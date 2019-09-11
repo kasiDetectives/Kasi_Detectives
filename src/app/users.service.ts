@@ -22,8 +22,7 @@ export class UsersService {
   // Logging users in to the app
   login(email, password){
     return firebase.auth().signInWithEmailAndPassword(email, password).then((result)=>{
-    this.setCurrentSession(firebase.auth())  
-      this.currentState = true
+    this.setCurrentSession(firebase.auth())
      return result
     }).catch((error) => {
       var errorMessage = error.message;
@@ -35,18 +34,16 @@ export class UsersService {
   //Adding new users to the database
   register(email, password, name){
     return firebase.auth().createUserWithEmailAndPassword(email, password).then((data) =>{
-      
+      this.setCurrentSession(firebase.auth())
+
       let userEmail = email;
       let userName = name;
       let userID = data.user.uid;
-      this.currentSessionId = data.user.uid
       console.log(userID)
       database.ref().child("Users/" + userID).update({
         email: userEmail,
-        displayName: userName
+        name: userName
       })
-      //this.setCurrentSession(firebase.auth())
-      this.currentState = true
       return data
      }).catch((error) => {
        // Handle Errors here.

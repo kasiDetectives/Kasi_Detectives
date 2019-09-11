@@ -53,7 +53,7 @@ export class RegistrationPage implements OnInit {
             console.log("signed in")
             let userId = data.user.uid
             console.log("Current user : " + userId)
-            this.userService.setCurrentSession(userId)
+            //this.userService.setCurrentSession(userId)
             this.route.navigate(["/home", userId])
             this.presentToast()
           }

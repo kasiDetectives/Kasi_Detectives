@@ -10,6 +10,16 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
+    appMenu =[{
+      url: 'report',
+      title: 'Crime',
+     // icon: ,
+    },
+    {
+      url: 'community-event',
+      title: 'Community event',
+     // icon: ,
+    }]
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
