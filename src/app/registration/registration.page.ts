@@ -40,6 +40,12 @@ export class RegistrationPage implements OnInit {
     this.name = this.registrationForm.get('name').value
     this.password = this.registrationForm.get('password').value
     this.confirmPassword = this.registrationForm.get('confirmPassword').value
+
+    console.log(this.email);
+    console.log(this.name);
+    console.log(this.password);
+    console.log(this.confirmPassword);
+    
     if(this.password === this.confirmPassword){
       this.userService.register(this.email, this.password, this.name).then((data)=>{
       console.log(data)
@@ -54,6 +60,9 @@ export class RegistrationPage implements OnInit {
         }).catch((error) => {
           console.log(error)
         })
+
+      console.log("passwords match");
+      
     }else if(this.password !== this.confirmPassword){
       this.loadPasswordAlert()
     }
