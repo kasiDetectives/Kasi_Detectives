@@ -100,9 +100,7 @@ export class UsersService {
           email : values["email"],
 
           })
-      })
-      
-      
+      })  
     }
      this.currentSessionId = uid
      console.log(uid);

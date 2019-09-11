@@ -7,7 +7,36 @@
 </ion-header>
 
 <ion-content>
-  <ion-button [routerLink]="['/login']">
-    login
-  </ion-button>
+  <div >
+      <ion-searchbar showCancelButton="always"></ion-searchbar>
+
+      <ion-button style="float: right;" [routerLink]="['/login']">
+        login
+      </ion-button>
+    <ion-button style="float: right;"  [routerLink]="['/registration']">
+      Register
+    </ion-button>
+    <br>
+  </div>
+<br>
+    <ion-card>
+        <ion-card-header>
+          <ion-card-title>Map</ion-card-title>
+        </ion-card-header>
+      
+        <ion-card-content>
+          ....
+        </ion-card-content>
+      </ion-card>
+    <ion-card>
+        <ion-card-header>
+          <ion-card-title>News Updates.</ion-card-title>
+        </ion-card-header>
+      
+        <ion-card-content>
+          Keep close to Nature's heart... and break clear away, once in awhile,
+          and climb a mountain or spend a week in the woods. Wash your spirit clean.
+        </ion-card-content>
+      </ion-card>
+  
 </ion-content>
