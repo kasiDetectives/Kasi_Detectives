@@ -8,7 +8,8 @@ const routes: Routes = [
   { path: 'report', loadChildren: './report/report.module#ReportPageModule' },
   { path: 'alert', loadChildren: './alert/alert.module#AlertPageModule' },
   { path: 'community-event', loadChildren: './community-event/community-event.module#CommunityEventPageModule' },
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },  { path: 'crime-alert', loadChildren: './crime-alert/crime-alert.module#CrimeAlertPageModule' },
+
 ];
 
 @NgModule({

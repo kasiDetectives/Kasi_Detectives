@@ -12,22 +12,28 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 export class AppComponent {
     appMenu =[{
       url: 'report',
-      title: 'Crime',
+      title: 'Crime-Alert',
      // icon: ,
     },
     {
       url: 'community-event',
       title: 'Community event',
+      
      // icon: ,
-    }]
+    },
+   {
+    url: 'Logout',
+    title: 'LogOut',
+   // icon: ,
+   }]
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
   ) {
     this.initializeApp();
   }
-
+  
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
