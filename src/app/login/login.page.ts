@@ -17,6 +17,7 @@ export class LoginPage implements OnInit {
   constructor(public userService: UsersService, public alertController: AlertController, public route: Router, public formBuilder: FormBuilder) {
     
     this.loginForm = formBuilder.group({
+    
       email: [this.email, Validators.compose(
         [Validators.required, Validators.pattern(this.emailPattern)]
       )],
