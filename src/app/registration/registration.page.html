@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>register</ion-title>
+    </ion-toolbar>
+   </ion-header>
+   
+   <ion-content class="one">
+      <form  class="form" [formGroup]="registrationForm" style="padding: 20px 50px; ">
+        <h1 class="header">Register</h1>
+        <div class="form-divider">
+            <ion-item class="inputItems">
+            <ion-label position="floating">Full Name </ion-label>
+            <ion-input formControlName="name"></ion-input>
+          </ion-item>
+          <ion-item class="inputItems">
+            <ion-label position="floating">Email </ion-label>
+            <ion-input formControlName="email"></ion-input>
+          </ion-item>
+          <ion-item class="inputItems">
+            <ion-label position="floating">Password: </ion-label>
+            <ion-input formControlName="password"></ion-input>
+          </ion-item>
+          <ion-item class="inputItems">
+            <ion-label position="floating">Confirm password: </ion-label>
+            <ion-input formControlName="confirmPassword"></ion-input>
+          </ion-item>
+        </div>
+        <br/><br/>
+        <ion-button class="form-buttons" (click)="addUser();" [disabled]="!registrationForm.valid">Register</ion-button><br/>
+        <a  class="form-link" [routerLink]="['/login']">I have an account</a>
+      </form>
+    </ion-content>

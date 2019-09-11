@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="one">
+  
+    <form class="form" style="padding: 50px;" [formGroup]="loginForm">
+      <h1 class="header">Login</h1>
+      <div class="form-divider">
+        <ion-item class="inputItems">
+        <ion-label class="inputs" position="floating">Email</ion-label>
+        <ion-input formControlName="email"></ion-input>
+      </ion-item>
+      <ion-item class="inputItems">
+        <ion-label  position="floating">Password </ion-label>
+        <ion-input formControlName="password"></ion-input>
+      </ion-item>
+      </div>
+      <br/>
+      <ion-button  class="form-buttons" [disabled]="!loginForm.valid" (click)="login();">Login</ion-button><br/><br/>
+      <ion-button class="form-buttons" (click)="resetPassword();">Forgot password</ion-button><br/>
+      <a  class="form-link"  [routerLink]="['/registration']">I don't have an account</a>
+    </form>
+    
+  </ion-content>
