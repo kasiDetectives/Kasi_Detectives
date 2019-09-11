@@ -1,9 +1,26 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>community_event</ion-title>
+      <ion-buttons slot ="start">
+          <ion-menu-button>
+          </ion-menu-button>
+        </ion-buttons>
+    <ion-title>community Event.</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+    <ion-searchbar showCancelButton="always" placeholder="Location"></ion-searchbar>
+
+    <ion-item>
+      <ion-input placeholder="Headlines"></ion-input>
+    </ion-item>
+
+<!-- Textarea in an item with a placeholder -->
+<ion-item>
+  <ion-textarea placeholder="Enter more information here..."></ion-textarea>
+  </ion-item>
+  <ion-button style="float: right;"  >
+    Submit
+  </ion-button>
 
 </ion-content>

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { GooglemapService } from '../googlemap.service';
+
 
 @Component({
   selector: 'app-community-event',
@@ -7,7 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CommunityEventPage implements OnInit {
 
-  constructor() { }
+  constructor(public googlemapservice : GooglemapService ) {
+    this.googlemapservice.myCity().subscribe((data)=>{
+          console.log(data);
+          
+    })
+   }
 
   ngOnInit() {
   }
