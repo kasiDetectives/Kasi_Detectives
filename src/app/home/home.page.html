@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+      <ion-buttons slot ="start">
+          <ion-menu-button>
+          </ion-menu-button>
+        </ion-buttons>
+        <ion-title style="text-align: center"><img src="../../assets/icon/dete.png" style="width: 35px; height:25px">
+          KASI DETECTIVES
+          
+         
+     
+        </ion-title>
+
+          
+  </ion-toolbar>
+  
+ </ion-header>
+
+    
+<ion-content color="success">
+    <ion-button shape="round" color="tertiary" style="float: right;" [routerLink]="['/login']">
+      <ion-icon name="log-in"></ion-icon>Sign In
+    </ion-button>
+  <ion-button shape="round" color="tertiary" style="float: right;"  [routerLink]="['/registration']"> 
+    <ion-icon name="person"></ion-icon>Sign Up
+  </ion-button><br><br>
+  
+    <ion-card>
+        <ion-card-header>
+          <ion-card-title>Map</ion-card-title>
+          <ion-searchbar color= "success"showCancelButton="never"></ion-searchbar>
+
+        </ion-card-header>
+      
+        <ion-card-content>
+          ....
+        </ion-card-content>
+      </ion-card>
+    <ion-card>
+        <ion-card-header>
+          <ion-card-title>News Updates.</ion-card-title>
+        </ion-card-header>
+      
+        <ion-card-content>
+          Keep close to Nature's heart... and break clear away, once in awhile,
+          and climb a mountain or spend a week in the woods. Wash your spirit clean.
+        </ion-card-content>
+      </ion-card>
+  
+</ion-content>
