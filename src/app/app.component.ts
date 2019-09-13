@@ -15,26 +15,9 @@ import { NavigationService } from './navigation.service';
 })
 export class AppComponent {
     bollean
-
-    appMenu =[{
-      url: 'home',
-      title: 'Home',
-      icon: "home",
-    },{
-      url: 'crime-alert',
-      title: 'Crime-Alert',
-      icon: "alert",
-    },
-    {
-      url: 'community-event',
-      title: 'Community Event',
-      icon: "paper" ,
-    },
-   {
-    url: 'Logout',
-    title: 'Sign Out',
-    icon: "log-out",
-   }]
+    email
+    homePage
+  
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -46,6 +29,7 @@ export class AppComponent {
     this.initializeApp();
     //this.checkBool()
     this.checkUser()
+    this.checkPage()
   }
   checkBool(){
     console.log("dddddddddd");
@@ -59,9 +43,16 @@ export class AppComponent {
     
   
   }
+
+  checkPage(){
+      this.events.subscribe('currentPage:home', (boolean)=>{
+        this.homePage = boolean
+      })
+  }
   checkUser(){
     this.events.subscribe('user:created', (email)=>{
       console.log(email);
+      this.email = email
     })
   }
 
@@ -69,7 +60,17 @@ export class AppComponent {
     console.log(url);
     this.route.navigate([url])
     this.navigationService.pageNavigator(url)
+
+    
     //this.userService.returnUserProfile()
+  }
+
+  signOut(url){
+    if(url === 'home'){
+      this.events.publish('user:loggedOut', true)
+      this.route.navigate([url])
+      this.navigationService.pageNavigator(url)
+    }
   }
   initializeApp() {
     this.platform.ready().then(() => {

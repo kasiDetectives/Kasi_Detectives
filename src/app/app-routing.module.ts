@@ -6,9 +6,8 @@ const routes: Routes = [
   { path: 'registration', loadChildren: './registration/registration.module#RegistrationPageModule' },
   { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
   { path: 'community-event', loadChildren: './community-event/community-event.module#CommunityEventPageModule' }, 
-  { path: 'crime-alert', loadChildren: './crime-alert/crime-alert.module#CrimeAlertPageModule' },
-  { path: 'alert', loadChildren: './alert/alert.module#AlertPageModule' },
-  { path: '', redirectTo: 'home', pathMatch: 'full' },  { path: 'report-alert', loadChildren: './report-alert/report-alert.module#ReportAlertPageModule' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'report-alert', loadChildren: './report-alert/report-alert.module#ReportAlertPageModule' },
 
 
 ];

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
+import { Events } from '@ionic/angular';
 
 @Component({
   selector: 'app-report',
@@ -9,8 +10,9 @@ import { Router } from '@angular/router';
 })
 export class ReportPage implements OnInit {
   user
-  constructor(public userService : UsersService, public router : Router) {
+  constructor(public userService : UsersService, public router : Router, public events  : Events) {
     this.checkState()
+    this.events.publish('currentPage:home', false)
   }
 
   checkState(){

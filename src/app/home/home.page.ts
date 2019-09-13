@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Events } from '@ionic/angular';
+import { UsersService } from '../users.service';
 
 @Component({
   selector: 'app-home',
@@ -8,9 +9,22 @@ import { Events } from '@ionic/angular';
 })
 export class HomePage {
 
-  constructor(public events : Events) {}
+  constructor(public events : Events, public userService : UsersService) {
+    this.checkUserState()
+    this.run()
+  }
+
+  checkUserState(){
+    this.events.subscribe('user:loggedOut', (boolean)=>{
+      console.log(boolean);
+      if(boolean === true){
+        this.userService.destroyUserData()
+        this.events.publish('user:created', false);
+      }
+    })
+  }
   run(){
     console.log("running");
-    this.events.publish('menu:clicked', true)
+    this.events.publish('currentPage:home', true)
   }
 }

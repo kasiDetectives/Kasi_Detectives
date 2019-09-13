@@ -4,6 +4,7 @@ import { GooglemapService } from '../googlemap.service';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { NavigationService } from '../navigation.service';
+import { Events } from '@ionic/angular';
 
 @Component({
   selector: 'app-report-alert',
@@ -12,9 +13,10 @@ import { NavigationService } from '../navigation.service';
 })
 export class ReportAlertPage implements OnInit {
   user
-  constructor(public navigationService : NavigationService, public userService : UsersService, public router : Router) {
+  constructor(public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events) {
     console.log("why");
     this.checkState()
+    this.events.publish('currentPage:home', false)
   }
   checkState(){
     this.user = this.userService.returnUserProfile()
