@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
 import { NavigationService } from '../navigation.service';
 
 @Component({
-  selector: 'app-community-event',
-  templateUrl: './community-event.page.html',
-  styleUrls: ['./community-event.page.scss'],
+  selector: 'app-report-alert',
+  templateUrl: './report-alert.page.html',
+  styleUrls: ['./report-alert.page.scss'],
 })
-export class CommunityEventPage implements OnInit {
+export class ReportAlertPage implements OnInit {
   user
   constructor(public navigationService : NavigationService, public userService : UsersService, public router : Router) {
     console.log("why");
