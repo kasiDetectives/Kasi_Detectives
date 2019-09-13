@@ -58,6 +58,7 @@ export class LoginPage implements OnInit {
         
         console.log("Welcome " + result.user.email)
         let userId = result.user.uid
+<<<<<<< HEAD
         if(this.pageURL){
           let link = "/" + this.pageURL
           console.log(link);
@@ -67,6 +68,10 @@ export class LoginPage implements OnInit {
           let link = "home"
           this.route.navigate([link])
         }
+=======
+       
+        this.route.navigate(["/home"])
+>>>>>>> 43e862645d4ffb57b202d4af7506a3e49fc2ce0f
       }else{
         console.log(result.message)
       }
@@ -87,7 +92,7 @@ export class LoginPage implements OnInit {
         {
           text: 'Cancel',
           role: 'cancel',
-          cssClass: 'secondary',
+          cssClass: 'success',
           handler: (blah) => {
             console.log('Confirm Cancel: blah');
           }

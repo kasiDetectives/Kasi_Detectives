@@ -17,20 +17,23 @@ export class AppComponent {
     bollean
 
     appMenu =[{
-      url: 'report',
+      url: 'home',
+      title: 'Home',
+      icon: "home",
+    },{
+      url: 'crime-alert',
       title: 'Crime-Alert',
-     // icon: ,
+      icon: "alert",
     },
     {
       url: 'community-event',
-      title: 'Community event',
-      
-     // icon: ,
+      title: 'Community Event',
+      icon: "paper" ,
     },
    {
     url: 'Logout',
-    title: 'LogOut',
-   // icon: ,
+    title: 'Sign Out',
+    icon: "log-out",
    }]
   constructor(
     private platform: Platform,

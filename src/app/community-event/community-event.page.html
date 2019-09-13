@@ -1,26 +1,35 @@
 <ion-header>
-  <ion-toolbar>
-      <ion-buttons slot ="start">
-          <ion-menu-button>
-          </ion-menu-button>
-        </ion-buttons>
-    <ion-title>community Event.</ion-title>
-  </ion-toolbar>
-</ion-header>
+    <ion-toolbar color="tertiary">
+        <ion-buttons slot ="start">
+            <ion-menu-button>
+            </ion-menu-button>
+          </ion-buttons>
+          <ion-title style="text-align: center"><img src="../../assets/icon/dete.png" style="width: 35px; height:25px">
+            KASI DETECTIVES</ion-title>
+    </ion-toolbar>
+   </ion-header>
 
-<ion-content>
-    <ion-searchbar showCancelButton="always" placeholder="Location"></ion-searchbar>
+<ion-content color="success">
+  <ion-searchbar color="success" showCancelButton="never" placeholder="Location"></ion-searchbar>
 
-    <ion-item>
-      <ion-input placeholder="Headlines"></ion-input>
-    </ion-item>
+  <ion-card>
+      <ion-item>
+          <ion-input placeholder="Headline"></ion-input>
+        </ion-item>
+  </ion-card>
 
 <!-- Textarea in an item with a placeholder -->
-<ion-item>
-  <ion-textarea placeholder="Enter more information here..."></ion-textarea>
-  </ion-item>
-  <ion-button style="float: right;"  >
-    Submit
-  </ion-button>
+<ion-card>
+    <ion-item>
+        <ion-textarea placeholder="Description" rows="20" cols="20"></ion-textarea>
+        </ion-item>
+</ion-card>
+
+<div style="text-align: center">
+    <ion-button  shape="round" color="tertiary">
+        Submit
+    </ion-button>
+      
+  </div>
 
 </ion-content>

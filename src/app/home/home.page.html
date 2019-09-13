@@ -1,31 +1,35 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="tertiary">
       <ion-buttons slot ="start">
           <ion-menu-button (click)="run()">
           </ion-menu-button>
         </ion-buttons>
-    <ion-title>
-        Home
-    </ion-title>
+        <ion-title style="text-align: center"><img src="../../assets/icon/dete.png" style="width: 35px; height:25px">
+          KASI DETECTIVES
+          
+         
+     
+        </ion-title>
+
+          
   </ion-toolbar>
-</ion-header>
+  
+ </ion-header>
 
-<ion-content>
-  <div >
-      <ion-searchbar showCancelButton="always"></ion-searchbar>
-
-      <ion-button style="float: right;" [routerLink]="['/login']">
-        login
-      </ion-button>
-    <ion-button style="float: right;"  [routerLink]="['/registration']">
-      Register
+    
+<ion-content color="success">
+    <ion-button shape="round" color="tertiary" style="float: right;" [routerLink]="['/login']">
+      <ion-icon name="log-in"></ion-icon>Sign In
     </ion-button>
-    <br>
-  </div>
-<br>
+  <ion-button shape="round" color="tertiary" style="float: right;"  [routerLink]="['/registration']"> 
+    <ion-icon name="person"></ion-icon>Sign Up
+  </ion-button><br><br>
+  
     <ion-card>
         <ion-card-header>
           <ion-card-title>Map</ion-card-title>
+          <ion-searchbar color= "success"showCancelButton="never"></ion-searchbar>
+
         </ion-card-header>
       
         <ion-card-content>

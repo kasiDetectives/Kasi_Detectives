@@ -102,8 +102,8 @@ export class RegistrationPage implements OnInit {
   async presentToast() {
     const toast = await this.toastController.create({
       message: 'You have been registered',
-      duration: 2000,
-      color: "primary"
+      duration: 1000,
+      color: "tertiary"
     });
     toast.present();
   }
