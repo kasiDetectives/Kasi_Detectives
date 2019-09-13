@@ -44,7 +44,8 @@ export class AppComponent {
     public events : Events
   ) {
     this.initializeApp();
-    this.checkBool()
+    //this.checkBool()
+    this.checkUser()
   }
   checkBool(){
     console.log("dddddddddd");
@@ -56,9 +57,14 @@ export class AppComponent {
     })
     
     
-    
-  }
   
+  }
+  checkUser(){
+    this.events.subscribe('user:created', (email)=>{
+      console.log(email);
+    })
+  }
+
   auto(url){
     console.log(url);
     this.route.navigate([url])
