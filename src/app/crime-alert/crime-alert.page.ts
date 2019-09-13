@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavigationService } from '../navigation.service';
 
 @Component({
   selector: 'app-crime-alert',
@@ -6,9 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./crime-alert.page.scss'],
 })
 export class CrimeAlertPage implements OnInit {
-
-  constructor() { }
-
+  
+  constructor(public navigationService : NavigationService) { }
+  
   ngOnInit() {
   }
 

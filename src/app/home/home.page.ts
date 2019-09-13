@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Events } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -7,6 +8,9 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
-  constructor() {}
-
+  constructor(public events : Events) {}
+  run(){
+    console.log("running");
+    this.events.publish('menu:clicked', true)
+  }
 }

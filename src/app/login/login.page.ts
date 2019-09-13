@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../users.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, Events } from '@ionic/angular';
 import { Router } from '@angular/router'
-import {FormBuilder, Validators} from '@angular/forms'
+import {FormBuilder, Validators, CheckboxRequiredValidator} from '@angular/forms'
+import { NavigationService } from '../navigation.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -14,8 +15,18 @@ export class LoginPage implements OnInit {
   emailPattern : string = "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
   passwordPattern = "^(?=.*\[0-9])(?=.*\[a-z])(?=.*\[A-Z])(?=.*\[@#$!%^&*,.<>]).{8,}$"
   loginForm
-  constructor(public userService: UsersService, public alertController: AlertController, public route: Router, public formBuilder: FormBuilder) {
-    
+  pageURL = "und"
+  constructor(
+    public userService: UsersService,
+    public alertController: AlertController,
+    public route: Router,
+    public formBuilder: FormBuilder,
+    public navigationService : NavigationService,
+    public events : Events,
+    ) {
+
+      this.checkURL()
+    //this.checkURL()
     this.loginForm = formBuilder.group({
     
       email: [this.email, Validators.compose(
@@ -28,16 +39,34 @@ export class LoginPage implements OnInit {
    this.loginForm.get('email').setValue('willington.mnisi@gmail.com')
    this.loginForm.get('password').setValue('Will1ngt0n7&')
   }
+
+  checkURL(){
+    if(this.pageURL==="und"){
+      this.pageURL = this.navigationService.returnPageURL()
+      console.log(this.pageURL);
+    }
+    
+  }
+
   login(){
     this.email = this.loginForm.get('email').value
     this.password = this.loginForm.get('password').value
     console.log(this.email, this.password)
     this.userService.login(this.email, this.password).then((result) =>{
       if(result.operationType === "signIn"){
+        this.events.publish('user:created', result.user.email);
+        
         console.log("Welcome " + result.user.email)
         let userId = result.user.uid
-       
-        this.route.navigate(["/home", userId])
+        if(this.pageURL){
+          let link = "/" + this.pageURL
+          console.log(link);
+          
+          this.route.navigate([link])
+        }else{
+          let link = "home"
+          this.route.navigate([link])
+        }
       }else{
         console.log(result.message)
       }
@@ -74,5 +103,7 @@ export class LoginPage implements OnInit {
     await alert.present();
   }
   ngOnInit() {
+
+    
   }
 }

@@ -8,7 +8,7 @@
   </ion-toolbar>
  </ion-header>
 
-<ion-content class="one" color="success">
+<ion-content class="one" color="success" ($ionicView.enter)="checkURL()">
   
     <form class="form" style="padding: 50px;" [formGroup]="loginForm">
       <h1 style="text-align: center" class="header"><b>Sign In</b></h1>
