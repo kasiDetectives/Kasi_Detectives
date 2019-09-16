@@ -4,6 +4,7 @@ import { Platform, Events } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Router } from '@angular/router';
+import { Environment } from '@ionic-native/google-maps';
 import { UsersService } from './users.service';
 import * as firebase from 'firebase'
 import { NavigationService } from './navigation.service';
@@ -74,6 +75,14 @@ export class AppComponent {
   }
   initializeApp() {
     this.platform.ready().then(() => {
+      Environment.setEnv({
+        // api key for server
+        'AIzaSyDrcHORRoXIs74hD9fvcfpX3GKbRvJQuKo': 'AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI',
+ 
+        // api key for local development
+        'AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI': 'AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI'
+      });
+
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       
