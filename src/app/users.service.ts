@@ -105,7 +105,11 @@ export class UsersService {
      console.log(this.user);
      
   }
-
+  destroyUserData(){
+    this.userProfile.pop()
+    console.log(this.userProfile);
+    
+  }
   readCurrentSession(){
     console.log(this.user);
     return this.user

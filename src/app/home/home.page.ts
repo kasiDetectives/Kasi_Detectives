@@ -12,6 +12,7 @@ import {
   GoogleMapsAnimation,
   MyLocation
 } from '@ionic-native/google-maps';
+import { UsersService } from '../users.service';
 
 @Component({
   selector: 'app-home',
@@ -22,8 +23,11 @@ export class HomePage implements OnInit  {
 
   map: GoogleMap;
   address:string;
-  constructor(public events : Events,  public toastCtrl: ToastController,
-    private platform: Platform) {}
+  constructor(public toastCtrl: ToastController,
+    private platform: Platform, public events : Events, public userService : UsersService) {
+      this.checkUserState()
+      this.run()
+    }
 
     ngOnInit() {
       // Since ngOnInit() is executed before `deviceready` event,
@@ -100,8 +104,19 @@ export class HomePage implements OnInit  {
 
     /////
 
+  
+
+  checkUserState(){
+    this.events.subscribe('user:loggedOut', (boolean)=>{
+      console.log(boolean);
+      if(boolean === true){
+        this.userService.destroyUserData()
+        this.events.publish('user:created', false);
+      }
+    })
+  }
   run(){
     console.log("running");
-    this.events.publish('menu:clicked', true)
+    this.events.publish('currentPage:home', true)
   }
 }
