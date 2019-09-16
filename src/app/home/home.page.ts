@@ -14,6 +14,7 @@ import {
   MyLocation
 } from '@ionic-native/google-maps';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
