@@ -23,7 +23,10 @@ export class HomePage implements OnInit  {
   map: GoogleMap;
   address:string;
   constructor(public events : Events,  public toastCtrl: ToastController,
-    private platform: Platform) {}
+    private platform: Platform) {
+
+    }
+
 
     ngOnInit() {
       // Since ngOnInit() is executed before `deviceready` event,
@@ -31,6 +34,7 @@ export class HomePage implements OnInit  {
       this.platform.ready();
       this.loadMap();
     }
+
 
     loadMap() {
       this.map = GoogleMaps.create('map_canvas', {

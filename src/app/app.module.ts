@@ -15,6 +15,7 @@ var firebaseConfig = {
   authDomain: "kasidetectives.firebaseapp.com",
   databaseURL: "https://kasidetectives.firebaseio.com",
   projectId: "kasidetectives",
+  
   storageBucket: "",
   messagingSenderId: "207670776123",
   appId: "1:207670776123:web:b1f7be1f7bb88f7d70271e"
