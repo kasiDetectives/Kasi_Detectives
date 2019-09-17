@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Events } from '@ionic/angular';
+import { UsersService } from '../users.service';
 import {
   ToastController,
   Platform
@@ -13,6 +14,7 @@ import {
   MyLocation
 } from '@ionic-native/google-maps';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -23,7 +25,10 @@ export class HomePage implements OnInit  {
   map: GoogleMap;
   address:string;
   constructor(public events : Events,  public toastCtrl: ToastController,
-    private platform: Platform) {}
+    private platform: Platform, public userService : UsersService) {
+      this.checkUserState()
+      this.run()
+    }
 
     ngOnInit() {
       // Since ngOnInit() is executed before `deviceready` event,
@@ -100,8 +105,19 @@ export class HomePage implements OnInit  {
 
     /////
 
+  
+
+  checkUserState(){
+    this.events.subscribe('user:loggedOut', (boolean)=>{
+      console.log(boolean);
+      if(boolean === true){
+        this.userService.destroyUserData()
+        this.events.publish('user:created', false);
+      }
+    })
+  }
   run(){
     console.log("running");
-    this.events.publish('menu:clicked', true)
+    this.events.publish('currentPage:home', true)
   }
 }
