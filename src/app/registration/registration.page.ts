@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../users.service';
 import {FormBuilder, Validators} from '@angular/forms'
 import { Router } from '@angular/router'
-import { AlertController } from '@ionic/angular';
+import { AlertController, Events } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
 import { NavigationService } from '../navigation.service';
 
@@ -26,8 +26,9 @@ export class RegistrationPage implements OnInit {
     public route: Router,
     public alertController: AlertController,
     public toastController: ToastController,
-    public  navigationService : NavigationService) {
-   
+    public  navigationService : NavigationService,
+    public events: Events) {
+      this.events.publish('currentPage:home', false)
       this.pageURL = this.navigationService.returnPageURL()
       console.log(this.pageURL);
 

@@ -64,7 +64,9 @@ export class LoginPage implements OnInit {
           
           this.route.navigate([link])
         }else{
-          let link = "home"
+          
+          let link = "/home"
+          console.log(link)
           this.route.navigate([link])
         }
       }else{

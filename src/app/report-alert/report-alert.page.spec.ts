@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AlertPage } from './alert.page';
+import { ReportAlertPage } from './report-alert.page';
 
-describe('AlertPage', () => {
-  let component: AlertPage;
-  let fixture: ComponentFixture<AlertPage>;
+describe('ReportAlertPage', () => {
+  let component: ReportAlertPage;
+  let fixture: ComponentFixture<ReportAlertPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AlertPage ],
+      declarations: [ ReportAlertPage ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AlertPage);
+    fixture = TestBed.createComponent(ReportAlertPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -7,13 +7,13 @@ import { NavigationService } from '../navigation.service';
 import { Events } from '@ionic/angular';
 
 @Component({
-  selector: 'app-community-event',
-  templateUrl: './community-event.page.html',
-  styleUrls: ['./community-event.page.scss'],
+  selector: 'app-report-alert',
+  templateUrl: './report-alert.page.html',
+  styleUrls: ['./report-alert.page.scss'],
 })
-export class CommunityEventPage implements OnInit {
+export class ReportAlertPage implements OnInit {
   user
-  constructor(public navigationService : NavigationService, public userService : UsersService, public router : Router, public events: Events) {
+  constructor(public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events) {
     console.log("why");
     this.checkState()
     this.events.publish('currentPage:home', false)
