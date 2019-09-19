@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Events } from '@ionic/angular';
+import { UsersService } from '../users.service';
 import {
   ToastController,
   Platform
@@ -12,7 +13,6 @@ import {
   GoogleMapsAnimation,
   MyLocation
 } from '@ionic-native/google-maps';
-import { UsersService } from '../users.service';
 
 @Component({
   selector: 'app-home',
