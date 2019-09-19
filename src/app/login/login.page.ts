@@ -59,7 +59,7 @@ export class LoginPage implements OnInit {
         
         console.log("Welcome " + result.user.email)
         let userId = result.user.uid
-        if(this.pageURL==="crime-alert" || this.pageURL==="community-event"){
+        if(this.pageURL==="report-alert" || this.pageURL==="community-event"){
           let link = "/" + this.pageURL
           console.log(link);
           
