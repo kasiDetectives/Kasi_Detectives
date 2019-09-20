@@ -34,7 +34,7 @@ export class CommunityEventPage implements OnInit {
   }
 
   autocomplete(){
-   
+   this.clearArray(this.place)
     // console.log(this.result);
     this.mapboxService.autoComplete(this.searchString).subscribe((data) => {
        this.result = data
@@ -44,7 +44,7 @@ export class CommunityEventPage implements OnInit {
         
    
         for(let i = 0; i < this.features.length; i++){
-        this.coordinates.push(this.features[i])
+        //this.coordinates.push(this.features[i])
         this.place.push({
           coordinates : this.features[i].geometry.coordinates,
           place : this.features[i].place_name,
@@ -69,8 +69,15 @@ export class CommunityEventPage implements OnInit {
        
     })
     
-   
+  
 
+  }
+
+  clearArray(array){
+    for(let i = 0; i < array.length; i++){
+      array.splice(i)
+    }
+    
   }
   check(data){
     let result = data
