@@ -10,8 +10,15 @@
    </ion-header>
 
 <ion-content color="success">
-  <ion-searchbar color="light" showCancelButton="never" placeholder="Location" (ionChange)="autocomplete()" [(ngModel)]="searchString"></ion-searchbar>
-
+    <ion-card>
+    <ion-list color="light">  
+  <ion-searchbar color="light" showCancelButton="never" placeholder="Location" (ionChange)="autocomplete()" [(ngModel)]="searchString">
+     </ion-searchbar>        
+            <ion-item (click)="" *ngFor = "let suggest of place">
+              {{suggest.Place}}
+            </ion-item>             
+    </ion-list>
+  </ion-card>
   <ion-card>
       <ion-item>
           <ion-input placeholder="Headline"></ion-input>

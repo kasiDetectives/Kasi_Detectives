@@ -19,6 +19,9 @@ export class CommunityEventPage implements OnInit {
   coordinates = []
   features =[]
   place =[]
+  lat :number
+lng :number
+resp
   constructor(public navigationService : NavigationService, public userService : UsersService, public mapboxService : MapboxService, public router : Router, public events: Events) {
     console.log("why");
     this.checkState()
@@ -47,7 +50,7 @@ export class CommunityEventPage implements OnInit {
         //this.coordinates.push(this.features[i])
         this.place.push({
           coordinates : this.features[i].geometry.coordinates,
-          place : this.features[i].place_name,
+          Place : this.features[i].place_name,
           name : this.features[i].text,
           // region : this.features[i].context[0].text,
           // regionCode : this.features[i].context[0].short_code,
@@ -87,6 +90,11 @@ export class CommunityEventPage implements OnInit {
     }
     console.log(coordinates);
   }
+  getCoordinate(lat,lng){
+
+
+  }
+  
   ngOnInit() {
   }
 
