@@ -5,6 +5,7 @@ import {
   Platform
 } from '@ionic/angular';
 import {
+  
   GoogleMaps,
   GoogleMap,
   GoogleMapsEvent,
