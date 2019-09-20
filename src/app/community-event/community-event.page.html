@@ -14,7 +14,7 @@
     <ion-list color="light">  
   <ion-searchbar color="light" showCancelButton="never" placeholder="Location" (ionChange)="autocomplete()" [(ngModel)]="searchString">
      </ion-searchbar>        
-            <ion-item (click)="" *ngFor = "let suggest of place">
+            <ion-item *ngFor = "let suggest of place">
               {{suggest.Place}}
             </ion-item>             
     </ion-list>
