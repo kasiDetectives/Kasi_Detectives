@@ -63,7 +63,7 @@ export class ReportAlertPage implements OnInit {
         console.log("document clicked");
         console.log(map);
         console.log(map.target);
-       this.MarkAlerts(location, map)
+      // this.MarkAlerts(location, map)
        console.log("xxx");
        
       });
@@ -142,20 +142,20 @@ export class ReportAlertPage implements OnInit {
     //////////////////////////////////////////////////////////
 
 
-    MarkAlerts(location, map){
-        //add a marker
-        let markers: Marker = this.map.addMarkerSync({
-          title: 'Crime-Alert',
-          snippet: 'Passop is awesome!',
-          position: location,
-          animation: GoogleMapsAnimation.BOUNCE,
-          map:map
-        });
+    // MarkAlerts(location, map){
+    //     //add a marker
+    //     let markers: Marker = this.map.addMarkerSync({
+    //       title: 'Crime-Alert',
+    //       snippet: 'Passop is awesome!',
+    //       position: location,
+    //       animation: GoogleMapsAnimation.BOUNCE,
+    //       map:map
+    //     });
 
-        //show the infoWindow
-        markers.showInfoWindow();
+    //     //show the infoWindow
+    //     markers.showInfoWindow();
 
-     }
+    //  }
 
      ////////
      MarksIn(map){
