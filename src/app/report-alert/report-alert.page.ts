@@ -52,7 +52,7 @@ export class ReportAlertPage implements OnInit {
   /////
     loadMap() {
       this.map = GoogleMaps.create('map_canvas', {
-        center: {lat: 59.325, lng: 18.070},
+        center: {lat: -34.075007, lng: 20.23852},
         zoom: 17,
         mapTypeId: 'roadmap'
       }
@@ -68,44 +68,20 @@ export class ReportAlertPage implements OnInit {
        
       });
 
-     ////////////////////////////// adding custom icons
-
-     let icon
-
-    //   let icons = {
-    //   warnings: {
-    //    icon: '\assets\icon\pin-black-silhouette-in-diagonal-position-pointing-down-right (1).png'
-    //   },
-    //   HighRisk: {
-    //    icon: '\assets\icon\pin-black-silhouette-in-diagonal-position-pointing-down-right (9).png'
-    //      }
-    //  };
-
-      /////////
-
-
-     // this.map = GoogleMaps.create('map_canvas', {
-        // camera: {
-        //   target: {
-        //     lat: 43.0741704,
-        //     lng: -89.3809802
-        //   },
-        //   zoom: 18,
-        //   tilt: 30
-        // }
-    //  });
-
         /// get user location
       this.goToMyLocation();
 
        ///// for warnings
        this.WarnMarker(location);
-
-        /////
+       /////////
+       this.MarksIn(this.map)
+        ////////
+        this.Markerz(this.map) 
+        ///////
      this.initAutocomplete()   
     }
    
-   ////////////////////////////////// Don't temper with main map display /////////
+   //////////////// Don't temper with main map display /////////
     goToMyLocation(){
       this.map.clear();
    
@@ -163,7 +139,7 @@ export class ReportAlertPage implements OnInit {
       });
       toast.present();
     }
-    ///////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
 
 
     MarkAlerts(location, map){
@@ -173,8 +149,6 @@ export class ReportAlertPage implements OnInit {
           snippet: 'Passop is awesome!',
           position: location,
           animation: GoogleMapsAnimation.BOUNCE,
-          icon: '\icon\pin-black-silhouette-in-diagonal-position-pointing-down-right (1).png',
-         // icon: '\assets\icon\pin-black-silhouette-in-diagonal-position-pointing-down-right (2).png',
           map:map
         });
 
@@ -183,13 +157,44 @@ export class ReportAlertPage implements OnInit {
 
      }
 
+     ////////
+     MarksIn(map){
+      //add a marker
+      let markerZA: Marker = this.map.addMarkerSync({
+        title: 'Crime-Scene',
+        snippet: 'Gang Rapes!',
+        position: {lat: -28.32813, lng: 30.697505},
+        animation: GoogleMapsAnimation.DROP,
+        map:map
+      });
+
+      //show the infoWindow
+      markerZA.showInfoWindow();
+
+   }
+
+   //////////////
+   Markerz(map){
+    //add a marker
+    let markerZA: Marker = this.map.addMarkerSync({
+      title: 'Crime-Scene',
+      snippet: 'Gang Rapes!',
+      position: {lat: -28.405467, lng: 23.270747},
+      animation: GoogleMapsAnimation.DROP,
+      map:map
+    });
+
+    //show the infoWindow
+    markerZA.showInfoWindow();
+
+ }
+
      ///////
      WarnMarker(map){
        let warmMark : Marker = this.map.addMarkerSync({
           title : 'User-Warning',
           snippet: 'Car-Hijackings!',
-          position: {lat: 59.325, lng: 18.070},
-         // icon: '\icon\pin-black-silhouette-in-diagonal-position-pointing-down-right (2).png',
+          position: {lat: -34.075007, lng: 20.23852},
           map:map
        })
 
@@ -199,7 +204,7 @@ export class ReportAlertPage implements OnInit {
   //////////////////////////////////////////////////////////////////////////////////////////
 
   initAutocomplete() {
-    var map = new map.maps.Map(document.getElementById('map_canvas'), {
+    var map = new map.maps.Map(document.getElementById("map_canvas"), {
       center: {lat: 26.0093, lng: 28.2181},
       zoom: 13,
       mapTypeId: 'roadmap'
@@ -263,6 +268,10 @@ export class ReportAlertPage implements OnInit {
       });
       map.fitBounds(bounds);
     });
+  }
+
+  getMaps(){
+    return this.map;
   }
 
 }

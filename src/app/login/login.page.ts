@@ -24,8 +24,9 @@ export class LoginPage implements OnInit {
     public navigationService : NavigationService,
     public events : Events,
     ) {
-
-      this.checkURL()
+      this.events.publish('currentPage:home', false)
+      this.pageURL = this.navigationService.returnPageURL()
+      console.log(this.pageURL);
     //this.checkURL()
     this.loginForm = formBuilder.group({
     
@@ -58,7 +59,7 @@ export class LoginPage implements OnInit {
         
         console.log("Welcome " + result.user.email)
         let userId = result.user.uid
-        if(this.pageURL){
+        if(this.pageURL==="report-alert" || this.pageURL==="community-event"){
           let link = "/" + this.pageURL
           console.log(link);
           

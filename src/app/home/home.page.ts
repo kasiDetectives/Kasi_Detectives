@@ -1,18 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Events } from '@ionic/angular';
 import { UsersService } from '../users.service';
-// import {
-//   ToastController,
-//   Platform
-// } from '@ionic/angular';
-// import {
-//   GoogleMaps,
-//   GoogleMap,
-//   GoogleMapsEvent,
-//   Marker,
-//   GoogleMapsAnimation,
-//   MyLocation
-// } from '@ionic-native/google-maps';
+import {
+  Platform
+} from '@ionic/angular';
+import {
+  GoogleMaps,
+  GoogleMap,
+  GoogleMapsEvent,
+  Marker,
+  GoogleMapsAnimation,
+  MyLocation
+} from '@ionic-native/google-maps';
 
 
 @Component({
@@ -24,18 +23,25 @@ export class HomePage implements OnInit  {
 
  // map: GoogleMap;
  // address:string;
-  constructor(public events : Events, public userService : UsersService) {
+  constructor(public events : Events, public userService : UsersService,private platform: Platform) {
       this.checkUserState()
       this.run()
+
+     // this.getMaps();
     }
 
     ngOnInit() {
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
-    //  this.platform.ready();
-    //  this.loadMap();
+     this.platform.ready();
+     this.loadMap();
     }
 
+    loadMap(){
+      
+    }
+
+    //getMaps();
 
     // loadMap() {
     //   this.map = GoogleMaps.create('map_canvas', {
