@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GooglemapService } from '../googlemap.service';
+import { Geolocation } from '@capacitor/core'
 
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
@@ -19,10 +20,16 @@ export class CommunityEventPage implements OnInit {
   coordinates = []
   features =[]
   place =[]
+
+  latitude: number
+  longitude: number
+
   constructor(public navigationService : NavigationService, public userService : UsersService, public mapboxService : MapboxService, public router : Router, public events: Events) {
     console.log("why");
     this.checkState()
     this.events.publish('currentPage:home', false)
+
+    this.getLocation()
   }
   checkState(){
     this.user = this.userService.returnUserProfile()
@@ -86,6 +93,16 @@ export class CommunityEventPage implements OnInit {
      coordinates = result.features[i].geometry.coordinates
     }
     console.log(coordinates);
+  }
+
+  async getLocation()
+  {
+    const position = await Geolocation.getCurrentPosition()
+    this.latitude = position.coords.latitude
+    this.longitude = position.coords.longitude
+    
+    console.log(this.latitude);
+    
   }
   ngOnInit() {
   }
