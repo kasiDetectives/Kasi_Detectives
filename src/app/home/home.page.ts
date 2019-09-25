@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Events } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import {
-  ToastController,
   Platform
 } from '@ionic/angular';
 import {
+  
   GoogleMaps,
   GoogleMap,
   GoogleMapsEvent,
@@ -13,7 +13,6 @@ import {
   GoogleMapsAnimation,
   MyLocation
 } from '@ionic-native/google-maps';
-
 
 @Component({
   selector: 'app-home',
@@ -24,84 +23,91 @@ export class HomePage implements OnInit  {
 
   map: GoogleMap;
   address:string;
-  constructor(public events : Events,  public toastCtrl: ToastController,
-    private platform: Platform, public userService : UsersService) {
+  constructor(private platform: Platform, public events : Events, public userService : UsersService) {
       this.checkUserState()
       this.run()
+
+     // this.getMaps();
     }
 
     ngOnInit() {
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
-      this.platform.ready();
-      this.loadMap();
+     this.platform.ready();
+     this.loadMap();
     }
 
-    loadMap() {
-      this.map = GoogleMaps.create('map_canvas', {
-        // camera: {
-        //   target: {
-        //     lat: 43.0741704,
-        //     lng: -89.3809802
-        //   },
-        //   zoom: 18,
-        //   tilt: 30
-        // }
-      });
-      this.goToMyLocation();
+    loadMap(){
+      
     }
+
+    //getMaps();
+
+    // loadMap() {
+    //   this.map = GoogleMaps.create('map_canvas', {
+    //     // camera: {
+    //     //   target: {
+    //     //     lat: 43.0741704,
+    //     //     lng: -89.3809802
+    //     //   },
+    //     //   zoom: 18,
+    //     //   tilt: 30
+    //     // }
+    //   });
+    //   this.goToMyLocation();
+    // }
    
    
-    goToMyLocation(){
-      this.map.clear();
+    // goToMyLocation(){
+    //   this.map.clear();
    
-      // Get the location of you
-      this.map.getMyLocation().then((location: MyLocation) => {
-        console.log(JSON.stringify(location, null ,2));
+    //   // Get the location of you
+    //   this.map.getMyLocation().then((location: MyLocation) => {
+    //     console.log(JSON.stringify(location, null ,2));
    
-        // Move the map camera to the location with animation
-        this.map.animateCamera({
-          target: location.latLng,
-          zoom: 17,
-          duration: 5000
-        });
+    //     // Move the map camera to the location with animation
+    //     this.map.animateCamera({
+    //       target: location.latLng,
+    //       zoom: 17,
+    //       duration: 5000
+    //     });
    
-        //add a marker
-        let marker: Marker = this.map.addMarkerSync({
-          title: '@ionic-native/google-maps plugin!',
-          snippet: 'This plugin is awesome!',
-          position: location.latLng,
-          animation: GoogleMapsAnimation.BOUNCE
-        });
+    //     //add a marker
+    //     let marker: Marker = this.map.addMarkerSync({
+    //       title: '@ionic-native/google-maps plugin!',
+    //       snippet: 'This plugin is awesome!',
+    //       position: location.latLng,
+    //       animation: GoogleMapsAnimation.BOUNCE
+    //     });
    
-        //show the infoWindow
-        marker.showInfoWindow();
+    //     //show the infoWindow
+    //     marker.showInfoWindow();
    
-        //If clicked it, display the alert
-        marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-          this.showToast('clicked!');
-        });
+    //     //If clicked it, display the alert
+    //     marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+    //       this.showToast('clicked!');
+    //     });
    
-        this.map.on(GoogleMapsEvent.MAP_READY).subscribe(
-          (data) => {
-              console.log("Click MAP",data);
-          }
-        );
-      })
-      .catch(err => {
-        //this.loading.dismiss();
-        this.showToast(err.error_message);
-      });
-    }
+    //     this.map.on(GoogleMapsEvent.MAP_READY).subscribe(
+    //       (data) => {
+    //           console.log("Click MAP",data);
+    //       }
+    //     );
+    //   })
+    //   .catch(err => {
+    //     //this.loading.dismiss();
+    //     this.showToast(err.error_message);
+    //   });
+    // }
    
-    async showToast(message: string) {
-      let toast = await this.toastCtrl.create({
-        message: message,
-        duration: 2000,
-        position: 'middle'
-      });
-      toast.present();
-    }
+    // async showToast(message: string) {
+    //   let toast = await this.toastCtrl.create({
+    //     message: message,
+    //     duration: 2000,
+    //     position: 'middle'
+    //   });
+    //   toast.present();
+    // }
 
     /////
 

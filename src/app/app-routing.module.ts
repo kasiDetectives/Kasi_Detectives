@@ -8,7 +8,8 @@ const routes: Routes = [
   { path: 'community-event', loadChildren: './community-event/community-event.module#CommunityEventPageModule' }, 
   
   { path: 'report-alert', loadChildren: './report-alert/report-alert.module#ReportAlertPageModule' },
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },  { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' },
+
 
 ];
 
