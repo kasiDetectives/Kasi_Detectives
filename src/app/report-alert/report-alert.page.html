@@ -1,0 +1,38 @@
+
+ <ion-header>
+  <ion-toolbar color="tertiary">
+      <ion-buttons slot ="start">
+          <ion-menu-button>
+          </ion-menu-button>
+        </ion-buttons>
+    <!-- <ion-searchbar [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar> -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="success">
+
+<!-- <ion-list [hidden]="autocompleteItems.length == 0">
+        <ion-item *ngFor="let item of autocompleteItems" tappable (click)="selectSearchResult(item)">
+          {{ item.description }}
+        </ion-item>
+</ion-list> -->
+
+   <!--  start map -->
+   <div id="map_canvas"></div>
+   <!-- end -->
+
+  <!-- <ion-searchbar color="success" showCancelButton="never" placeholder="Location"></ion-searchbar> -->
+    
+      <ion-card>
+          <ion-item>
+              <ion-textarea placeholder="Description" rows="20" cols="20"></ion-textarea>
+              </ion-item>
+      </ion-card>
+      
+      <div style="text-align: center">
+          <ion-button  shape="round" color="tertiary">
+              Submit
+          </ion-button>
+            
+        </div>
+</ion-content>
