@@ -1,262 +1,238 @@
-import { Component, OnInit } from '@angular/core';
+
+ import { Component, OnInit, NgZone} from '@angular/core';
 
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { NavigationService } from '../navigation.service';
 import { Events, ToastController, Platform } from '@ionic/angular';
 import {
-  GoogleMaps,
-  GoogleMap,
-  GoogleMapsEvent,
-  Marker,
-  GoogleMapsAnimation,
-  MyLocation,
-  LatLng
+ GoogleMaps,
+ GoogleMap,
+ GoogleMapsEvent,
+ Marker,
+ GoogleMapsAnimation,
+ MyLocation,
+ LatLng
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
 
+declare var google
 
 @Component({
-  selector: 'app-report-alert',
-  templateUrl: './report-alert.page.html',
-  styleUrls: ['./report-alert.page.scss'],
+ selector: 'app-report-alert',
+ templateUrl: './report-alert.page.html',
+ styleUrls: ['./report-alert.page.scss'],
 })
 export class ReportAlertPage implements OnInit {
-  map: GoogleMap;
-  address:string;
+ map: GoogleMap;
+ address:string;
+ user
 
-  user
-  constructor(public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-    private platform: Platform) {
-    console.log("why");
-    this.checkState()
-    this.events.publish('currentPage:home', false)
-  }
+//////////
 
-  ngOnInit() {
-    // Since ngOnInit() is executed before `deviceready` event,
-     // you have to wait the event.
-     this.platform.ready();
-     this.loadMap();
+  mapz : any;
+  markers : any;
+  autocomplete: any;
+  GoogleAutocomplete: any;
+  GooglePlaces: any;
+  geocoder: any
+  autocompleteItems: any;
+
+//////////
+   nearbyItems = [];
+
+ constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
+   private platform: Platform) {
+   console.log("why");
+   this.checkState()
+   this.events.publish('currentPage:home', false)
+
+   ////
+    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
+    this.autocomplete = { input: '' };
+    this.autocompleteItems = [];
+  ////
+    this.geocoder = new google.maps.Geocoder;
+    this.markers = [];
  }
+ ngOnInit() {
+   // Since ngOnInit() is executed before deviceready event,
+    // you have to wait the event.
+    this.platform.ready();
+    this.loadMap();
+}
+ checkState(){
+   this.user = this.userService.returnUserProfile()
+   console.log(this.user);
+   if(this.user[0] ===undefined){
+     console.log(true);
+     this.router.navigate(['/login'])
+   }
+ }
+ /////
+   loadMap() {
+     this.map = GoogleMaps.create('map_canvas', {
+       center: {lat:-26.024472, lng: 28.185799},
+       zoom: 17,
+      // mapTypeId: 'roadmap'
+     }
+     );
 
-  checkState(){
-    this.user = this.userService.returnUserProfile()
-    console.log(this.user);
-    if(this.user[0] ===undefined){
-      console.log(true);
-      this.router.navigate(['/login'])
-    }
-  }
-
-  /////
-    loadMap() {
-      this.map = GoogleMaps.create('map_canvas', {
-        center: {lat: -34.075007, lng: 20.23852},
-        zoom: 17,
-        mapTypeId: 'roadmap'
-      }
-      );
-
-      
-      document.addEventListener('click', (map: any) => {
-        console.log("document clicked");
-        console.log(map);
-        console.log(map.target);
-      // this.MarkAlerts(location, map)
-       console.log("xxx");
-       
-      });
-
-        /// get user location
-      this.goToMyLocation();
-
-       ///// for warnings
-       this.WarnMarker(location);
-       /////////
-       this.MarksIn(this.map)
-        ////////
-        this.Markerz(this.map) 
-        ///////
-     this.initAutocomplete()   
-    }
-   
-   //////////////// Don't temper with main map display /////////
-    goToMyLocation(){
-      this.map.clear();
-   
-      // Get the location of you
-      this.map.getMyLocation().then((location: MyLocation) => {
-        console.log(JSON.stringify(location, null ,2));
-   
-        // Move the map camera to the location with animation
-        this.map.animateCamera({
-          target: location.latLng,
-          zoom: 17,
-          duration: 5000
-        });
-   
-        //add a marker
-        let marker: Marker = this.map.addMarkerSync({
-          title: 'User-Location',
-          snippet: 'This awesome!',
-          position: location.latLng,
-          animation: GoogleMapsAnimation.BOUNCE
-        });
-
-        //show the infoWindow
-        marker.showInfoWindow();
-   
-        //If clicked it, display the alert
-        marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-          this.showToast('clicked!');
-        });
-   
-        this.map.on(GoogleMapsEvent.MAP_READY).subscribe(
-          (data) => {
-              console.log("Click MAP",data);
-          }
-        );
-
-      })
-      .catch(err => {
-        //this.loading.dismiss();
-        this.showToast(err.error_message);
-      });
-
-      this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe(
-        (data) => {
-            console.log("Click MAP",data);
-        }
-      );
-    }
-   
-    async showToast(message: string) {
-      let toast = await this.toastCtrl.create({
-        message: message,
-        duration: 2000,
-        position: 'middle'
-      });
-      toast.present();
-    }
-    //////////////////////////////////////////////////////////
-
-
-     ////////
-     MarksIn(map){
-      //add a marker
-      let markerZA: Marker = this.map.addMarkerSync({
-        title: 'Crime-Scene',
-        snippet: 'Gang Rapes!',
-        position: {lat: -28.32813, lng: 30.697505},
-        animation: GoogleMapsAnimation.DROP,
-        map:map
-      });
-
-      //show the infoWindow
-      markerZA.showInfoWindow();
+  /// get user location
+     this.goToMyLocation();
+      ///// for warnings
+      this.WarnMarker(location);
+      /////////
+      this.MarksIn(this.map)
+       ////////
+       this.Markerz(this.map)
 
    }
+  ///// Don't temper with main map display
+   goToMyLocation(){
+     this.map.clear();
+     // Get the location of you
+     this.map.getMyLocation().then((location: MyLocation) => {
+       console.log(JSON.stringify(location, null ,2));
+       // Move the map camera to the location with animation
+       this.map.animateCamera({
+         target: location.latLng,
+         zoom: 17,
+         duration: 5000
+       });
+       //add a marker
+       let marker: Marker = this.map.addMarkerSync({
+         title: 'User-Location',
+         snippet: 'This awesome!',
+         position: location.latLng,
+         animation: GoogleMapsAnimation.BOUNCE
+       });
+       //show the infoWindow
+       marker.showInfoWindow();
+       //If clicked it, display the alert
+       marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+         this.showToast('clicked!');
+       });
+       this.map.on(GoogleMapsEvent.MAP_READY).subscribe(
+         (data) => {
+             console.log("Click MAP",data);
+         }
+       );
+     })
+     .catch(err => {
+       //this.loading.dismiss();
+       this.showToast(err.error_message);
+     });
+     this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe(
+       (data) => {
+           console.log("Click MAP",data);
+       }
+     );
+   }
+async showToast(message: string) {
+     let toast = await this.toastCtrl.create({
+       message: message,
+       duration: 2000,
+       position: 'middle'
+     });
+     toast.present();
+   }
 
-   //////////////
-   Markerz(map){
-    //add a marker
-    let markerZA: Marker = this.map.addMarkerSync({
-      title: 'Crime-Scene',
-      snippet: 'Gang Rapes!',
-      position: {lat: -28.405467, lng: 23.270747},
-      animation: GoogleMapsAnimation.DROP,
-      map:map
+
+   ///////////////////
+    MarksIn(map){
+     //add a marker
+     let markerZA: Marker = this.map.addMarkerSync({
+       title: 'Crime-Scene',
+       snippet: 'Gang Rapes!',
+       position: {lat: -28.32813, lng: 30.697505},
+       animation: GoogleMapsAnimation.DROP,
+       map:map
+     });
+     //show the infoWindow
+     markerZA.showInfoWindow();
+  }
+  //////////////
+  Markerz(map){
+   //add a marker
+   let markerZA: Marker = this.map.addMarkerSync({
+     title: 'Crime-Scene',
+     snippet: 'Gang Rapes!',
+     position: {lat: -28.405467, lng: 23.270747},
+     animation: GoogleMapsAnimation.DROP,
+     map:map
+   });
+   //show the infoWindow
+   markerZA.showInfoWindow();
+}
+    ///////
+    WarnMarker(map){
+      let warmMark : Marker = this.map.addMarkerSync({
+         title : 'User-Warning',
+         snippet: 'Car-Hijackings!',
+         position:{ lat: -34.9011, lng: -56.1645 } ,
+         map:map
+      })
+      warmMark.showInfoWindow();
+    }
+
+ ////////  getting different places
+updateSearchResults(){
+    if (this.autocomplete.input == '') {
+      this.autocompleteItems = [];
+      return;
+    }
+    this.GoogleAutocomplete.getPlacePredictions({ input: this.autocomplete.input },
+    (predictions, status) => {
+      this.autocompleteItems = [];
+      this.zone.run(() => {
+        predictions.forEach((prediction) => {
+          this.autocompleteItems.push(prediction);
+        });
+      });
     });
+  }
 
-    //show the infoWindow
-    markerZA.showInfoWindow();
+  /////////////////////////// selecting a particular place
+selectSearchResult(item){
+  // this.clearMarkers();
+   this.autocompleteItems = [];
 
+    //Set latitude and longitude of user place
+    this.mapz = new google.maps.Map(document.getElementById('map_canvas'), {
+      center: {lat: -34.075007, lng: 20.23852},
+      zoom: 15
+    });
+ 
+   this.geocoder.geocode({'placeId': item.place_id}, (results, status) => {
+     if(status === 'OK' && results[0]){
+       let position = {
+           lat: results[0].geometry.location.lat,
+           lng: results[0].geometry.location.lng
+       };
+ 
+       let marker = new google.maps.Marker({
+         position: results[0].geometry.location,
+         map: this.mapz,
+       });
+       this.markers.push(marker);
+       this.mapz.setCenter(results[0].geometry.location);
+     }
+   })
  }
 
-     ///////
-     WarnMarker(map){
-       let warmMark : Marker = this.map.addMarkerSync({
-          title : 'User-Warning',
-          snippet: 'Car-Hijackings!',
-          position: {lat: -34.075007, lng: 20.23852},
-          map:map
-       })
+//  clearMarkers(){
+//   for (var i = 0; i < this.markers.length; i++) {
+//     console.log(this.markers[i])
+//     this.markers[i].setMap(null);
+//   }
+//   this.markers = [];
+// }
+//////////////////////////////////////////////////////------- end here.
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-       warmMark.showInfoWindow();
-     }
-
-  //////////////////////////////////////////////////////////////////////////////////////////
-
-  initAutocomplete() {
-    var map = new map.maps.Map(document.getElementById("map_canvas"), {
-      center: {lat: 26.0093, lng: 28.2181},
-      zoom: 13,
-      mapTypeId: 'roadmap'
-    });
-
-    // Create the search box and link it to the UI element.
-    let input = document.getElementById('pac-input');
-    let searchBox = new map.maps.places.SearchBox(input);
-    map.controls[map.maps.ControlPosition.TOP_LEFT].push(input);
-
-    // Bias the SearchBox results towards current map's viewport.
-    map.addListener('bounds_changed', ()=> {
-      searchBox.setBounds(map.getBounds());
-    });
-
-    let markers = [];
-    // Listen for the event fired when the user selects a prediction and retrieve
-    // more details for that place.
-    searchBox.addListener('places_changed', ()=> {
-      let places = searchBox.getPlaces();
-
-      if (places.length == 0) {
-        return;
-      }
-
-      // Clear out the old markers.
-      markers.forEach((marker)=> {
-        marker.setMap(null);
-      });
-      markers = [];
-
-      // For each place, get the icon, name and location.
-      let bounds = new map.maps.LatLngBounds();
-      places.forEach((place)=> {
-        if (!place.geometry) {
-          console.log("Returned place contains no geometry");
-          return;
-        }
-        let icon = {
-          url: place.icon,
-          size: new map.maps.Size(71, 71),
-          origin: new map.maps.Point(0, 0),
-          anchor: new map.maps.Point(17, 34),
-          scaledSize: new map.maps.Size(25, 25)
-        };
-
-        // Create a marker for each place.
-        markers.push(new map.maps.Marker({
-          map: map,
-          icon: icon,
-          title: place.name,
-          position: place.geometry.location
-        }));
-
-        if (place.geometry.viewport) {
-          // Only geocodes have viewport.
-          bounds.union(place.geometry.viewport);
-        } else {
-          bounds.extend(place.geometry.location);
-        }
-      });
-      map.fitBounds(bounds);
-    });
-  }
-
-  getMaps(){
-    return this.map;
-  }
+ getMaps(){
+   return this.map;
+ }
 
 }
