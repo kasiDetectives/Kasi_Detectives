@@ -1,38 +1,34 @@
-
- <ion-header>
+<ion-header>
   <ion-toolbar color="tertiary">
       <ion-buttons slot ="start">
           <ion-menu-button>
           </ion-menu-button>
         </ion-buttons>
-    <!-- <ion-searchbar [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar> -->
+        <ion-title style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png">
+        </ion-title>
   </ion-toolbar>
-</ion-header>
+ </ion-header>
+ <ion-content color="success">
 
-<ion-content color="success">
+    <ion-searchbar id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
 
-<!-- <ion-list [hidden]="autocompleteItems.length == 0">
-        <ion-item *ngFor="let item of autocompleteItems" tappable (click)="selectSearchResult(item)">
+    <ion-list [hidden]="autocompleteItems.length == 0">
+        <ion-item  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
           {{ item.description }}
         </ion-item>
-</ion-list> -->
-
+      </ion-list>
    <!--  start map -->
    <div id="map_canvas"></div>
    <!-- end -->
-
-  <!-- <ion-searchbar color="success" showCancelButton="never" placeholder="Location"></ion-searchbar> -->
-    
+  <!-- <ion-searchbar color="light" showCancelButton="never" placeholder="Location"  ></ion-searchbar> -->
       <ion-card>
           <ion-item>
               <ion-textarea placeholder="Description" rows="20" cols="20"></ion-textarea>
               </ion-item>
       </ion-card>
-      
       <div style="text-align: center">
           <ion-button  shape="round" color="tertiary">
               Submit
           </ion-button>
-            
         </div>
-</ion-content>
+ </ion-content>
