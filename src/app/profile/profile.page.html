@@ -8,6 +8,19 @@
   </ion-toolbar>
  </ion-header>
 
-<ion-content>
-
+<ion-content class="one" color="success">
+  <form  class="form" [formGroup]="profileForm" style="padding: 20px 50px; ">
+    <h1 style="text-align: center" class="header"> <b>Profile</b></h1>
+    <div class="form-divider">
+        <ion-item class="inputItems">
+        <ion-input  formControlName="name" placeholder=" Full Name"><ion-icon name="person"></ion-icon></ion-input>
+      </ion-item>
+      <ion-item class="inputItems">
+        <ion-input formControlName="email"  placeholder=" Email Address"><ion-icon name="mail"></ion-icon></ion-input>
+      </ion-item>
+    </div>
+    <div style="text-align: center">
+      <ion-button color="tertiary"  class="form-buttons" [disabled]="!profileForm.valid" shape="round" (click)="login()">Update</ion-button><br/><br/>  
+    </div>
+  </form>
 </ion-content>
