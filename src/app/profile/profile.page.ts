@@ -3,6 +3,7 @@ import { ToastController, Events } from '@ionic/angular';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+import { UsersService } from '../users.service';
 
 @Component({
   selector: 'app-profile',
@@ -18,7 +19,7 @@ export class ProfilePage implements OnInit {
   namePattern = "^(?=.*\[A-Z])(?=.*\[a-z])(?=.*\[A-Z]).{2,}$"
   emailPattern= "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
 
-  constructor(public camera:Camera, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
+  constructor(public userService : UsersService,public camera:Camera, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
     this.events.subscribe('user:created', (email) => {
       if(!email){
@@ -55,7 +56,7 @@ export class ProfilePage implements OnInit {
       let base64Image = this.pics + ImageData
     }, (err) =>
     {
-      
+
     })
   }
   
@@ -64,6 +65,7 @@ export class ProfilePage implements OnInit {
     this.email = this.profileForm.get('email').value
     this.name = this.profileForm.get('name').value
   }    
+
 
   async presentToast() {
     const toast = await this.toastController.create({
