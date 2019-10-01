@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { NavigationService } from '../navigation.service';
@@ -25,13 +25,26 @@ export class ReportAlertPage implements OnInit {
   map: GoogleMap;
   address:string;
 
+  pic = '\assets\icon\magnifying-glass (10).png'
   user
-  constructor(public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
+  constructor(public socialSharing:SocialSharing, public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
     private platform: Platform) {
     console.log("why");
     this.checkState()
     this.events.publish('currentPage:home', false)
   }
+
+  tweet()
+  {
+    this.socialSharing.shareViaTwitter('A crime has been reported',this.pic,'').then(() =>
+    {
+
+    }).catch(() =>
+    {
+
+    })
+}
+  
 
   ngOnInit() {
     // Since ngOnInit() is executed before `deviceready` event,

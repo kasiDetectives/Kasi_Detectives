@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ToastController, Events } from '@ionic/angular';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 
 @Component({
   selector: 'app-profile',
@@ -13,10 +14,11 @@ export class ProfilePage implements OnInit {
   profileForm
   name 
   email
+  pics
   namePattern = "^(?=.*\[A-Z])(?=.*\[a-z])(?=.*\[A-Z]).{2,}$"
   emailPattern= "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
 
-  constructor(public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
+  constructor(public camera:Camera, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
     this.events.subscribe('user:created', (email) => {
       if(!email){
@@ -35,6 +37,25 @@ export class ProfilePage implements OnInit {
         [Validators.required, Validators.pattern(this.emailPattern)]
         )
       ]]
+    })
+  }
+
+  getPic()
+  {
+    const options: CameraOptions =
+    {
+      quality: 100,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE
+    }
+
+    this.camera.getPicture(options).then((ImageData) =>
+    {
+      let base64Image = this.pics + ImageData
+    }, (err) =>
+    {
+      
     })
   }
   
