@@ -10,7 +10,7 @@
       <ion-list  style="margin: 0; padding: 0">
         <ion-menu-toggle auto-hide="false" color="tertiary">
             
-                <ion-item (click)="auto('home')" color="success" style="margin: 0">
+                <ion-item *ngIf="!homePage" (click)="auto('home')" color="success" style="margin: 0">
                     <ion-icon name="home"></ion-icon>&nbsp;<ion-label>Home</ion-label>
                   </ion-item>
            
@@ -18,7 +18,7 @@
                 <ion-label >Report</ion-label>
               </ion-list-header>
 
-              <ion-item (click)="auto('alert')" color="success">
+              <ion-item (click)="auto('report-alert')" color="success">
                 <ion-icon name="alert"></ion-icon>&nbsp;<ion-label>Crime alert</ion-label>
               </ion-item>
               <ion-item  (click)="auto('community-event')" color="success">
@@ -29,13 +29,13 @@
                   <ion-label>Account</ion-label>
                 </ion-list-header>
                 
-                <ion-item (click)="auto('registration')" color="success">
+                <ion-item *ngIf="!email" (click)="auto('registration')" color="success">
                   <ion-icon name="person-add"></ion-icon>&nbsp;<ion-label>Sign Up</ion-label>
                 </ion-item>
-                <ion-item  (click)="auto('login')" color="success">
+                <ion-item *ngIf="!email"  (click)="auto('login')" color="success">
                   <ion-icon name="log-in"></ion-icon>&nbsp;<ion-label>Sign In</ion-label>
                 </ion-item>
-                <ion-item  (click)="auto('home')" color="success">
+                <ion-item  *ngIf="email" (click)="signOut('home')" color="success">
                     <ion-icon name="log-out"></ion-icon>&nbsp;<ion-label>Sign Out</ion-label>
                   </ion-item>
             
