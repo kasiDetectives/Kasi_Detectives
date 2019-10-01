@@ -39,7 +39,14 @@ export class ReportAlertPage implements OnInit {
   autocompleteItems: any;
 
 //////////
-   nearbyItems = [];
+Crimeslocations = [
+  ['Robbery', -26.027056,28.186148],
+  ['Robbery', -26.000192,28.207734], //swazi inn
+  ['Robbery', -26.036723,28.188513], // sofaya squatar
+  ['Murders', -28.32813,30.697505],
+  ['Robbery', -26.196374, 28.034205], //mandela bridge
+  ['Robbery', -26.204136,28.046641]  // small street jozi
+];
 
  constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
    private platform: Platform) {
@@ -55,6 +62,7 @@ export class ReportAlertPage implements OnInit {
     this.geocoder = new google.maps.Geocoder;
     this.markers = [];
  }
+
  ngOnInit() {
    // Since ngOnInit() is executed before deviceready event,
     // you have to wait the event.
@@ -74,18 +82,43 @@ export class ReportAlertPage implements OnInit {
      this.map = GoogleMaps.create('map_canvas', {
        center: {lat:-26.024472, lng: 28.185799},
        zoom: 17,
-      // mapTypeId: 'roadmap'
+       mapTypeId: google.maps.MapTypeId.ROADMAP
      }
      );
 
   /// get user location
      this.goToMyLocation();
-      ///// for warnings
-      this.WarnMarker(location);
-      /////////
-      this.MarksIn(this.map)
-       ////////
-       this.Markerz(this.map)
+  
+////////////////////////////////////////////////////////////////// start here
+// array of Markers to Use
+let map = new google.maps.Map(document.getElementById('map_canvas'), {
+    zoom: 12,
+    center: new google.maps.LatLng(-26.027056,28.186148),
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+});
+
+let infowindow = new google.maps.InfoWindow;
+
+let marker, i;
+
+for (i = 0; i < this.Crimeslocations.length; i++) {  
+   marker = new google.maps.Marker({
+        position: new google.maps.LatLng(this.Crimeslocations[i][1], this.Crimeslocations[i][2]),
+        map: map
+   });
+
+   google.maps.event.addListener(marker, 'click', ((marker, i) => {
+        return() => {
+            infowindow.setContent(this.Crimeslocations[i][0]);
+            infowindow.open(map, marker);
+        }
+   })(marker, i));
+}
+
+//////
+
+/////
+
 
    }
   ///// Don't temper with main map display
@@ -104,7 +137,7 @@ export class ReportAlertPage implements OnInit {
        let marker: Marker = this.map.addMarkerSync({
          title: 'User-Location',
          snippet: 'This awesome!',
-         position: location.latLng,
+         position: location.latLng,             // this is initial user location
          animation: GoogleMapsAnimation.BOUNCE
        });
        //show the infoWindow
@@ -138,45 +171,32 @@ async showToast(message: string) {
      toast.present();
    }
 
+   //////////////// Calculating distance 
+   
+  //  Location locationA = new Location("point A");  
+  //  locationA.setLatitude(location.getLatitude());  
+  //  locationA.setLongitude(location.getLongitude());  
+  //  Location locationB = new Location("point B");  
+  //  locationB.setLatitude(lat2);  
+  //  locationB.setLongitude(lng2);  
+  //  distance = locationA.distanceTo(locationB);
+  //  Log.v("log", "distance "+distance);
 
-   ///////////////////
-    MarksIn(map){
-     //add a marker
-     let markerZA: Marker = this.map.addMarkerSync({
-       title: 'Crime-Scene',
-       snippet: 'Gang Rapes!',
-       position: {lat: -28.32813, lng: 30.697505},
-       animation: GoogleMapsAnimation.DROP,
-       map:map
-     });
-     //show the infoWindow
-     markerZA.showInfoWindow();
-  }
-  //////////////
-  Markerz(map){
-   //add a marker
-   let markerZA: Marker = this.map.addMarkerSync({
-     title: 'Crime-Scene',
-     snippet: 'Gang Rapes!',
-     position: {lat: -28.405467, lng: 23.270747},
-     animation: GoogleMapsAnimation.DROP,
-     map:map
-   });
-   //show the infoWindow
-   markerZA.showInfoWindow();
-}
-    ///////
-    WarnMarker(map){
-      let warmMark : Marker = this.map.addMarkerSync({
-         title : 'User-Warning',
-         snippet: 'Car-Hijackings!',
-         position:{ lat: -34.9011, lng: -56.1645 } ,
-         map:map
-      })
-      warmMark.showInfoWindow();
-    }
 
- ////////  getting different places
+
+    // let myLatLng1 = { lat: 40.634315, lng: 14.602552 };
+    // let myLatLng2 = {lat: 40.04215, lng: 14.102552 };
+    // google.maps.geometry.spherical.computeDistanceBetween(myLatLng1, myLatLng2);
+
+
+
+   calcDistance (fromLat, fromLng, toLat, toLng) {
+    return google.maps.geometry.spherical.computeDistanceBetween(
+      new google.maps.LatLng(fromLat, fromLng), new google.maps.LatLng(toLat, toLng));
+ }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+ ////////////////////////  getting different places
 updateSearchResults(){
     if (this.autocomplete.input == '') {
       this.autocompleteItems = [];
@@ -195,7 +215,7 @@ updateSearchResults(){
 
   /////////////////////////// selecting a particular place
 selectSearchResult(item){
-  // this.clearMarkers();
+   this.clearMarkers();
    this.autocompleteItems = [];
 
     //Set latitude and longitude of user place
@@ -221,13 +241,13 @@ selectSearchResult(item){
    })
  }
 
-//  clearMarkers(){
-//   for (var i = 0; i < this.markers.length; i++) {
-//     console.log(this.markers[i])
-//     this.markers[i].setMap(null);
-//   }
-//   this.markers = [];
-// }
+ clearMarkers(){
+  for (var i = 0; i < this.markers.length; i++) {
+    console.log(this.markers[i])
+    this.markers[i].setMap(null);
+  }
+  this.markers = [];
+}
 //////////////////////////////////////////////////////------- end here.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
