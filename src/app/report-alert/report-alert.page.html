@@ -19,16 +19,18 @@
   <ion-searchbar color="light" showCancelButton="never" placeholder="Location"  ></ion-searchbar>
     
       <ion-card>
-          <ion-item>
-              <ion-textarea placeholder="Description" rows="20" cols="20"></ion-textarea>
-              </ion-item>
+         <ion-item>
+           <ion-label>Type of Crime</ion-label>
+           <ion-select interface="popover">
+             <ion-select-option value=""> </ion-select-option>
+           </ion-select>
+         </ion-item> 
       </ion-card>
       
       <div style="text-align: center">
           <ion-button  shape="round" color="tertiary">
               Submit
           </ion-button>
-            
           <ion-button shape="round" color="tertiary" (click)="tweet()">
             <ion-icon name="logo-twitter"></ion-icon>
           </ion-button>

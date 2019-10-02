@@ -16,11 +16,13 @@ export class ProfilePage implements OnInit {
   name 
   email
   pics
+  user =[]
   namePattern = "^(?=.*\[A-Z])(?=.*\[a-z])(?=.*\[A-Z]).{2,}$"
   emailPattern= "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
 
   constructor(public userService : UsersService,public camera:Camera, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
+    this.fetchUserProfile()
     this.events.subscribe('user:created', (email) => {
       if(!email){
         this.router.navigate(['/login'])
@@ -66,6 +68,15 @@ export class ProfilePage implements OnInit {
     this.name = this.profileForm.get('name').value
   }    
 
+  fetchUserProfile(){
+  
+    this.user = this.userService.returnUserProfile()
+    console.log(this.user);
+    
+    this.name = this.user[0].displayName
+    this.email = this.user[0].email
+
+  }
 
   async presentToast() {
     const toast = await this.toastController.create({

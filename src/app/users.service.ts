@@ -89,11 +89,11 @@ export class UsersService {
       userRoot.once("value", snap => {
         console.log(userRoot);
         let values = snap.val()
-          console.log(values["displayName"]);
+          console.log(values["name"]);
           console.log(values["email"]);
           this.userProfile.push({
           key: snap.key,
-          displayName : values["displayName"],
+          displayName : values["name"],
           email : values["email"],
 
           })
