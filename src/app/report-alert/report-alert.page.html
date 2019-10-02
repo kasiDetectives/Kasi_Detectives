@@ -17,8 +17,8 @@
     </div>
 
     <ion-card class="searchBar">
-    <ion-searchbar id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
-    <ion-list  [hidden]="autocompleteItems.length == 0">
+    <ion-searchbar color="black" id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
+    <ion-list   [hidden]="autocompleteItems.length == 0">
       <ion-item class="list"  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
          {{ item.description }}
       </ion-item>
@@ -30,34 +30,17 @@
    <!-- end -->
   <!-- <ion-searchbar color="light" showCancelButton="never" placeholder="Location"  ></ion-searchbar> -->
       <ion-card>
-          <ion-card-header style="text-align: center" color="tertiary">Location</ion-card-header>
+          <ion-card-header style="text-align: center" color="tertiary"><b><strong></strong></b> LOCATION</ion-card-header>
          
 
           <ion-card-content>
          
             <p style="text-align: center"><b><strong><ion-icon name="list-box"></ion-icon>INCIDENT</strong></b></p>
-            <ion-list style="text-align: center">
-                <ion-icon name="sad"></ion-icon>
-              <ion-label>Report Incident</ion-label>
-              <ion-select multiple="true" paceholder="Select One">
-              <ion-select-option></ion-select-option> 
-            </ion-select>            
-            </ion-list> 
+            
              
-            <div style="text-align: center">
-            <ion-button  shape="round" color="tertiary">
-                Submit
-            </ion-button>
-            <ion-button  shape="round" color="tertiary">
-              <ion-icon name="logo-twitter"></ion-icon>
-            </ion-button>
-          </div>
+            
 
-        <!-- <ion-item style="text-align: center">
-                        
-              <ion-textarea placeholder="Report Crime Here" rows="20" cols="20">                
-              </ion-textarea>
-              </ion-item> -->
+      
             </ion-card-content>
 
       </ion-card>
