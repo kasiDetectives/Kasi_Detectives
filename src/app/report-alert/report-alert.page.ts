@@ -275,11 +275,10 @@ selectSearchResult(item){
  }
 
  fetchCrimeCategories(){
-    this.result = this.firebaseService.addOther()
-    //this.result.push("Other")
-  
-  
-  console.log(this.result);
+  this.firebaseService.fetchCrimeCategories().then(data=>{
+    this.result = data
+    console.log(this.result);
+  })
 }
 
 // openPopUp(lat, lng){
