@@ -37,22 +37,7 @@
     </select>
   </div> -->
 
-  <button ion-button (click)="calcDistance()"></button>
-
-      <ion-card>
-         <ion-item>
-           <ion-label>Type of Crime</ion-label>
-           <ion-select interface="popover" >
-             <ion-select-option *ngFor="let crime of result" value="crime">{{crime}}</ion-select-option>
-           </ion-select>
-         </ion-item> 
-      </ion-card>
-      <div style="text-align: center">
-          <ion-button  shape="round" color="tertiary">
-              Submit
-          </ion-button>
-          <ion-button shape="round" color="tertiary" (click)="tweet()">
-            <ion-icon name="logo-twitter"></ion-icon>
-          </ion-button>
-      </div>
+  <ion-button (click)="calcDistance()">Calculate distance</ion-button>
+  <ion-button (click)="presentPopover(-28.96855, 23.3434342);">Report</ion-button>
+    
  </ion-content>

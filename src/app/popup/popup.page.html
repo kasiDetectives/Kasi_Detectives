@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>LOCATION</ion-title>
+    <ion-button end>
+      <button ion-button (click)="closePopup()"> Close</button>
+     </ion-button>
+  </ion-toolbar>
+  
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <p><b><strong>Content</strong></b></p>
+    <ion-item>
+      <ion-label>Type of Crime</ion-label>
+      <ion-select interface="popover" >
+        <ion-select-option *ngFor="let crime of result" value="crime">{{crime}}</ion-select-option>
+      </ion-select>
+    </ion-item> 
+ </ion-card>
+ <div style="text-align: center">
+     <ion-button  shape="round" color="tertiary">
+         Submit
+     </ion-button>
+     <ion-button shape="round" color="tertiary" (click)="tweet()">
+       <ion-icon name="logo-twitter"></ion-icon>
+     </ion-button>
+ </div>
+</ion-content>

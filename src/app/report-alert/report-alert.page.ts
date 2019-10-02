@@ -16,7 +16,7 @@ import {
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
 import { FirebaseService } from '../firebase.service';
-
+import {ModalController} from '@ionic/angular' 
 declare var google
 
 @Component({
@@ -43,7 +43,7 @@ export class ReportAlertPage implements OnInit {
   geocoder: any
   autocompleteItems: any;
   Crimeslocations = []
-  constructor(public socialSharing:SocialSharing, public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
+  constructor(public socialSharing:SocialSharing, private modal:ModalController,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
     private platform: Platform, public zone: NgZone, public firebaseService : FirebaseService) {
       console.log("why");
       this.checkState()
@@ -280,6 +280,22 @@ selectSearchResult(item){
   
   
   console.log(this.result);
+}
+
+// openPopUp(lat, lng){
+//   console.log(lat);
+//   console.log(lng);
+  
+//   ////
+  
+// }
+
+openPopup(){
+  const myData={
+
+  }
+  const myPopup = this.modal.create('PopupPage');
+  myPopup.catch;
 }
   getCurrentSessionUser(){
     this.user = this.userService.readCurrentSession()
