@@ -275,7 +275,10 @@ selectSearchResult(item){
  }
 
  fetchCrimeCategories(){
-  this.result = (this.firebaseService.fetchCrimeCategories())
+    this.result = this.firebaseService.addOther()
+    //this.result.push("Other")
+  
+  
   console.log(this.result);
 }
   getCurrentSessionUser(){
