@@ -87,7 +87,7 @@ export class UsersService {
       
       var userRoot = firebase.database().ref("Users").child(uid)
       userRoot.once("value", snap => {
-        console.log(userRoot);
+        //console.log(userRoot);
         let values = snap.val()
           console.log(values["name"]);
           console.log(values["email"]);
