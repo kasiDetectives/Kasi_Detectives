@@ -15,6 +15,7 @@ import {
  LatLng
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
+import { FirebaseService } from '../firebase.service';
 
 declare var google
 
@@ -26,8 +27,9 @@ declare var google
 export class ReportAlertPage implements OnInit {
  map: GoogleMap;
  address:string;
- user
-
+ user = []
+ result = []
+ //////////
 //////////
 
   mapz : any;
@@ -49,10 +51,11 @@ Crimeslocations = [
 ];
 
  constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-   private platform: Platform) {
+   private platform: Platform, public firebaseService : FirebaseService) {
    console.log("why");
    this.checkState()
    this.events.publish('currentPage:home', false)
+   this.fetchCrimeCategories()
 
    ////
     this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
@@ -255,4 +258,13 @@ selectSearchResult(item){
    return this.map;
  }
 
+ fetchCrimeCategories(){
+  this.result = (this.firebaseService.fetchCrimeCategories())
+  console.log(this.result);
+}
+  getCurrentSessionUser(){
+    this.user = this.userService.readCurrentSession()
+    console.log(this.user);
+    
+  }
 }

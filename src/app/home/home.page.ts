@@ -13,6 +13,7 @@ import {
   GoogleMapsAnimation,
   MyLocation
 } from '@ionic-native/google-maps';
+import { FirebaseService } from '../firebase.service';
 
 @Component({
   selector: 'app-home',
@@ -23,10 +24,11 @@ export class HomePage implements OnInit  {
 
   map: GoogleMap;
   address:string;
-  constructor(private platform: Platform, public events : Events, public userService : UsersService) {
+  // result = []
+  constructor(private platform: Platform, public events : Events, public userService : UsersService, public firebaseService : FirebaseService) {
       this.checkUserState()
       this.run()
-
+      // this.fetchCrimeCategories()
      // this.getMaps();
     }
 
@@ -111,7 +113,10 @@ export class HomePage implements OnInit  {
 
     /////
 
-  
+    // fetchCrimeCategories(){
+    //   this.result = (this.firebaseService.fetchCrimeCategories())
+    //   console.log(this.result);
+    // }
 
   checkUserState(){
     this.events.subscribe('user:loggedOut', (boolean)=>{
