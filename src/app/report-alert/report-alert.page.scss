@@ -23,3 +23,15 @@
 
 
 
+  #floating-panel {
+    position: float top;
+    z-index: 5;
+    background-color: rgb(95, 151, 255);
+    padding: 5px;
+    border: 1px solid  rgb(95, 151, 255);
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Roboto', 'sans-serif';
+    line-height: 30px;
+    padding-left: 10px;
+  }

@@ -28,21 +28,31 @@
   
 
    <!-- end -->
-  <!-- <ion-searchbar color="light" showCancelButton="never" placeholder="Location"  ></ion-searchbar> -->
+
+   <!-- <div id="floating-panel"> <b>Mode of Travel: </b>
+    <select id="mode">
+      <option value="DRIVING">Driving</option>
+      <option value="WALKING">Walking</option>
+      <option value="BICYCLING">Bicycling</option>
+    </select>
+  </div> -->
+
+  <button ion-button (click)="calcDistance()"></button>
+
       <ion-card>
-          <ion-card-header style="text-align: center" color="tertiary"><b><strong></strong></b> LOCATION</ion-card-header>
-         
-
-          <ion-card-content>
-         
-            <p style="text-align: center"><b><strong><ion-icon name="list-box"></ion-icon>INCIDENT</strong></b></p>
-            
-             
-            
-
-      
-            </ion-card-content>
-
+         <ion-item>
+           <ion-label>Type of Crime</ion-label>
+           <ion-select interface="popover" >
+             <ion-select-option *ngFor="let crime of result" value="crime">{{crime}}</ion-select-option>
+           </ion-select>
+         </ion-item> 
       </ion-card>
-      
+      <div style="text-align: center">
+          <ion-button  shape="round" color="tertiary">
+              Submit
+          </ion-button>
+          <ion-button shape="round" color="tertiary" (click)="tweet()">
+            <ion-icon name="logo-twitter"></ion-icon>
+          </ion-button>
+      </div>
  </ion-content>
