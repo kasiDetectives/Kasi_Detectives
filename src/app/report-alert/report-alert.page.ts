@@ -259,8 +259,10 @@ selectSearchResult(item){
  }
 
  fetchCrimeCategories(){
-  this.result = (this.firebaseService.fetchCrimeCategories())
-  console.log(this.result);
+  this.firebaseService.fetchCrimeCategories().then(data=>{
+    this.result = data
+    console.log(this.result);
+  })
 }
   getCurrentSessionUser(){
     this.user = this.userService.readCurrentSession()
