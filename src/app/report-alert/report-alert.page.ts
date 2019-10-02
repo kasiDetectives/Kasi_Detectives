@@ -203,7 +203,7 @@ selectSearchResult(item){
       center: {lat: -34.075007, lng: 20.23852},
       zoom: 15
     });
- 
+  
    this.geocoder.geocode({'placeId': item.place_id}, (results, status) => {
      if(status === 'OK' && results[0]){
        let position = {
