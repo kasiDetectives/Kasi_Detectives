@@ -28,6 +28,7 @@ export class HomePage implements OnInit  {
   constructor(private platform: Platform, public events : Events, public userService : UsersService, public firebaseService : FirebaseService) {
       this.checkUserState()
       this.run()
+      this.loadLocations()
       // this.fetchCrimeCategories()
      // this.getMaps();
     }
@@ -130,5 +131,20 @@ export class HomePage implements OnInit  {
   run(){
     console.log("running");
     this.events.publish('currentPage:home', true)
+  }
+
+ async loadLocations(){
+   let result : Array<any> = []
+   result = this.firebaseService.fetchSavedLocations()
+   console.log(result);
+   
+  }
+
+  loadLocationss(){
+    // this.firebaseService.fetchSavedLocations().then(data =>{
+    //   let result = data
+    //   console.log(result);
+      
+    // })
   }
 }
