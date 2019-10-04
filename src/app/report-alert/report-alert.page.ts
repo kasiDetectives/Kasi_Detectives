@@ -4,7 +4,7 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { NavigationService } from '../navigation.service';
-import { Events, ToastController, Platform } from '@ionic/angular';
+import { Events, ToastController, Platform, ModalController } from '@ionic/angular';
 import {
  GoogleMaps,
  GoogleMap,
@@ -15,8 +15,9 @@ import {
  LatLng
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
+import { PopupPage } from '../popup/popup.page';
 import { FirebaseService } from '../firebase.service';
-import {ModalController} from '@ionic/angular' 
+
 declare var google
 
 @Component({
@@ -43,11 +44,22 @@ export class ReportAlertPage implements OnInit {
   geocoder: any
   autocompleteItems: any;
   Crimeslocations = []
-  constructor(public socialSharing:SocialSharing, private modal:ModalController,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
+  constructor(public socialSharing:SocialSharing, public modal:ModalController,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
     private platform: Platform, public zone: NgZone, public firebaseService : FirebaseService) {
       console.log("why");
       this.checkState()
       this.events.publish('currentPage:home', false)
+
+
+      ///////////////////////////////////////////////////////////////////////////////
+      this.events.subscribe('crimeTypes:List', (data) =>{
+        console.log(data);
+        
+      })
+
+
+
+      /////////////////////////////////////////////////////////////////////
       this.fetchCrimeCategories()
    
       ////
@@ -278,6 +290,8 @@ selectSearchResult(item){
   this.firebaseService.fetchCrimeCategories().then(data=>{
     this.result = data
     console.log(this.result);
+    this.events.publish('crimeTypes:List', this.result)
+   
   })
 }
 
@@ -289,13 +303,19 @@ selectSearchResult(item){
   
 // }
 
-openPopup(){
-  const myData={
+async openModal(){
+  const myModal =await this.modal.create({
+  component: PopupPage,
+  componentProps:{
+    result : this.result
 
   }
-  const myPopup = this.modal.create('PopupPage');
-  myPopup.catch;
-}
+      
+  });
+
+  
+   myModal.present()
+     }
   getCurrentSessionUser(){
     this.user = this.userService.readCurrentSession()
     console.log(this.user);
