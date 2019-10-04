@@ -16,6 +16,7 @@ import {
   GoogleMapsAnimation,
   MyLocation
 } from '@ionic-native/google-maps';
+import { FirebaseService } from '../firebase.service';
 
 declare var google
 
@@ -27,6 +28,8 @@ declare var google
 export class HomePage implements OnInit  {
   map: GoogleMap;
   address:string;
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
   user
  
  //////////
@@ -60,9 +63,10 @@ export class HomePage implements OnInit  {
  ];
  
  constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-  private platform: Platform) {
+  private platform: Platform, public firebaseService : FirebaseService) {
   this.checkUserState()
   this.run()
+  this.loadLocations()
   console.log("why");
 
   ////
@@ -73,6 +77,10 @@ export class HomePage implements OnInit  {
    this.geocoder = new google.maps.Geocoder;
    this.markers = [];
 
+  // result = []
+  
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ///
   this.calcDistance();
   ///
@@ -344,7 +352,10 @@ selectSearchResult(item){
 
     /////
 
-  
+    // fetchCrimeCategories(){
+    //   this.result = (this.firebaseService.fetchCrimeCategories())
+    //   console.log(this.result);
+    // }
 
   checkUserState(){
     this.events.subscribe('user:loggedOut', (boolean)=>{
@@ -358,5 +369,20 @@ selectSearchResult(item){
   run(){
     console.log("running");
     this.events.publish('currentPage:home', true)
+  }
+
+ async loadLocations(){
+   let result : Array<any> = []
+   result = this.firebaseService.fetchSavedLocations()
+   console.log(result);
+   
+  }
+
+  loadLocationss(){
+    // this.firebaseService.fetchSavedLocations().then(data =>{
+    //   let result = data
+    //   console.log(result);
+      
+    // })
   }
 }
