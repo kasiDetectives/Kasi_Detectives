@@ -10,25 +10,35 @@
 
           
   </ion-toolbar>
+  <ion-grid color="success">
+    <ion-row>
+      <ion-col>    
+  <ion-searchbar id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
+</ion-col>
+ 
+</ion-row>
+<ion-row>
+    <ion-col>
+  <ion-list  [hidden]="autocompleteItems.length == 0">
+      <ion-item  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
+      {{ item.description }}
+      </ion-item>
+    </ion-list>
+  </ion-col>
+  
+</ion-row>
+   </ion-grid>
   
  </ion-header>
 
     
 <ion-content color="success">
-    <!-- <ion-button shape="round" color="tertiary" style="float: right;" [routerLink]="['/login']">
-      <ion-icon name="log-in"></ion-icon>Sign In
-    </ion-button>
-  <ion-button shape="round" color="tertiary" style="float: right;"  [routerLink]="['/registration']"> 
-    <ion-icon name="person"></ion-icon>Sign Up
-  </ion-button><br><br> -->
-  
-  
-  <!--  start map -->
-  <!-- <div id="map_canvas"></div> -->
-  <!-- end -->
+<!--  start map -->
+   <div id="map_canvas"> 
+  </div>
+<!-- end -->
 
-
-  <ion-searchbar color= "light"showCancelButton="never"></ion-searchbar>
+<p id="output"></p>
 
     <ion-card color="light">
         <ion-card-header>
