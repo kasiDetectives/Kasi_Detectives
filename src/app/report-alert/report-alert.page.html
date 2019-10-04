@@ -35,16 +35,26 @@
    <div id="map_canvas">     
       </div>
    <!-- end -->
+   
 
-   <!-- <div id="floating-panel"> <b>Mode of Travel: </b>
-    <select id="mode">
-      <option value="DRIVING">Driving</option>
-      <option value="WALKING">Walking</option>
-      <option value="BICYCLING">Bicycling</option>
-    </select>
-  </div> -->
+   <p id="output"></p>
 
-  <button ion-button (click)="calcDistance()"></button>
+  <!-- <p id="floating-panel">
+  <ion-list>
+    <ion-list-header> Mode of Travel:</ion-list-header>
+
+     <ion-item>
+      <ion-label>Mode</ion-label>
+      <ion-select placeholder="Select One" [(ngModel)]="mySelected" (ionChange)="getmode($event)"  id="Travel_mode">
+        <ion-select-option value="DRIVING">DRIVING</ion-select-option>
+        <ion-select-option value="WALKING">WALKING</ion-select-option>
+        <ion-select-option value="BICYCLING">BICYCLING</ion-select-option>
+        <ion-select-option value="TRANSIT">TRANSIT</ion-select-option>
+        <ion-select-option value="AIR">AIR</ion-select-option>
+      </ion-select>
+     </ion-item>
+  </ion-list>
+  </p> -->
 
       <ion-card>
           <ion-item>

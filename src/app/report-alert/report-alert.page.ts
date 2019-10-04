@@ -12,9 +12,9 @@ import {
  Marker,
  GoogleMapsAnimation,
  MyLocation,
- LatLng
+ LatLng,
+ GoogleMapOptions
 } from '@ionic-native/google-maps';
-import { Icon } from 'ionicons/dist/types/icon/icon';
 
 declare var google
 
@@ -29,7 +29,12 @@ export class ReportAlertPage implements OnInit {
  user
 
 //////////
+loc =[]
+mySelected : string = ""
+////
 
+ message
+///
   mapz : any;
   markers : any;
   autocomplete: any;
@@ -38,15 +43,23 @@ export class ReportAlertPage implements OnInit {
   geocoder: any
   autocompleteItems: any;
 
+  ////////
+  array : any;
+ 
+ // start; end
+  directionsService
 //////////
 Crimeslocations = [
-  ['Robbery', -26.027056,28.186148],
-  ['Robbery', -26.000192,28.207734], //swazi inn
-  ['Robbery', -26.036723,28.188513], // sofaya squatar
-  ['Murders', -28.32813,30.697505],
-  ['Robbery', -26.196374, 28.034205], //mandela bridge
-  ['Robbery', -26.204136,28.046641]  // small street jozi
+  ['Robbery',new google.maps.LatLng ( -26.027056,28.186148)],
+  ['Robbery',new google.maps.LatLng ( -26.000192,28.207734)], //swazi inn
+  ['Robbery',new google.maps.LatLng ( -26.036723,28.188513)], // sofaya squatar
+  ['Murders', new google.maps.LatLng (-28.32813,30.697505)],
+  ['Robbery',new google.maps.LatLng ( -26.196374, 28.034205)], //mandela bridge
+  ['Robbery',new google.maps.LatLng ( -26.204136,28.046641)] , // small street jozi
+  ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
 ];
+
+
 
  constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
    private platform: Platform) {
@@ -61,13 +74,23 @@ Crimeslocations = [
   ////
     this.geocoder = new google.maps.Geocoder;
     this.markers = [];
+
+    ///
+   this.calcDistance();
+   ///
+   this.array = [];
+   console.log(this.array, "ooo");
+   
  }
+
+ 
 
  ngOnInit() {
    // Since ngOnInit() is executed before deviceready event,
     // you have to wait the event.
     this.platform.ready();
     this.loadMap();
+    this.initMap();
 }
  checkState(){
    this.user = this.userService.returnUserProfile()
@@ -79,125 +102,159 @@ Crimeslocations = [
  }
  /////
    loadMap() {
-     this.map = GoogleMaps.create('map_canvas', {
-       center: {lat:-26.024472, lng: 28.185799},
-       zoom: 17,
-       mapTypeId: google.maps.MapTypeId.ROADMAP
-     }
-     );
 
-  /// get user location
-     this.goToMyLocation();
-  
+       /// default location if user didn't allow Location!
+    //  this.map = GoogleMaps.create('map_canvas', {
+    //    center: {lat:-26.024472, lng: 28.185799},
+    //    zoom: 17,
+    //    mapTypeId: google.maps.MapTypeId.ROADMAP
+    //  });
 ////////////////////////////////////////////////////////////////// start here
-// array of Markers to Use
-let map = new google.maps.Map(document.getElementById('map_canvas'), {
-    zoom: 12,
-    center: new google.maps.LatLng(-26.027056,28.186148),
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-});
+///////////////////// array of Markers to Use
+// let map = new google.maps.Map(document.getElementById('map_canvas'), {
+//     zoom: 12,
+//     center: new google.maps.LatLng(-26.027056,28.186148),
+//     mapTypeId: google.maps.MapTypeId.ROADMAP
+// });
 
-let infowindow = new google.maps.InfoWindow;
+// let infowindow = new google.maps.InfoWindow;
 
-let marker, i;
+// let marker, i;
 
-for (i = 0; i < this.Crimeslocations.length; i++) {  
-   marker = new google.maps.Marker({
-        position: new google.maps.LatLng(this.Crimeslocations[i][1], this.Crimeslocations[i][2]),
-        map: map
-   });
+// for (i = 0; i < this.Crimeslocations.length; i++) {  
+//    marker = new google.maps.Marker({
+//         position: new google.maps.LatLng(this.Crimeslocations[i][1], this.Crimeslocations[i][2]),
+//         map: map
+//    });
 
-   google.maps.event.addListener(marker, 'click', ((marker, i) => {
-        return() => {
-            infowindow.setContent(this.Crimeslocations[i][0]);
-            infowindow.open(map, marker);
-        }
-   })(marker, i));
+//    google.maps.event.addListener(marker, 'click', ((marker, i) => {
+//         return() => {
+//             infowindow.setContent(this.Crimeslocations[i][0]);
+//             infowindow.open(map, marker);
+//         }
+//    })(marker, i));
+//    }
+   ////////////////////////////////////////////////////////////////////////// end here
 }
 
-//////
+//////-----------------------
+initMap() {
+  var map, infoWindow;
+  var marker1, marker2, i;
 
-/////
+  map = new google.maps.Map(document.getElementById('map_canvas'), {
+    center: {lat: -34.397, lng: 150.644},
+    zoom: 6,
+    animation: GoogleMapsAnimation.BOUNCE
+  });
+  infoWindow = new google.maps.InfoWindow;
 
 
-   }
-  ///// Don't temper with main map display
-   goToMyLocation(){
-     this.map.clear();
-     // Get the location of you
-     this.map.getMyLocation().then((location: MyLocation) => {
-       console.log(JSON.stringify(location, null ,2));
-       // Move the map camera to the location with animation
-       this.map.animateCamera({
-         target: location.latLng,
-         zoom: 17,
-         duration: 5000
-       });
-       //add a marker
-       let marker: Marker = this.map.addMarkerSync({
-         title: 'User-Location',
-         snippet: 'This awesome!',
-         position: location.latLng,             // this is initial user location
-         animation: GoogleMapsAnimation.BOUNCE
-       });
-       //show the infoWindow
-       marker.showInfoWindow();
-       //If clicked it, display the alert
-       marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-         this.showToast('clicked!');
-       });
-       this.map.on(GoogleMapsEvent.MAP_READY).subscribe(
-         (data) => {
-             console.log("Click MAP",data);
-         }
-       );
-     })
-     .catch(err => {
-       //this.loading.dismiss();
-       this.showToast(err.error_message);
-     });
-     this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe(
-       (data) => {
-           console.log("Click MAP",data);
+/////////// tryin to insert markers
+for (i = 0; i < this.Crimeslocations.length; i++) {  
+  console.log(this.Crimeslocations.length, "weewewew");
+  
+marker1 = new google.maps.Marker({
+  map: map,
+  draggable: true,
+  position: new google.maps.LatLng(this.Crimeslocations[i][1], this.Crimeslocations[i][2]),
+  //position: {lat: 40.714, lng: -74.006},
+  animation: GoogleMapsAnimation.BOUNCE
+});
+
+google.maps.event.addListener(marker1, 'click', ((marker1, i) => {
+  return() => {
+    infoWindow.setContent(this.Crimeslocations[i][0]);
+    infoWindow.open(map, marker1);
+  }
+})(marker1, i));
+}
+/////////---------------
+marker2 = new google.maps.Marker({
+  map: map,
+  draggable: true,
+  position: {lat: 48.857, lng: 2.352},
+  animation: GoogleMapsAnimation.BOUNCE
+});
+///////
+
+   // Get the location of you
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position)=> {
+      this.array = [];
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      infoWindow.setPosition(pos);
+      infoWindow.setContent('Your Location.');
+      infoWindow.open(map);
+      map.setCenter(pos);
+
+      this.array.push(pos)
+     
+      console.log(this.array, "zzz");
+      return
+      
+    }, () => {
+      this.handleLocationError(true, infoWindow, map.getCenter());
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    this.handleLocationError(false, infoWindow, map.getCenter());
+  }
+}
+
+handleLocationError(browserHasGeolocation, infoWindow, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(browserHasGeolocation ?
+                        'Error: The Geolocation service failed.' :
+                        'Error: Your browser doesn\'t support geolocation.');
+  infoWindow.open(this.map);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////// Calculating distance
+calcDistance () {
+  var input= this.LandMarks()
+    for(let x = 0; x < input.length; x++){
+       if(input[x] <= 0.5 )
+       {
+          // notification
+          console.log("notification");
        }
-     );
-   }
-async showToast(message: string) {
-     let toast = await this.toastCtrl.create({
-       message: message,
-       duration: 2000,
-       position: 'middle'
-     });
-     toast.present();
-   }
+       else{
+         console.log("you safe.");
+       }
+    }
+  }
 
-   //////////////// Calculating distance 
-   
-  //  Location locationA = new Location("point A");  
-  //  locationA.setLatitude(location.getLatitude());  
-  //  locationA.setLongitude(location.getLongitude());  
-  //  Location locationB = new Location("point B");  
-  //  locationB.setLatitude(lat2);  
-  //  locationB.setLongitude(lng2);  
-  //  distance = locationA.distanceTo(locationB);
-  //  Log.v("log", "distance "+distance);
+  LandMarks(){
+      // below manually insert user location
+      this.loc =  ['Ewc', new google.maps.LatLng(-26.209469, 28.157037)];
+    // insert with user location from geo
 
+      console.log(this.loc,"inside array");
+      var temp = 0;
+      var  output = []
+        var dist = google.maps.geometry.spherical.computeDistanceBetween;
+           console.log(dist,"dist");
+           console.log(this.array,"array");
+           console.log(this.Crimeslocations,"crimeArray");
 
-
-    // let myLatLng1 = { lat: 40.634315, lng: 14.602552 };
-    // let myLatLng2 = {lat: 40.04215, lng: 14.102552 };
-    // google.maps.geometry.spherical.computeDistanceBetween(myLatLng1, myLatLng2);
-
-
-
-   calcDistance (fromLat, fromLng, toLat, toLng) {
-    return google.maps.geometry.spherical.computeDistanceBetween(
-      new google.maps.LatLng(fromLat, fromLng), new google.maps.LatLng(toLat, toLng));
+      this.Crimeslocations.forEach((pt)=>{
+            temp = +(dist(this.loc[1],pt[1])/1000).toFixed(1)
+            output.push(temp);
+         console.log(output, "output");
+          });
+          return output
  }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
  ////////////////////////  getting different places
 updateSearchResults(){
+  console.log(this.autocomplete.input);
+  
     if (this.autocomplete.input == '') {
       this.autocompleteItems = [];
       return;
@@ -254,5 +311,83 @@ selectSearchResult(item){
  getMaps(){
    return this.map;
  }
+ ///////////// start here
+  ModeMap() {
+  let pointA = new google.maps.LatLng(-26.027056,28.186148),
+    pointB = new google.maps.LatLng(51.5379, 0.7138),
+    center = new google.maps.LatLng(51.3, 0.8),
+    myOptions = {
+      zoom: 8,
+      center: center,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    },
+    map = new google.maps.Map(document.getElementById('map-canvas'), myOptions),
+    // Instantiate a directions service.
+    directionsService = new google.maps.DirectionsService,
+    directionsDisplay = new google.maps.DirectionsRenderer({
+      map: map
+    }),
+
+    outputAtoB = document.getElementById('a2b'),
+    flightPath = new google.maps.Polyline({
+      path: [pointA, pointB],
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+
+//   // click on marker B to get route from A to B
+   this.calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputAtoB);
+
+  let travelMode = document.getElementById('Travel_mode');
+  travelMode.addEventListener("change", ()=> {
+    console.log(travelMode);
+    
+//     if (travelMode.value == "AIR") {
+      
+//       directionsDisplay.setMap(null);
+//       directionsDisplay.setOptions({
+//         suppressPolylines: true
+//       });
+//       directionsDisplay.setMap(map);
+//       let distance = google.maps.geometry.spherical.computeDistanceBetween(pointA, pointB);
+//       outputAtoB.innerHTML = Math.round(distance / 1000) + "Km";
+//       flightPath.setMap(map);
+//     } else {
+//       flightPath.setMap(null);
+//       directionsDisplay.setOptions({
+//         suppressPolylines: false
+//      });
+//  // calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputAtoB);
+//      }
+
+  });
+}
+
+
+ calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputTxt) {
+  let selectedMode = document.getElementById('Travel_mode')["value"];
+
+  directionsService.route({
+    origin: pointA,
+    destination: pointB,
+    unitSystem: google.maps.UnitSystem.METRIC,
+    travelMode: google.maps.TravelMode[selectedMode]
+  },(response, status) => {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(response);
+      outputTxt.innerHTML = Math.round(directionsDisplay.getDirections().routes[directionsDisplay.getRouteIndex()].legs[0].distance.value / 1000) + "Km";
+    } else {
+      window.alert('Directions request failed due to ' + status);
+    }
+  });
+}
+
+////
+  getmode(event) {
+    this.mySelected = event.detail.value
+  console.log(this.mySelected);
+}
 
 }
