@@ -1,10 +1,10 @@
-
- import { Component, OnInit, NgZone} from '@angular/core';
+import { Component, OnInit, NgZone} from '@angular/core';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { NavigationService } from '../navigation.service';
-import { Events, ToastController, Platform } from '@ionic/angular';
+import { Events, ToastController, Platform, ModalController } from '@ionic/angular';
 import {
  GoogleMaps,
  GoogleMap,
@@ -16,6 +16,7 @@ import {
  GoogleMapOptions
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
+import { PopupPage } from '../popup/popup.page';
 import { FirebaseService } from '../firebase.service';
 
 declare var google
@@ -26,16 +27,18 @@ declare var google
  styleUrls: ['./report-alert.page.scss'],
 })
 export class ReportAlertPage implements OnInit {
- map: GoogleMap;
- address:string;
- user = []
- result = []
- //////////
-//////////
-loc =[]
-mySelected : string = ""
-////
+  ///////////////////
+  ///////////////////
+  //////////////////
+  map: GoogleMap;
+  address:string;
 
+  pic = '\assets\icon\magnifying-glass (10).png'
+  user = []
+  result = []
+  loc =[]
+  mySelected : string = ""
+  
  message
 ///
   mapz : any;
@@ -45,27 +48,42 @@ mySelected : string = ""
   GooglePlaces: any;
   geocoder: any
   autocompleteItems: any;
+  Crimeslocations : Array<any> = []
 
-  ////////
-  array : any;
- 
- // start; end
   directionsService
-//////////
-Crimeslocations = [
-  ['Robbery',new google.maps.LatLng ( -26.027056,28.186148)],
-  ['Robbery',new google.maps.LatLng ( -26.000192,28.207734)], //swazi inn
-  ['Robbery',new google.maps.LatLng ( -26.036723,28.188513)], // sofaya squatar
-  ['Murders', new google.maps.LatLng (-28.32813,30.697505)],
-  ['Robbery',new google.maps.LatLng ( -26.196374, 28.034205)], //mandela bridge
-  ['Robbery',new google.maps.LatLng ( -26.204136,28.046641)] , // small street jozi
-  ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
-];
+  array = []
+
+  ///////
+  // this.Crimeslocations = [
+  //   ['Robbery',new google.maps.LatLng ( -26.027056,28.186148)],
+  //   ['Robbery',new google.maps.LatLng ( -26.000192,28.207734)], //swazi inn
+  //   ['Robbery',new google.maps.LatLng ( -26.036723,28.188513)], // sofaya squatar
+  //   ['Murders', new google.maps.LatLng (-28.32813,30.697505)],
+  //   ['Robbery',new google.maps.LatLng ( -26.196374, 28.034205)], //mandela bridge
+  //   ['Robbery',new google.maps.LatLng ( -26.204136,28.046641)] , // small street jozi
+  //   ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
+  // ];
 
 
+  /////
+  
+  tweet()
+  {
+    this.socialSharing.shareViaTwitter('A crime has been reported',this.pic,'').then(() =>
+    {
+
+    }).catch(() =>
+    {
+
+    })
+}
 
  constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-   private platform: Platform, public firebaseService : FirebaseService) {
+   private platform: Platform, public firebaseService : FirebaseService, public modal : ModalController, public socialSharing:SocialSharing) {
+      ///////////////////////////////////////////////////////////////////////////////
+    this.events.subscribe('crimeTypes:List', (data) =>{
+      console.log(data);
+    })
    console.log("why");
    this.checkState()
    this.events.publish('currentPage:home', false)
@@ -82,20 +100,16 @@ Crimeslocations = [
     ///
    this.calcDistance();
    ///
-   this.array = [];
-   console.log(this.array, "ooo");
-   
  }
 
- 
-
  ngOnInit() {
-   // Since ngOnInit() is executed before deviceready event,
-    // you have to wait the event.
-    this.platform.ready();
-    this.loadMap();
-    this.initMap();
-}
+  // Since ngOnInit() is executed before deviceready event,
+   // you have to wait the event.
+   this.platform.ready();
+   this.initMap();
+} 
+
+ 
  checkState(){
    this.user = this.userService.returnUserProfile()
    console.log(this.user);
@@ -104,42 +118,6 @@ Crimeslocations = [
      this.router.navigate(['/login'])
    }
  }
- /////
-   loadMap() {
-
-       /// default location if user didn't allow Location!
-    //  this.map = GoogleMaps.create('map_canvas', {
-    //    center: {lat:-26.024472, lng: 28.185799},
-    //    zoom: 17,
-    //    mapTypeId: google.maps.MapTypeId.ROADMAP
-    //  });
-////////////////////////////////////////////////////////////////// start here
-///////////////////// array of Markers to Use
-// let map = new google.maps.Map(document.getElementById('map_canvas'), {
-//     zoom: 12,
-//     center: new google.maps.LatLng(-26.027056,28.186148),
-//     mapTypeId: google.maps.MapTypeId.ROADMAP
-// });
-
-// let infowindow = new google.maps.InfoWindow;
-
-// let marker, i;
-
-// for (i = 0; i < this.Crimeslocations.length; i++) {  
-//    marker = new google.maps.Marker({
-//         position: new google.maps.LatLng(this.Crimeslocations[i][1], this.Crimeslocations[i][2]),
-//         map: map
-//    });
-
-//    google.maps.event.addListener(marker, 'click', ((marker, i) => {
-//         return() => {
-//             infowindow.setContent(this.Crimeslocations[i][0]);
-//             infowindow.open(map, marker);
-//         }
-//    })(marker, i));
-//    }
-   ////////////////////////////////////////////////////////////////////////// end here
-}
 
 //////-----------------------
 initMap() {
@@ -284,7 +262,7 @@ selectSearchResult(item){
       center: {lat: -34.075007, lng: 20.23852},
       zoom: 15
     });
- 
+  
    this.geocoder.geocode({'placeId': item.place_id}, (results, status) => {
      if(status === 'OK' && results[0]){
        let position = {
@@ -398,8 +376,32 @@ selectSearchResult(item){
   this.firebaseService.fetchCrimeCategories().then(data=>{
     this.result = data
     console.log(this.result);
+    this.events.publish('crimeTypes:List', this.result)
+   
   })
 }
+
+// openPopUp(lat, lng){
+//   console.log(lat);
+//   console.log(lng);
+  
+//   ////
+  
+// }
+
+async openModal(){
+  const myModal =await this.modal.create({
+  component: PopupPage,
+  componentProps:{
+    result : this.result
+
+  }
+      
+  });
+
+  
+   myModal.present()
+     }
   getCurrentSessionUser(){
     this.user = this.userService.readCurrentSession()
     console.log(this.user);

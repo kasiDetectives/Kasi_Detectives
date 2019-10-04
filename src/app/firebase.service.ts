@@ -13,6 +13,20 @@ export class FirebaseService {
   tempArray : Array<any> = []
   constructor() { }
 
+<<<<<<< HEAD
+  fetchCrimeCategoriess(){
+  var result = firebase.database().ref().child('CrimeTypes')
+  result.on('child_added', snap =>{
+    this.crimesList.push(snap.key)
+    
+    console.log(this.crimesList);
+   })
+
+    return this.crimesList
+  }
+
+=======
+>>>>>>> 096b0c1b80fc3b5661759fab915654b693c4e83c
   fetchCrimeCategories(){
   return firebase.database().ref().child('CrimeTypes').once('value').then(result =>{
       let string =  (JSON.stringify(result));

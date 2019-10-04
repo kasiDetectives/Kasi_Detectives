@@ -46,10 +46,7 @@ export class HomePage implements OnInit  {
    GooglePlaces: any;
    geocoder: any
    autocompleteItems: any;
- 
-   ////////
-  
-  // start; end
+ //
    directionsService
  //////////
  Crimeslocations = [
@@ -79,8 +76,6 @@ export class HomePage implements OnInit  {
 
   // result = []
   
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ///
   this.calcDistance();
   ///
@@ -157,7 +152,6 @@ marker2 = new google.maps.Marker({
       map.setCenter(pos);
 
       array.push(pos)
-     
       console.log(array, "zzz");
       return array;
       
@@ -235,7 +229,6 @@ updateSearchResults(){
       });
     });
   }
-
   /////////////////////////// selecting a particular place
 selectSearchResult(item){
    this.clearMarkers();
@@ -277,6 +270,7 @@ selectSearchResult(item){
  getMaps(){
    return this.map;
  }
+ 
  ///////////// start here
   ModeMap() {
   let pointA = new google.maps.LatLng(-26.027056,28.186148),
