@@ -70,18 +70,12 @@ export class HomePage implements OnInit  {
    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
    this.autocomplete = { input: '' };
    this.autocompleteItems = [];
- ////
    this.geocoder = new google.maps.Geocoder;
    this.markers = [];
-
-  // result = []
-  
    ///
   this.calcDistance();
   ///
   //this.array = [];
- 
-  
 }
  
 ngOnInit() {
@@ -92,9 +86,9 @@ ngOnInit() {
    this.initMap();
 }
 
-    loadMap(){
+  loadMap(){
       
-    }
+ }
 
 //////-----------------------
 initMap() {
@@ -132,7 +126,7 @@ google.maps.event.addListener(marker1, 'click', ((marker1, i) => {
 marker2 = new google.maps.Marker({
   map: map,
   draggable: true,
-  position: {lat: 48.857, lng: 2.352},
+  position: {lat:-26.196374, lng: 28.034205},
   animation: GoogleMapsAnimation.BOUNCE
 });
 ///////
@@ -145,7 +139,15 @@ marker2 = new google.maps.Marker({
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
-
+             ///
+      let marker = new google.maps.Marker({
+        position: pos,
+        map: map,
+        animation: GoogleMapsAnimation.BOUNCE
+      });
+      this.markers.push(marker);
+      map.setCenter(pos);
+          ///
       infoWindow.setPosition(pos);
       infoWindow.setContent('Your Location.');
       infoWindow.open(map);
@@ -177,10 +179,11 @@ handleLocationError(browserHasGeolocation, infoWindow, pos) {
 calcDistance () {
   var input= this.LandMarks()
     for(let x = 0; x < input.length; x++){
-       if(input[x] <= 0.5 )
+       if(input[x].location <= 0.5 )
        {
+         var description = input[x].desc
           // notification
-          console.log("notification");
+          console.log("notification", description);
        }
        else{
          console.log("you safe.");
@@ -189,10 +192,15 @@ calcDistance () {
   }
 
   LandMarks(){
+    var here = this.loadLocations()
+    console.log(here, "dsdsds");
+
+    // var Were = this.initMap()
+    // console.log(Were, "XXXXX");
+    
       // below manually insert user location
       this.loc =  ['Ewc', new google.maps.LatLng(-26.209469, 28.157037)];
     // insert with user location from geo
-    //var here = this.initMap()
 
       console.log(  this.loc ,"inside array");
       var temp = 0;
@@ -205,8 +213,8 @@ calcDistance () {
       this.Crimeslocations.forEach((pt)=>{
             // temp = +(dist(this.loc[1],pt[1])/1000).toFixed(1)
             temp = +(dist( this.loc [1],pt[1])/1000).toFixed(1)
-            var desc = pt[0]
-            output.push({temps:temp, description: desc});
+            var pttwo = pt[0]
+            output.push({location:temp, desc: pttwo} );
          console.log(output, "output");
           });
           return output
@@ -265,13 +273,9 @@ selectSearchResult(item){
   }
   this.markers = [];
 }
-//////////////////////////////////////////////////////------- end here.
-////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////// end here.
 
- getMaps(){
-   return this.map;
- }
- 
+////////////////////////////////////////////////////////////////////////////////////////////////
  ///////////// start here
   ModeMap() {
   let pointA = new google.maps.LatLng(-26.027056,28.186148),
@@ -370,8 +374,8 @@ selectSearchResult(item){
    let result : Array<any> = []
    result = this.firebaseService.fetchSavedLocations()
    console.log(result);
+
    return result
-   
   }
 
   loadLocationss(){
