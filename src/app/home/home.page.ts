@@ -205,7 +205,8 @@ calcDistance () {
       this.Crimeslocations.forEach((pt)=>{
             // temp = +(dist(this.loc[1],pt[1])/1000).toFixed(1)
             temp = +(dist( this.loc [1],pt[1])/1000).toFixed(1)
-            output.push(temp);
+            var desc = pt[0]
+            output.push({temps:temp, description: desc});
          console.log(output, "output");
           });
           return output
@@ -369,6 +370,7 @@ selectSearchResult(item){
    let result : Array<any> = []
    result = this.firebaseService.fetchSavedLocations()
    console.log(result);
+   return result
    
   }
 
