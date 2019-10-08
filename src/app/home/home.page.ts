@@ -59,11 +59,15 @@ export class HomePage implements OnInit  {
    ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
  ];
  
+
+
+
+ array : Array<any> = []
  constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
   private platform: Platform, public firebaseService : FirebaseService) {
   this.checkUserState()
   this.run()
-  this.loadLocations()
+  this.runsss()
   console.log("why");
 
   ////
@@ -83,7 +87,11 @@ export class HomePage implements OnInit  {
  
   
 }
+ async runsss(){
+ let life = await this.loadLocations()
+ console.log(life);
  
+ }
 ngOnInit() {
   // Since ngOnInit() is executed before deviceready event,
    // you have to wait the event.
@@ -188,7 +196,13 @@ calcDistance () {
     }
   }
 
-  LandMarks(){
+ LandMarks(){
+   
+   let result = this.loadLocations()
+   console.log(result);
+   
+   
+   
       // below manually insert user location
       this.loc =  ['Ewc', new google.maps.LatLng(-26.209469, 28.157037)];
     // insert with user location from geo
@@ -367,9 +381,21 @@ selectSearchResult(item){
 
  async loadLocations(){
    let result : Array<any> = []
-   result = this.firebaseService.fetchSavedLocations()
+   let locations : Array<any> = []
+   result = await this.firebaseService.fetchSavedLocations()
    console.log(result);
+
+   for(let i = 0 ; i < locations.length; i++){
+    console.log('i am running');
+    
+   this.array.push({
+     crime : locations[i].crimeType,
+     function: new google.maps.LatLng(locations[i].lat, locations[i].lng)
+   })
+   console.log(this.array);
    
+  }
+   return locations
   }
 
   loadLocationss(){

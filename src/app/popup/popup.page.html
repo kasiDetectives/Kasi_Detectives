@@ -19,16 +19,16 @@
  </ion-card>
  <ion-item *ngIf='showInput'>
    <ion-label><ion-icon name ="list-box"></ion-icon></ion-label>
- <ion-input  position="stacked" placeholder='Describe crime'></ion-input>
+ <ion-input  position="stacked" placeholder='Describe crime' [ngModel]='crimeText' (ionChange)='setInput($event)'></ion-input>
  </ion-item>
  <ion-list>
    <ion-item>
    <ion-label>Share on twitter</ion-label>
- <ion-checkbox  slot='start' ></ion-checkbox>
+ <ion-checkbox  slot='start' (ionChange)='setCheckState($event)'></ion-checkbox>
 </ion-item>
 </ion-list>
 <div style="text-align: center">
-     <ion-button  shape="round" color="tertiary">
+     <ion-button  shape="round" color="tertiary" [disabled]='!reportFormValid' (click)='sendData()'>
          Submit
      </ion-button>
      

@@ -390,7 +390,7 @@ selectSearchResult(item){
 // }
 
 async openModal(){
-  const myModal =await this.modal.create({
+  const myModal = await this.modal.create({
   component: PopupPage,
   componentProps:{
     result : this.result
@@ -399,6 +399,15 @@ async openModal(){
       
   });
 
+
+myModal.onDidDismiss().then((dataReturned) => {
+  console.log(dataReturned);
+  let data = dataReturned
+  if(data != null){
+    this.submit()
+  }
+});
+
   
    myModal.present()
      }
@@ -406,5 +415,13 @@ async openModal(){
     this.user = this.userService.readCurrentSession()
     console.log(this.user);
     
+  }
+  submitToFirebase(){
+    this.firebaseService.submit()
+  }
+  
+  submit(){
+    this.submitToFirebase()
+    //this.tweet()
   }
 }
