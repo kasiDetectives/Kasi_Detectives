@@ -262,7 +262,7 @@ map.addListener('dblclick',(event)=>{
   infoWindowMarker.open(map,marker);
   infoWindowMarker.setContent(String(event.latLng));
   console.log(marker,"marker selected")
-  console.log(event);
+  console.log(String(event.latLng));
   
   let lat = marker.position.lat['[[Scopes]]']
   let lng = marker.position.lat['[[Scopes]]']
