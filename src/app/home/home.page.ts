@@ -58,16 +58,6 @@ export class HomePage implements OnInit  {
 
   directionsService
   array = []
- //////////
- Crimeslocations = [
-   ['Robbery',new google.maps.LatLng ( -26.027056,28.186148)],
-   ['Robbery',new google.maps.LatLng ( -26.000192,28.207734)], //swazi inn
-   ['Robbery',new google.maps.LatLng ( -26.036723,28.188513)], // sofaya squatar
-   ['Murders', new google.maps.LatLng (-28.32813,30.697505)],
-   ['Robbery',new google.maps.LatLng ( -26.196374, 28.034205)], //mandela bridge
-   ['Robbery',new google.maps.LatLng ( -26.204136,28.046641)] , // small street jozi
-   ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
- ];
  
  constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
   private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
@@ -116,18 +106,18 @@ export class HomePage implements OnInit  {
   
    //
    
-   this.notifyDanger();
+  // this.notifyDanger();
    //////////////////// constructor notification end
 }
  ///////// notification start
-notifyDanger()
+notifyDanger(desc)
 {
 // Schedule a single notification
 this.localNotifications.schedule({
   id: 1,
-  title:'Danger ! ',
-  text: 'you are about to enter a high crime zone',
-  data:{mydata: 'Highjackings were reported here'},
+  title:'High Crime Zone ! ',
+  text: desc,
+  data:{mydata: desc},
   sound: this.setSound(),
  trigger: {in: 2, unit: ELocalNotificationTriggerUnit.SECOND},
  foreground: true
@@ -183,18 +173,7 @@ showAlert(header,sub,msg)
      clearMarkers() {
       this.setMapOnAll(null);
     }
-    ///deleting marker methods end
-
-  //add marker method start
- /*   addMarker(location) {
-      var marker = new google.maps.Marker({
-        position: location,
-        map: map
-      });
-      markers.push(marker)
-    }
-    */
-  //  add marker methodend
+   
 
 ngOnInit() {
   // Since ngOnInit() is executed before deviceready event,
@@ -213,11 +192,48 @@ initMap() {
   var infoWindowMarker;
   var selectedMarker
   var  infoWindow
+  ///danger image
+  var dangerImage = {
+    url: 'assets/icon/danger (2).png',
+    // This marker is 20 pixels wide by 32 pixels high.
+    size: new google.maps.Size(32, 32),
+    // The origin for this image is (0, 0).
+    origin: new google.maps.Point(0, 0),
+    // The anchor for this image is the base of the flagpole at (0, 32).
+   // anchor: new google.maps.Point(0, 40)
+  };
+
+  ///selected area image
+  var selectImage = {
+    url: 'assets/icon/precision (2).png',
+    // This marker is 20 pixels wide by 32 pixels high.
+    size: new google.maps.Size(40, 40),
+    // The origin for this image is (0, 0).
+    origin: new google.maps.Point(0, 0),
+    // The anchor for this image is the base of the flagpole at (0, 32).
+   // anchor: new google.maps.Point(0, 40)
+  };
+
+  ///my location image
+  var myLocationimage = {
+    url: 'assets/icon/pin (1).png',
+    // This marker is 20 pixels wide by 32 pixels high.
+    size: new google.maps.Size(32, 32),
+    // The origin for this image is (0, 0).
+    origin: new google.maps.Point(0, 0),
+    // The anchor for this image is the base of the flagpole at (0, 32).
+   // anchor: new google.maps.Point(0, 40)
+  };
+
+
+
 
   map = new google.maps.Map(document.getElementById('map_canvas'), {
     center: {lat: -34.397, lng: 150.644},
     zoom: 17,
-    animation: GoogleMapsAnimation.BOUNCE
+    animation: GoogleMapsAnimation.BOUNCE,
+    icon: myLocationimage
+   
   });
   infoWindow = new google.maps.InfoWindow;
   infoWindowMarker= new google.maps.InfoWindow;
@@ -232,7 +248,8 @@ map.addListener('dblclick',(event)=>{
   //this.addMarker(event.latLng);
   var marker = new google.maps.Marker({
     position: event.latLng,
-    map: map
+    map: map,
+    icon: selectImage
   });
   markers.push(marker);
   selectedMarker=marker
@@ -274,7 +291,8 @@ map.addListener('dblclick',(event)=>{
         position: pos[0].location,
         zoom: 17,
         map: map,
-        animation: GoogleMapsAnimation.BOUNCE
+        animation: GoogleMapsAnimation.BOUNCE,
+        icon: myLocationimage
 
       });
       this.markers.push(marker);
@@ -285,6 +303,35 @@ map.addListener('dblclick',(event)=>{
       infoWindow.open(map);
       map.setCenter(pos[0].location);
 ​
+///  popular map with crime hotspots start
+this.loadLocations().then(info =>{
+  console.log( info.length);
+for( let x = 0; x < info.length; x++ ){
+   console.log(info[x]);    
+var  markers = new google.maps.Marker({
+map: map,
+draggable: true,
+position: new google.maps.LatLng(info[x].lat, info[x].lng),
+icon: dangerImage,
+});
+console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
+
+    console.log(  markers , "vvvv");
+   
+google.maps.event.addListener(markers, 'click', ((markers, x) => {
+  return() => {
+      infoWindow.setContent(info[x].crimeType);
+      infoWindow.setPosition(new google.maps.LatLng(info[x].lat, info[x].lng));
+      infoWindow.open(map, markers);
+      
+    }
+  })(markers, x));
+
+}
+})
+
+
+///popular map with crime hotspots end
       this.array.push(pos[0])
       console.log(this.array, "zzz");
       
@@ -320,7 +367,7 @@ calcDistance () {
          var description = input[0][x].desc
           // notification
           console.log("notification", description);
-          this.notifyDanger();
+          this.notifyDanger(description);
        }
        else{
          console.log("you safe.");
