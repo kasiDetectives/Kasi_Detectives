@@ -1,7 +1,7 @@
 import { Component, OnInit, NgZone} from '@angular/core';
 
 import { UsersService } from '../users.service';
-import { Router } from '@angular/router';
+import { Router, ChildActivationStart } from '@angular/router';
 import { NavigationService } from '../navigation.service';
 import { Events, ToastController} from '@ionic/angular';
 import {
@@ -17,6 +17,7 @@ import {
   MyLocation
 } from '@ionic-native/google-maps';
 import { FirebaseService } from '../firebase.service';
+import { database } from 'firebase';
 
 declare var google
 
@@ -34,6 +35,7 @@ export class HomePage implements OnInit  {
  
  //////////
  loc =[]
+ crimes : Array<any> = []
  mySelected : string = ""
  ////
  
@@ -49,14 +51,19 @@ export class HomePage implements OnInit  {
  //
    directionsService
  //////////
- Crimeslocations = [
-   ['Robbery',new google.maps.LatLng ( -26.027056,28.186148)],
-   ['Robbery',new google.maps.LatLng ( -26.000192,28.207734)], //swazi inn
-   ['Robbery',new google.maps.LatLng ( -26.036723,28.188513)], // sofaya squatar
-   ['Murders', new google.maps.LatLng (-28.32813,30.697505)],
-   ['Robbery',new google.maps.LatLng ( -26.196374, 28.034205)], //mandela bridge
-   ['Robbery',new google.maps.LatLng ( -26.204136,28.046641)] , // small street jozi
-   ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
+ array =[]
+ firebaseLoc
+
+ DBLocation = []
+
+Crimeslocations = [
+  //  ['Robbery',new google.maps.LatLng ( -26.027056,28.186148)],
+  //  ['Robbery',new google.maps.LatLng ( -26.000192,28.207734)], //swazi inn
+  //  ['Robbery',new google.maps.LatLng ( -26.036723,28.188513)], // sofaya squatar
+  //  ['Murders', new google.maps.LatLng (-28.32813,30.697505)],
+  //  ['Robbery',new google.maps.LatLng ( -26.196374, 28.034205)], //mandela bridge
+  //  ['Robbery',new google.maps.LatLng ( -26.204136,28.046641)] , // small street jozi
+  //  ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
  ];
  
  constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
@@ -74,8 +81,7 @@ export class HomePage implements OnInit  {
    this.markers = [];
    ///
   this.calcDistance();
-  ///
-  //this.array = [];
+  
 }
  
 ngOnInit() {
@@ -87,13 +93,22 @@ ngOnInit() {
 }
 
   loadMap(){
-      
- }
+ 
+    }
 
-//////-----------------------
 initMap() {
   var map, infoWindow;
-  var marker1, marker2, i;
+  var image = {
+    url: 'assets/icon/danger (2).png',
+    // This marker is 20 pixels wide by 32 pixels high.
+    size: new google.maps.Size(32, 32),
+    // The origin for this image is (0, 0).
+    origin: new google.maps.Point(0, 0),
+    // The anchor for this image is the base of the flagpole at (0, 32).
+   // anchor: new google.maps.Point(0, 40)
+  };
+console.log()
+
 
   map = new google.maps.Map(document.getElementById('map_canvas'), {
     center: {lat: -34.397, lng: 150.644},
@@ -103,59 +118,60 @@ initMap() {
   infoWindow = new google.maps.InfoWindow;
 
 
-/////////// tryin to insert markers
-for (i = 0; i < this.Crimeslocations.length; i++) {  
-  console.log(this.Crimeslocations.length, "weewewew");
-  
-marker1 = new google.maps.Marker({
-  map: map,
-  draggable: true,
-  position: new google.maps.LatLng(this.Crimeslocations[i][1], this.Crimeslocations[i][2]),
-  //position: {lat: 40.714, lng: -74.006},
-  animation: GoogleMapsAnimation.BOUNCE
-});
-
-google.maps.event.addListener(marker1, 'click', ((marker1, i) => {
-  return() => {
-    infoWindow.setContent(this.Crimeslocations[i][0]);
-    infoWindow.open(map, marker1);
-  }
-})(marker1, i));
-}
-/////////---------------
-marker2 = new google.maps.Marker({
-  map: map,
-  draggable: true,
-  position: {lat:-26.196374, lng: 28.034205},
-  animation: GoogleMapsAnimation.BOUNCE
-});
-///////
-
    // Get the location of you
   if (navigator.geolocation) {
-    var array =[]
+    //this.array =[]
     navigator.geolocation.getCurrentPosition((position)=> {
-      var pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
+      var pos=[]
+      pos.push({
+      location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
+        });
              ///
       let marker = new google.maps.Marker({
-        position: pos,
+        position: pos[0].location,
         map: map,
         animation: GoogleMapsAnimation.BOUNCE
       });
       this.markers.push(marker);
-      map.setCenter(pos);
-          ///
-      infoWindow.setPosition(pos);
+      map.setCenter(pos[0].location);
+
+          /////// populating our  map with markers  from DB
+
+          this.loadLocations().then(info =>{
+            console.log( info.length);
+       for( let x = 0; x < info.length; x++ ){
+             console.log(info[x]);    
+        var  markers = new google.maps.Marker({
+          map: map,
+          draggable: true,
+          position: new google.maps.LatLng(info[x].lat, info[x].lng),
+          icon: image,
+        });
+        console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
+        
+              console.log(  markers , "vvvv");
+             
+     google.maps.event.addListener(markers, 'click', ((markers, x) => {
+            return() => {
+                infoWindow.setContent(info[x].crimeType);
+                infoWindow.setPosition(new google.maps.LatLng(info[x].lat, info[x].lng));
+                infoWindow.open(map, markers);
+                
+              }
+            })(markers, x));
+  
+          }
+        })
+
+          //////
+
+      infoWindow.setPosition(pos[0]);
       infoWindow.setContent('Your Location.');
       infoWindow.open(map);
-      map.setCenter(pos);
+      map.setCenter(pos[0]);
 
-      array.push(pos)
-      console.log(array, "zzz");
-      return array;
+      this.array.push(pos[0])
+      console.log(this.array, "zzz");
       
     }, () => {
       this.handleLocationError(true, infoWindow, map.getCenter());
@@ -191,32 +207,43 @@ calcDistance () {
     }
   }
 
-  LandMarks(){
-    var here = this.loadLocations()
-    console.log(here, "dsdsds");
+    LandMarks(){
+    let result : Array<any> = []
+    console.log(  this.loc ,"inside array");
+    var temp = 0;
+    var  output = []
+    var dist = google.maps.geometry.spherical.computeDistanceBetween;
+    console.log(dist,"dist");
+         /// here
+     this.loadLocations().then(data =>{
+       console.log( data.length);
+       for( let x = 0; x < data.length; x++ ){
+        console.log(x);
+        
+        this.DBLocation.push({
+          crimeType: data[x].crimeType,
+        location:new google.maps.LatLng(data[x].lat,data[x].lng)
+        })
+      }
 
-    // var Were = this.initMap()
-    // console.log(Were, "XXXXX");
+      console.log(this.DBLocation);
+        
+      for(let y = 0; y < this.DBLocation.length; y++){
+        console.log(this.DBLocation[y]);
+        console.log(this.array[0], 'running');
+        
+        temp = +(dist(this.array[0].location,this.DBLocation[y].location)/1000).toFixed(1)
+        var pttwo = this.DBLocation[y].crimeType
+        output.push({location:temp, desc: pttwo} );
+      }
+      console.log(output, "output");
+      
+     })
     
-      // below manually insert user location
-      this.loc =  ['Ewc', new google.maps.LatLng(-26.209469, 28.157037)];
-    // insert with user location from geo
-
-      console.log(  this.loc ,"inside array");
-      var temp = 0;
-      var  output = []
-        var dist = google.maps.geometry.spherical.computeDistanceBetween;
-           console.log(dist,"dist");
-           console.log(  this.loc ,"array");
-           console.log(this.Crimeslocations,"crimeArray");
-
-      this.Crimeslocations.forEach((pt)=>{
-            // temp = +(dist(this.loc[1],pt[1])/1000).toFixed(1)
-            temp = +(dist( this.loc [1],pt[1])/1000).toFixed(1)
-            var pttwo = pt[0]
-            output.push({location:temp, desc: pttwo} );
-         console.log(output, "output");
-          });
+    console.log(this.DBLocation , "dsdsds");
+    
+    //this.array 
+    console.log(this.array, "XXXXX");
           return output
  }
 
@@ -273,9 +300,8 @@ selectSearchResult(item){
   }
   this.markers = [];
 }
-///////////////////// end here.
 
-////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////// end here.
  ///////////// start here
   ModeMap() {
   let pointA = new google.maps.LatLng(-26.027056,28.186148),
@@ -371,11 +397,15 @@ selectSearchResult(item){
   }
 
  async loadLocations(){
-   let result : Array<any> = []
-   result = this.firebaseService.fetchSavedLocations()
-   console.log(result);
+   let result :any
+   await this.firebaseService.fetchSavedLocations().then(data =>{
+     result = data
 
-   return result
+    console.log(result.length);
+   })
+   console.log(result);
+  //this.LandMarks()
+   return  result 
   }
 
   loadLocationss(){

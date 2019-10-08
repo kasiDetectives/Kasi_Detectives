@@ -3,6 +3,7 @@ import * as firebase from 'firebase'
 import { ValueAccessor } from '@ionic/angular/dist/directives/control-value-accessors/value-accessor';
 
 
+
 var database = firebase.database();
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,9 @@ export class FirebaseService {
   }
 
   fetchSavedLocations(){
+
+   return new Promise((resolve, reject) => {
+
     firebase.database().ref().child('HighRisk').on('child_added', result=>{
       let locations = JSON.parse(JSON.stringify(result))
       console.log(locations);
@@ -47,10 +51,16 @@ export class FirebaseService {
         lng: this.tempArray[i].place[2]
       })
     }
+    resolve(this.savedLocations)
       console.log(this.savedLocations);
       
     })
-    return this.savedLocations
+
+    
+   })
+   
+  
+    // return this.savedLocations
   }
   clearArray(array){
     for(let i=0; i < array.length; i++){array.splice(i)}

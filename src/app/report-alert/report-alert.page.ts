@@ -27,9 +27,6 @@ declare var google
  styleUrls: ['./report-alert.page.scss'],
 })
 export class ReportAlertPage implements OnInit {
-  ///////////////////
-  ///////////////////
-  //////////////////
   map: GoogleMap;
   address:string;
 
