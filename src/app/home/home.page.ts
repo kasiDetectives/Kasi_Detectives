@@ -216,7 +216,7 @@ initMap() {
 
   ///my location image
   var myLocationimage = {
-    url: 'assets/icon/pin (1).png',
+    url: 'assets/icon/placeholder.png',
     // This marker is 20 pixels wide by 32 pixels high.
     size: new google.maps.Size(32, 32),
     // The origin for this image is (0, 0).
@@ -476,87 +476,6 @@ selectSearchResult(item){
    })
  }
 
-//////////////////////////////////////////////////////------- end here.
-////////////////////////////////////////////////////////////////////////////////////////////////
- ///////////// start here
-  ModeMap() {
-  let pointA = new google.maps.LatLng(-26.027056,28.186148),
-    pointB = new google.maps.LatLng(51.5379, 0.7138),
-    center = new google.maps.LatLng(51.3, 0.8),
-    myOptions = {
-      zoom: 8,
-      center: center,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    },
-    map = new google.maps.Map(document.getElementById('map-canvas'), myOptions),
-    // Instantiate a directions service.
-    directionsService = new google.maps.DirectionsService,
-    directionsDisplay = new google.maps.DirectionsRenderer({
-      map: map
-    }),
-
-    outputAtoB = document.getElementById('a2b'),
-    flightPath = new google.maps.Polyline({
-      path: [pointA, pointB],
-      geodesic: true,
-      strokeColor: '#FF0000',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
-    });
-
-//   // click on marker B to get route from A to B
-   this.calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputAtoB);
-
-  let travelMode = document.getElementById('Travel_mode');
-  travelMode.addEventListener("change", ()=> {
-    console.log(travelMode);
-    
-//     if (travelMode.value == "AIR") {
-      
-//       directionsDisplay.setMap(null);
-//       directionsDisplay.setOptions({
-//         suppressPolylines: true
-//       });
-//       directionsDisplay.setMap(map);
-//       let distance = google.maps.geometry.spherical.computeDistanceBetween(pointA, pointB);
-//       outputAtoB.innerHTML = Math.round(distance / 1000) + "Km";
-//       flightPath.setMap(map);
-//     } else {
-//       flightPath.setMap(null);
-//       directionsDisplay.setOptions({
-//         suppressPolylines: false
-//      });
-//  // calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputAtoB);
-//      }
-
-  });
-}
-
-
- calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputTxt) {
-  let selectedMode = document.getElementById('Travel_mode')["value"];
-
-  directionsService.route({
-    origin: pointA,
-    destination: pointB,
-    unitSystem: google.maps.UnitSystem.METRIC,
-    travelMode: google.maps.TravelMode[selectedMode]
-  },(response, status) => {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setDirections(response);
-      outputTxt.innerHTML = Math.round(directionsDisplay.getDirections().routes[directionsDisplay.getRouteIndex()].legs[0].distance.value / 1000) + "Km";
-    } else {
-      window.alert('Directions request failed due to ' + status);
-    }
-  });
-}
-
-    /////
-
-    // fetchCrimeCategories(){
-    //   this.result = (this.firebaseService.fetchCrimeCategories())
-    //   console.log(this.result);
-    // }
 
   checkUserState(){
     this.events.subscribe('user:loggedOut', (boolean)=>{
@@ -584,16 +503,5 @@ selectSearchResult(item){
     return  result 
    }
  
- 
- 
- 
- 
 
-  loadLocationss(){
-    // this.firebaseService.fetchSavedLocations().then(data =>{
-    //   let result = data
-    //   console.log(result);
-      
-    // })
-  }
 }
