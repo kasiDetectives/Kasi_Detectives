@@ -1,24 +1,28 @@
-import { Component, OnInit, NgZone} from '@angular/core';
-
+import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { NavigationService } from '../navigation.service';
-import { Events, ToastController} from '@ionic/angular';
+import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
+import { Component, OnInit, NgZone} from '@angular/core';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
+import { Events, ToastController, Platform, ModalController } from '@ionic/angular';
 import {
-  Platform
-} from '@ionic/angular';
-import {
-  
-  GoogleMaps,
-  GoogleMap,
-  GoogleMapsEvent,
-  Marker,
-  GoogleMapsAnimation,
-  MyLocation
+ GoogleMaps,
+ GoogleMap,
+ GoogleMapsEvent,
+ Marker,
+ GoogleMapsAnimation,
+ MyLocation,
+ LatLng,
+ GoogleMapOptions
 } from '@ionic-native/google-maps';
+import { Icon } from 'ionicons/dist/types/icon/icon';
+import { PopupPage } from '../popup/popup.page';
 import { FirebaseService } from '../firebase.service';
 
 declare var google
+ var map;
+var markers= [];
 
 @Component({
   selector: 'app-home',
@@ -26,28 +30,34 @@ declare var google
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit  {
-  map: GoogleMap;
-  address:string;
+  
+
 
   /////////////////////////////////////////////////////////////////////////////////////////////
-  user
+  address:string;
+  DBLocation=[]
+  scheduled=[];
+  mySelected
+  pic = '\assets\icon\magnifying-glass (10).png'
+  user = []
+  result = []
+  loc =[]
  
- //////////
- loc =[]
- mySelected : string = ""
- ////
+  
+ message
+///
+  mapz : any;
+  markers : any;
+  autocomplete: any;
+  GoogleAutocomplete: any;
+  GooglePlaces: any;
+  geocoder: any
+  autocompleteItems: any;
+  
  
-  message
- ///
-   mapz : any;
-   markers : any;
-   autocomplete: any;
-   GoogleAutocomplete: any;
-   GooglePlaces: any;
-   geocoder: any
-   autocompleteItems: any;
- //
-   directionsService
+
+  directionsService
+  array = []
  //////////
  Crimeslocations = [
    ['Robbery',new google.maps.LatLng ( -26.027056,28.186148)],
@@ -59,8 +69,9 @@ export class HomePage implements OnInit  {
    ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
  ];
  
- constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-  private platform: Platform, public firebaseService : FirebaseService) {
+ constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
+  private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
+  {
   this.checkUserState()
   this.run()
   this.loadLocations()
@@ -81,9 +92,110 @@ export class HomePage implements OnInit  {
   ///
   //this.array = [];
  
+   /////////////////////////constructor notification start
+   
+    //notify
+    this.platform.ready().then(()=>{
+      this.localNotifications.on('click').subscribe(res =>{
+
+        console.log('click: ',res)
+        let msg = res.data ? res.data.mydata : '';
+        this.showAlert(res.title,res.text,msg)
+
+      });
+
+        this.localNotifications.on('trigger').subscribe(res =>{
+
+          console.log('trigger: ',res)
+          let msg = res.data ? res.data.mydata : '';
+          this.showAlert(res.title,res.text,msg)
+
+        });
+
+    });
   
+   //
+   
+   this.notifyDanger();
+   //////////////////// constructor notification end
 }
- 
+ ///////// notification start
+notifyDanger()
+{
+// Schedule a single notification
+this.localNotifications.schedule({
+  id: 1,
+  title:'Danger ! ',
+  text: 'you are about to enter a high crime zone',
+  data:{mydata: 'Highjackings were reported here'},
+  sound: this.setSound(),
+ trigger: {in: 2, unit: ELocalNotificationTriggerUnit.SECOND},
+ foreground: true
+});
+console.log("hh")
+
+} 
+//set sound
+setSound() {
+  if (this.platform.is('android')) {
+    return 'file://assets/sounds/shame.mp3';
+  } else {
+    return 'file://assets/sounds/bell.mp3';
+  }
+}
+//
+showAlert(header,sub,msg)
+{
+
+  this.alertController.create({
+    header: header,
+    subHeader: sub,
+    message: msg,
+    buttons:['Ok']
+  }).then(alert => alert.present());
+
+}
+//
+   getAll()
+   {
+   this.localNotifications.getAll().then(res =>{
+     this.scheduled =res;
+
+     console.log(res)
+   });
+   console.log("hh")
+   }
+   ///////////////////////////notification end
+
+   //deleting marker methods start
+    // delete markers on array and on map
+    deleteMarkers() {
+      this.clearMarkers();
+      markers = [];
+    }
+    //  //set map on all markers
+     setMapOnAll(map) {
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+      }
+    }
+    // //delete markers only on map
+     clearMarkers() {
+      this.setMapOnAll(null);
+    }
+    ///deleting marker methods end
+
+  //add marker method start
+ /*   addMarker(location) {
+      var marker = new google.maps.Marker({
+        position: location,
+        map: map
+      });
+      markers.push(marker)
+    }
+    */
+  //  add marker methodend
+
 ngOnInit() {
   // Since ngOnInit() is executed before deviceready event,
    // you have to wait the event.
@@ -98,62 +210,83 @@ ngOnInit() {
 
 //////-----------------------
 initMap() {
-  var map, infoWindow;
-  var marker1, marker2, i;
+  var infoWindowMarker;
+  var selectedMarker
+  var  infoWindow
 
   map = new google.maps.Map(document.getElementById('map_canvas'), {
     center: {lat: -34.397, lng: 150.644},
-    zoom: 6,
+    zoom: 17,
     animation: GoogleMapsAnimation.BOUNCE
   });
   infoWindow = new google.maps.InfoWindow;
+  infoWindowMarker= new google.maps.InfoWindow;
 
-
-/////////// tryin to insert markers
-for (i = 0; i < this.Crimeslocations.length; i++) {  
-  console.log(this.Crimeslocations.length, "weewewew");
+ 
   
-marker1 = new google.maps.Marker({
-  map: map,
-  draggable: true,
-  position: new google.maps.LatLng(this.Crimeslocations[i][1], this.Crimeslocations[i][2]),
-  //position: {lat: 40.714, lng: -74.006},
-  animation: GoogleMapsAnimation.BOUNCE
+// /// map click listener start
+map.addListener('dblclick',(event)=>{
+//     //delete marker
+  this.deleteMarkers() 
+//  //delete marker end
+  //this.addMarker(event.latLng);
+  var marker = new google.maps.Marker({
+    position: event.latLng,
+    map: map
+  });
+  markers.push(marker);
+  selectedMarker=marker
+ console.log(selectedMarker,"first selected marker")
+
+  console.log(event.latLng,"location of new marker")
+
+   ////// listener on marker start
+
+ marker.addListener('click', (event) => {
+  infoWindowMarker.open(map,marker);
+  infoWindowMarker.setContent(String(event.latLng));
+  console.log(marker,"marker selected")
+ });
+
+//// listener on marker end
 });
 
-google.maps.event.addListener(marker1, 'click', ((marker1, i) => {
-  return() => {
-    infoWindow.setContent(this.Crimeslocations[i][0]);
-    infoWindow.open(map, marker1);
-  }
-})(marker1, i));
-}
-/////////---------------
-marker2 = new google.maps.Marker({
-  map: map,
-  draggable: true,
-  position: {lat: 48.857, lng: 2.352},
-  animation: GoogleMapsAnimation.BOUNCE
-});
-///////
+// /// map click listener end
+
+////add marker
+
+
+
+///add marker
+
+
 
    // Get the location of you
-  if (navigator.geolocation) {
-    var array =[]
+   if (navigator.geolocation) {
+    //this.array =[]
     navigator.geolocation.getCurrentPosition((position)=> {
-      var pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
+      var pos=[]
+      pos.push({
+      location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
+        });
+             ///
+      let marker = new google.maps.Marker({
+        position: pos[0].location,
+        zoom: 17,
+        map: map,
+        animation: GoogleMapsAnimation.BOUNCE
 
-      infoWindow.setPosition(pos);
+      });
+      this.markers.push(marker);
+      map.setCenter(pos[0].location);
+          ///
+      infoWindow.setPosition(pos[0].location);
       infoWindow.setContent('Your Location.');
       infoWindow.open(map);
-      map.setCenter(pos);
-
-      array.push(pos)
-      console.log(array, "zzz");
-      return array;
+      map.setCenter(pos[0].location);
+​
+      this.array.push(pos[0])
+      console.log(this.array, "zzz");
       
     }, () => {
       this.handleLocationError(true, infoWindow, map.getCenter());
@@ -169,47 +302,86 @@ handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setContent(browserHasGeolocation ?
                         'Error: The Geolocation service failed.' :
                         'Error: Your browser doesn\'t support geolocation.');
-  infoWindow.open(this.map);
+  infoWindow.open(map);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////// Calculating distance
 calcDistance () {
-  var input= this.LandMarks()
-    for(let x = 0; x < input.length; x++){
-       if(input[x] <= 0.5 )
+  var input=[]
+  return new Promise((resolve, reject) => {
+    console.log(resolve,"resolve");
+    this.LandMarks().then(data =>{
+      input.push(data)
+  console.log(input,"input");
+    for(let x = 0; x < input[0].length; x++){
+       if(input[0][x].location <= 0.5 )
        {
+         var description = input[0][x].desc
           // notification
-          console.log("notification");
+          console.log("notification", description);
+          this.notifyDanger();
        }
        else{
          console.log("you safe.");
        }
     }
+  })
+})
   }
+​
 
-  LandMarks(){
-      // below manually insert user location
-      this.loc =  ['Ewc', new google.maps.LatLng(-26.209469, 28.157037)];
-    // insert with user location from geo
-    //var here = this.initMap()
+LandMarks(){
 
-      console.log(  this.loc ,"inside array");
-      var temp = 0;
-      var  output = []
-        var dist = google.maps.geometry.spherical.computeDistanceBetween;
-           console.log(dist,"dist");
-           console.log(  this.loc ,"array");
-           console.log(this.Crimeslocations,"crimeArray");
+  
+  let result : Array<any> = []
+  console.log(  this.loc ,"inside array");
+  var temp = 0;
+  var  output = []
+    var dist = google.maps.geometry.spherical.computeDistanceBetween;
+       console.log(dist,"dist");
+  // result = this.firebaseService.fetchSavedLocations()
+  // console.log(this.firebaseService.fetchSavedLocations());
+  // console.log(result.length);
+  return new Promise((resolve, reject) => {
+    this.loadLocations().then(data =>{
+     
+     console.log( data.length);
+     for( let x = 0; x < data.length; x++ ){
+      console.log(x);
+      
+      this.DBLocation.push({
+        crimeType: data[x].crimeType,
+      location:new google.maps.LatLng(data[x].lat,data[x].lng)
+      })
+    
+    }
+​
+    console.log(this.DBLocation);
+      
+    for(let y = 0; y < this.DBLocation.length; y++){
+      console.log(this.DBLocation[y]);
+      console.log(this.array, 'array')
+      console.log(this.array[0].location)
+      console.log(this.array[0].location, 'running');
+      
+      temp = +(dist(this.array[0].location,this.DBLocation[y].location)/1000).toFixed(1)
+      var pttwo = this.DBLocation[y].crimeType
+      output.push({location:temp, desc: pttwo} );
+    }
+    console.log(output, "output");
+      
+ resolve(output)
+   })
+  
+  console.log(this.DBLocation , "dsdsds");
+  
+  //this.array 
+  console.log(this.array, "XXXXX");
 
-      this.Crimeslocations.forEach((pt)=>{
-            // temp = +(dist(this.loc[1],pt[1])/1000).toFixed(1)
-            temp = +(dist( this.loc [1],pt[1])/1000).toFixed(1)
-            output.push(temp);
-         console.log(output, "output");
-          });
-          return output
- }
+  })
+}
+
 
  ////////////////////////  getting different places
 updateSearchResults(){
@@ -257,20 +429,8 @@ selectSearchResult(item){
    })
  }
 
- clearMarkers(){
-  for (var i = 0; i < this.markers.length; i++) {
-    console.log(this.markers[i])
-    this.markers[i].setMap(null);
-  }
-  this.markers = [];
-}
 //////////////////////////////////////////////////////------- end here.
 ////////////////////////////////////////////////////////////////////////////////////////////////
-
- getMaps(){
-   return this.map;
- }
- 
  ///////////// start here
   ModeMap() {
   let pointA = new google.maps.LatLng(-26.027056,28.186148),
@@ -365,12 +525,22 @@ selectSearchResult(item){
     this.events.publish('currentPage:home', true)
   }
 
- async loadLocations(){
-   let result : Array<any> = []
-   result = this.firebaseService.fetchSavedLocations()
-   console.log(result);
-   
-  }
+  async loadLocations(){
+    let result :any
+    await this.firebaseService.fetchSavedLocations().then(data =>{
+      result = data
+ ​
+     console.log(result.length);
+    })
+    console.log(result);
+   //this.LandMarks()
+    return  result 
+   }
+ 
+ 
+ 
+ 
+ 
 
   loadLocationss(){
     // this.firebaseService.fetchSavedLocations().then(data =>{
