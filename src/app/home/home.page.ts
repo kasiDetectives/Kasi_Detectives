@@ -262,8 +262,23 @@ map.addListener('dblclick',(event)=>{
   infoWindowMarker.open(map,marker);
   infoWindowMarker.setContent(String(event.latLng));
   console.log(marker,"marker selected")
-
+  console.log(event);
   
+  let lat = marker.position.lat['[[Scopes]]']
+  let lng = marker.position.lat['[[Scopes]]']
+  let array : Array<any> =[]
+  array.push(lat)
+  let temp = []
+  for(let key in array){
+    temp.push(Object.values[key])
+    console.log(temp);
+    
+  }
+  
+
+  console.log(array)
+  //this.openModal()
+
   
  });
 
@@ -504,6 +519,38 @@ selectSearchResult(item){
    //this.LandMarks()
     return  result 
    }
+
+   async openModal(){
+    const myModal = await this.modal.create({
+    component: PopupPage,
+    componentProps:{
+      result : this.result
+  
+    }
+        
+    });
+  
+  
+  myModal.onDidDismiss().then((dataReturned) => {
+    console.log(dataReturned);
+    let data = dataReturned
+    if(data != null){
+      this.submit()
+    }
+  });
+  
+    
+     myModal.present()
+       }
+
+      submitToFirebase(){
+        this.firebaseService.submit()
+      }
+      
+      submit(){
+        this.submitToFirebase()
+        //this.tweet()
+      }
  
 
 }
