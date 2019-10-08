@@ -84,8 +84,6 @@ export class RegistrationPage implements OnInit {
     }else if(this.password !== this.confirmPassword){
       this.loadPasswordAlert()
     }
-  
-
   }
 
 

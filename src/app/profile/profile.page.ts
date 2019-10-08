@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { ToastController, Events } from '@ionic/angular';
+import { ToastController, Events, ActionSheetController, LoadingController } from '@ionic/angular';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+import { UsersService } from '../users.service';
+import * as firebase from 'firebase'
+import { promise } from 'protractor';
+import { resolve } from 'dns';
+import { reject } from 'q';
+import { File } from '@ionic-native/file/ngx';
+
 
 @Component({
   selector: 'app-profile',
@@ -11,13 +19,19 @@ import { Router } from '@angular/router';
 export class ProfilePage implements OnInit {
 
   profileForm
-  name 
+  name
+  userId
   email
+  pics
+  user =[]
   namePattern = "^(?=.*\[A-Z])(?=.*\[a-z])(?=.*\[A-Z]).{2,}$"
   emailPattern= "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
+  image: any;
 
-  constructor(public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
+  constructor(public file:File, public actionSheetController:ActionSheetController, public userService : UsersService,public camera:Camera, public loader:LoadingController, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
+    this.getUserProfile()
+    this.fetchUserProfile()
     this.events.subscribe('user:created', (email) => {
       if(!email){
         this.router.navigate(['/login'])
@@ -37,12 +51,135 @@ export class ProfilePage implements OnInit {
       ]]
     })
   }
+
+  getPic(sourceType)
+  {
+    const options: CameraOptions =
+    {
+      quality: 100,
+      sourceType: sourceType,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE
+    }
+
+    this.camera.getPicture(options).then((imageData) =>
+    {
+      console.log(imageData);
+      
+      var names = imageData.substring(imageData.lastIndexOf('/') +1,
+      imageData.length)
+
+      console.log(names);
+      
+      if(sourceType === this.camera.PictureSourceType.PHOTOLIBRARY)
+      {
+        names = names.substring(0, names.lastIndexOf('?'))
+      }
+
+      console.log(names);
+      
+      var dirrectory = imageData.substring(0, imageData.lastIndexOf('/') +1)
+      this.file.readAsDataURL(dirrectory, names).then((result) =>
+      {
+        console.log(result);
+        this.image = result
+      })
+
+      this.file.readAsArrayBuffer(dirrectory, names).then((buffer) =>
+      {
+        var blob = new Blob([buffer], {type: "image/jpeg"})
+
+        console.log(buffer);
+        console.log(blob.size);
+        console.log(blob);
+
+        this.userService.savePic(blob)
+      }).then(() =>
+      {
+        if(sourceType === this.camera.PictureSourceType.CAMERA)
+        {
+
+        }
+      })
+      // let base64Image = this.pics + ImageData
+    }, (err) =>
+    {
+
+    })
+  }
+
+  async selectPic()
+  {
+    const actionSheet = await this.actionSheetController.create(
+      {
+        header: "Select image source",
+        buttons: [{text: "Gallery", handler:() =>
+      {
+        this.getPic(this.camera.PictureSourceType.PHOTOLIBRARY)
+      }},
+    {
+      text: "Camera", handler:() =>
+      {
+        this.getPic(this.camera.PictureSourceType.CAMERA)
+      }
+    },
+  {
+    text: "Cancel",
+    role: 'cancel'
+  }]
+      }
+    )
+
+    await actionSheet.present()
+  }
+
   
   updateProfile()
   {
     this.email = this.profileForm.get('email').value
     this.name = this.profileForm.get('name').value
   }    
+
+  getUserProfile(){
+    this.user = this.userService.returnUserProfile()
+    console.log(this.user);
+  }
+   async fetchUserProfile(){
+    const loader = await this.loader.create(
+      {
+        message: 'Loading profile...'
+      }
+    )
+
+    await loader.present()
+    this.userService.getUserProfile(this.user[0].key).then(data =>
+      
+      
+      {
+        console.log(data);
+      // this.name = data.name
+      // this.email = data.email
+      this.profileForm.get('email').setValue(data.email)
+      this.profileForm.get('name').setValue(data.name)
+      this.image = data.profilePicUrl
+        loader.dismiss()
+      })
+
+
+
+
+
+
+    
+    
+  
+    // this.userService.getUserProfile(this.user[0].key).then( profile =>{
+    //   this.image = profile.profilePicUrl
+      
+    // })
+
+  }
 
   async presentToast() {
     const toast = await this.toastController.create({
@@ -53,6 +190,8 @@ export class ProfilePage implements OnInit {
     toast.present();
   }
   ngOnInit() {
+
+
   }
 
 }

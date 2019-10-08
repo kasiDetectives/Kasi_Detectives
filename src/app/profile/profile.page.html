@@ -9,9 +9,16 @@
  </ion-header>
 
 <ion-content class="one" color="success">
+  
   <form  class="form" [formGroup]="profileForm" style="padding: 20px 50px; ">
     <h1 style="text-align: center" class="header"> <b>Profile</b></h1>
     <div class="form-divider">
+      <div style="text-align: center">
+        <img [src] ="image" >
+          <ion-button color="tertiary" shape="round" (click)="selectPic()">
+              <ion-icon name="camera"></ion-icon>
+          </ion-button>
+      </div>  
         <ion-item class="inputItems">
         <ion-input  formControlName="name" placeholder=" Full Name"><ion-icon name="person"></ion-icon></ion-input>
       </ion-item>
