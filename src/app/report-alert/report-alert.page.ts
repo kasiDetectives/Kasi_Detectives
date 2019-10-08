@@ -1,9 +1,10 @@
-import { Component, OnInit, NgZone} from '@angular/core';
-import { SocialSharing } from '@ionic-native/social-sharing/ngx';
-
+import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { NavigationService } from '../navigation.service';
+import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
+import { Component, OnInit, NgZone} from '@angular/core';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { Events, ToastController, Platform, ModalController } from '@ionic/angular';
 import {
  GoogleMaps,
@@ -16,10 +17,12 @@ import {
  GoogleMapOptions
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
+var google
+ var map;
+var markers= [];
+
 import { PopupPage } from '../popup/popup.page';
 import { FirebaseService } from '../firebase.service';
-
-declare var google
 
 @Component({
  selector: 'app-report-alert',
@@ -29,12 +32,13 @@ declare var google
 export class ReportAlertPage implements OnInit {
   map: GoogleMap;
   address:string;
-
+  scheduled=[];
+  mySelected
   pic = '\assets\icon\magnifying-glass (10).png'
   user = []
   result = []
   loc =[]
-  mySelected : string = ""
+ 
   
  message
 ///
@@ -49,20 +53,6 @@ export class ReportAlertPage implements OnInit {
 
   directionsService
   array = []
-
-  ///////
-  // this.Crimeslocations = [
-  //   ['Robbery',new google.maps.LatLng ( -26.027056,28.186148)],
-  //   ['Robbery',new google.maps.LatLng ( -26.000192,28.207734)], //swazi inn
-  //   ['Robbery',new google.maps.LatLng ( -26.036723,28.188513)], // sofaya squatar
-  //   ['Murders', new google.maps.LatLng (-28.32813,30.697505)],
-  //   ['Robbery',new google.maps.LatLng ( -26.196374, 28.034205)], //mandela bridge
-  //   ['Robbery',new google.maps.LatLng ( -26.204136,28.046641)] , // small street jozi
-  //   ['muder', new google.maps.LatLng(-26.209551, 28.157613)] //germi
-  // ];
-
-
-  /////
   
   tweet()
   {
@@ -75,8 +65,9 @@ export class ReportAlertPage implements OnInit {
     })
 }
 
- constructor(public zone: NgZone,public navigationService : NavigationService, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-   private platform: Platform, public firebaseService : FirebaseService, public modal : ModalController, public socialSharing:SocialSharing) {
+constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
+  private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
+  {
       ///////////////////////////////////////////////////////////////////////////////
     this.events.subscribe('crimeTypes:List', (data) =>{
       console.log(data);
@@ -97,7 +88,99 @@ export class ReportAlertPage implements OnInit {
     ///
    this.calcDistance();
    ///
+
+   /////////////////////////constructor notification start
+   
+    //notify
+    this.platform.ready().then(()=>{
+      this.localNotifications.on('click').subscribe(res =>{
+
+        console.log('click: ',res)
+        let msg = res.data ? res.data.mydata : '';
+        this.showAlert(res.title,res.text,msg)
+
+      });
+
+        this.localNotifications.on('trigger').subscribe(res =>{
+
+          console.log('trigger: ',res)
+          let msg = res.data ? res.data.mydata : '';
+          this.showAlert(res.title,res.text,msg)
+
+        });
+
+    });
+  
+   //
+   
+   this.notifyDanger();
+   //////////////////// constructor notification end
  }
+///////// notification start
+notifyDanger()
+{
+// Schedule a single notification
+this.localNotifications.schedule({
+  id: 1,
+  title:'Danger ! ',
+  text: 'you are about to enter a high crime zone',
+  data:{mydata: 'Highjackings were reported here'},
+  sound: this.setSound(),
+ trigger: {in: 2, unit: ELocalNotificationTriggerUnit.SECOND},
+ foreground: true
+});
+console.log("hh")
+
+}
+//set sound
+setSound() {
+  if (this.platform.is('android')) {
+    return 'file://assets/sounds/shame.mp3';
+  } else {
+    return 'file://assets/sounds/bell.mp3';
+  }
+}
+//
+showAlert(header,sub,msg)
+{
+
+  this.alertController.create({
+    header: header,
+    subHeader: sub,
+    message: msg,
+    buttons:['Ok']
+  }).then(alert => alert.present());
+
+}
+//
+   getAll()
+   {
+   this.localNotifications.getAll().then(res =>{
+     this.scheduled =res;
+
+     console.log(res)
+   });
+   console.log("hh")
+   }
+   ///////////////////////////notification end
+
+///deleting marker methods start
+    // delete markers on array and on map
+    deleteMarkers() {
+      this.clearMarkers();
+      markers = [];
+    }
+    //  //set map on all markers
+     setMapOnAll(map) {
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+      }
+    }
+    // //delete markers only on map
+     clearMarkers() {
+      this.setMapOnAll(null);
+    }
+    ///deleting marker methods end
 
  ngOnInit() {
   // Since ngOnInit() is executed before deviceready event,
@@ -127,7 +210,8 @@ initMap() {
     animation: GoogleMapsAnimation.BOUNCE
   });
   infoWindow = new google.maps.InfoWindow;
-
+ 
+  
 
 /////////// tryin to insert markers
 for (i = 0; i < this.Crimeslocations.length; i++) {  
@@ -157,6 +241,29 @@ marker2 = new google.maps.Marker({
 });
 ///////
 
+ /// map click add marker start
+ map.on(GoogleMapsEvent.MAP_CLICK).subscribe(
+  (data: any[]) => {
+    let latLng: LatLng = data[0];
+      console.log("Click MAP",data);
+      
+      //delete maker
+   //  this.deleteMarkers() 
+      //add marker
+     let marker = new google.maps.Marker({
+        position: latLng,
+        title: latLng.toString(),
+        animation: google.maps.Animation.DROP,
+        map: map
+         
+      });
+     markers.push(marker);
+    console.log("marker",markers);
+  });
+/// map click add marker end
+
+
+  //
    // Get the location of you
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position)=> {
@@ -190,7 +297,7 @@ handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setContent(browserHasGeolocation ?
                         'Error: The Geolocation service failed.' :
                         'Error: Your browser doesn\'t support geolocation.');
-  infoWindow.open(this.map);
+  infoWindow.open(map);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -251,7 +358,7 @@ updateSearchResults(){
 
   /////////////////////////// selecting a particular place
 selectSearchResult(item){
-   this.clearMarkers();
+  
    this.autocompleteItems = [];
 
     //Set latitude and longitude of user place
@@ -277,19 +384,11 @@ selectSearchResult(item){
    })
  }
 
- clearMarkers(){
-  for (var i = 0; i < this.markers.length; i++) {
-    console.log(this.markers[i])
-    this.markers[i].setMap(null);
-  }
-  this.markers = [];
-}
+ 
 //////////////////////////////////////////////////////------- end here.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
- getMaps(){
-   return this.map;
- }
+ 
  ///////////// start here
   ModeMap() {
   let pointA = new google.maps.LatLng(-26.027056,28.186148),

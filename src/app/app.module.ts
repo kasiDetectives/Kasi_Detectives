@@ -10,10 +10,9 @@ import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
-
 import { PopupPageModule } from './popup/popup.module';
 import * as firebase from 'firebase'
-
+import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
 var firebaseConfig = {
   apiKey: "AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI",
   authDomain: "kasidetectives.firebaseapp.com",
@@ -35,6 +34,7 @@ firebase.initializeApp(firebaseConfig);
     StatusBar,
     SocialSharing,
     Camera,
+    LocalNotifications, 
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
