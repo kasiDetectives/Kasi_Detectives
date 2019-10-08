@@ -245,6 +245,8 @@ map.addListener('dblclick',(event)=>{
   infoWindowMarker.open(map,marker);
   infoWindowMarker.setContent(String(event.latLng));
   console.log(marker,"marker selected")
+
+  
  });
 
 //// listener on marker end
