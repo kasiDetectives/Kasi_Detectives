@@ -29,31 +29,35 @@ export class FirebaseService {
 
   //Retrieving data from firebase/// Reported locations
   fetchSavedLocations(){
-    firebase.database().ref().child('HighRisk').on('child_added', result=>{
-      let locations = JSON.parse(JSON.stringify(result))
-      console.log(locations);
-     
-      this.clearArray(this.tempArray)
-      for(let key in locations){
-        
-        this.tempArray.push({
-          place : Object.values(locations[key])
+    ​
+       return new Promise((resolve, reject) => {
+    ​
+        firebase.database().ref().child('HighRisk').on('child_added', result=>{
+          let locations = JSON.parse(JSON.stringify(result))
+          console.log(locations);
+         
+          this.clearArray(this.tempArray)
+          for(let key in locations){
+            
+            this.tempArray.push({
+              place : Object.values(locations[key])
+            })
+          
+          }
+          console.log(this.tempArray);
+         for(let i = 0; i < this.tempArray.length; i++){
+          this.savedLocations.push({
+            crimeType: this.tempArray[i].place[0],
+            lat: this.tempArray[i].place[1],
+            lng: this.tempArray[i].place[2]
+          })
+        }
+        resolve(this.savedLocations)
+          console.log(this.savedLocations);
+          
         })
-      
-      }
-      console.log(this.tempArray);
-     for(let i = 0; i < this.tempArray.length; i++){
-      this.savedLocations.push({
-        crimeType: this.tempArray[i].place[0],
-        lat: this.tempArray[i].place[1],
-        lng: this.tempArray[i].place[2]
-      })
-    }
-      console.log(this.savedLocations);
-      
-    })
-    return this.savedLocations
-  }
+       })
+}
 
   //Submitting data to firebase /// Pinning new report
   submit(){
@@ -69,6 +73,7 @@ export class FirebaseService {
       lng : lng
     })
   }
+
   clearArray(array){
     for(let i=0; i < array.length; i++){array.splice(i)}
   }
