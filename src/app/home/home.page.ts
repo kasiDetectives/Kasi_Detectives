@@ -264,6 +264,7 @@ map.addListener('dblclick',(event)=>{
   console.log(marker,"marker selected")
 
   
+  
  });
 
 //// listener on marker end
