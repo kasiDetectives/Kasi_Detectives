@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router'
 import * as firebase from 'firebase'
+import { url } from 'inspector';
 
 var database = firebase.database();
 
@@ -42,7 +43,8 @@ export class UsersService {
       console.log(userID)
       database.ref().child("Users/" + userID).update({
         email: userEmail,
-        name: userName
+        name: userName,
+        hasProfilePic: false
       })
       return data
      }).catch((error) => {
@@ -114,6 +116,59 @@ export class UsersService {
     console.log(this.user);
     return this.user
   }
+
+  getUserProfile(userId)
+  {
+    return firebase.database().ref("Users/" + userId).once('value').then((snapshot) =>
+    {
+      let profile = snapshot.val()
+    
+      if(profile.hasProfilePic){
+        return firebase.storage().ref('userDisplayPic/' + userId).getDownloadURL().then(url =>
+          {
+            profile['profilePicUrl'] = url
+            return profile
+          })
+      }else{
+          profile['profilePicUrl'] = "../assets/icon/person.png"
+          return profile
+      }
+    
+    })
+  }
+
+  signIn()
+  {
+    return new Promise((resolve, reject) =>
+    {
+      firebase.auth().onAuthStateChanged((user) =>
+      {
+        if(user)
+        {
+          resolve (user.uid)
+        } else
+        {
+
+        }
+      })
+    })
+  }
+
+  savePic(image)
+  {
+    this.signIn().then((userID) =>
+    {
+      let storageRef = firebase.storage().ref('userDisplayPic/' + userID)
+      
+      return storageRef.put(image).then((data) =>
+      {
+        console.log('Saved');
+        
+      })
+    })
+  }
+
+
 
   returnUserProfile(){
     console.log(this.userProfile);

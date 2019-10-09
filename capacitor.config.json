@@ -1,0 +1,7 @@
+{
+  "appId": "io.kasi.detectives",
+  "appName": "kasi_detectives",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}
