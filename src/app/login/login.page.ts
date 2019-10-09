@@ -29,7 +29,6 @@ export class LoginPage implements OnInit {
       console.log(this.pageURL);
     //this.checkURL()
     this.loginForm = formBuilder.group({
-    
       email: [this.email, Validators.compose(
         [Validators.required, Validators.pattern(this.emailPattern)]
       )],
@@ -46,7 +45,6 @@ export class LoginPage implements OnInit {
       this.pageURL = this.navigationService.returnPageURL()
       console.log(this.pageURL);
     }
-    
   }
 
   login(){

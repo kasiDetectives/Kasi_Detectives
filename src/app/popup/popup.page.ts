@@ -12,6 +12,8 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 })
 export class PopupPage implements OnInit {
   result : Array<string>
+  lat: String = ''
+  lng: String = ''
   optionSelectedValue
   showInput : boolean = false
   checkboxState : boolean = false
@@ -20,60 +22,25 @@ export class PopupPage implements OnInit {
   crimeText : string = ''
   pic = '\assets\icon\magnifying-glass (10).png'
   constructor(public modCtrl:ModalController, public events : Events, public navParam:NavParams, public socialSharing:SocialSharing) {
-    // this.fetchCrimeCategories()
-    this.events.subscribe('crimeTypes:List', (data) =>{
-      let why = data
-      console.log(why);
-      
-    })
+    
   }
-  load(){ 
-    console.log('fgfdgdf');
-    // this.events.publish('why:dd', 'ring')
-    this.events.subscribe('why:dd', (data) =>{
-      console.log(data);
-      
-    })
-    this.events.subscribe('crimeTypes:List', (data) =>{
-      let why = data
-      console.log(why);
-      
-    })
+  closePopup(){
+    this.modCtrl.dismiss(null);
   }
-  // closePopup(){
-  //   this.modCtrl.dismiss(null);    
-  // }
 
   sendData(){
     let report = [{
       description: this.crimeDescription,
-      lat: '23424',
-      lng: '3333',
+      lat: this.lat,
+      lng: this.lng,
       postToTweeter : this.checkboxState
     }]
-    this.events.publish('firebaseReport', report)
     this.modCtrl.dismiss(report) 
   }
-  // fetchCrimeCategories(){
-  //   this.firebaseService.fetchCrimeCategories().then(data=>{
-  //     this.result = data
-  //     console.log(this.result);
-  //   })
-  // }
-
+  
   setCheckState(event){
     this.checkboxState = event.detail.checked
     console.log(this.checkboxState);
-  }
-
-  fetch(){
-    this.events.subscribe('crimeTypes:List', (data) =>{
-      console.log(data);
-      
-      this.result = data
-      console.log(this.result);
-      
-    })
   }
 
   setInput(event){
@@ -114,20 +81,12 @@ export class PopupPage implements OnInit {
     })
   }
 
-  // submitToFirebase(){
-  //   this.firebaseService.submit()
-  // }
-  
-  // submit(){
-  //   this.submitToFirebase()
-  //   //this.tweet()
-  // }
   ngOnInit() {
-    //this.fetch()
-    console.log('why');
-
     this.result = this.navParam.get("result")
-    
+    this.lat = this.navParam.get('lat')
+    this.lng = this.navParam.get('lng')    
+    console.log(this.result);
+    console.log(this.lat)
+    console.log(this.lng)
   }
-
 }

@@ -21,8 +21,8 @@ import { PopupPage } from '../popup/popup.page';
 import { FirebaseService } from '../firebase.service';
 
 declare var google
- var map;
-var markers= [];
+var map;
+var markers = [];
 
 @Component({
   selector: 'app-home',
@@ -42,6 +42,7 @@ export class HomePage implements OnInit  {
   user = []
   result = []
   loc =[]
+  email = ''
  
   
  message
@@ -63,7 +64,10 @@ export class HomePage implements OnInit  {
   private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
   {
   this.checkUserState()
+  this.checkEmail()
   this.run()
+  this.fetchCrimeCategories()
+  this.checkModalOption()
   console.log("why");
 
   ////
@@ -180,6 +184,7 @@ ngOnInit() {
    this.platform.ready();
    this.loadMap();
    this.initMap();
+   this.checkUserState()
 }
 
     loadMap(){
@@ -262,22 +267,26 @@ map.addListener('dblclick',(event)=>{
   infoWindowMarker.open(map,marker);
   infoWindowMarker.setContent(String(event.latLng));
   console.log(marker,"marker selected")
-  console.log(String(event.latLng));
+  console.log(event.latLng.lat());
   
-  let lat = marker.position.lat['[[Scopes]]']
-  let lng = marker.position.lat['[[Scopes]]']
-  let array : Array<any> =[]
-  array.push(lat)
-  let temp = []
-  for(let key in array){
-    temp.push(Object.values[key])
-    console.log(temp);
-    
-  }
+  let lat = event.latLng.lat()
+  let lng = event.latLng.lng()
+  
   
 
-  console.log(array)
-  //this.openModal()
+  console.log(lat, lng, this.result)
+  if(this.email){
+    console.log(this.email);
+    this.events.publish('openModal', false, null, null)
+    this.openModal(lat, lng)
+    
+  }else{
+    this.events.publish('openModal', true, lat, lng)
+    this.router.navigate(['/login'])
+    
+  }
+  /////////////////////////////////////
+  
 
   
  });
@@ -493,8 +502,16 @@ selectSearchResult(item){
    })
  }
 
-
+  checkEmail(){
+    this.events.subscribe('user:created', (data)=>{
+      this.email = data
+      console.log(this.email);
+    })
+  }
   checkUserState(){
+    console.log('checking state');
+    console.log(this.user);
+    
     this.events.subscribe('user:loggedOut', (boolean)=>{
       console.log(boolean);
       if(boolean === true){
@@ -520,11 +537,24 @@ selectSearchResult(item){
     return  result 
    }
 
-   async openModal(){
+
+   fetchCrimeCategories(){
+    this.firebaseService.fetchCrimeCategories().then(data=>{
+      this.result = data
+      console.log(this.result);     
+    })
+  }
+
+
+   async openModal(lat, lng){
+     console.log(lat, lng);
+     
     const myModal = await this.modal.create({
     component: PopupPage,
     componentProps:{
-      result : this.result
+      result : this.result,
+      lat : lat,
+      lng: lng
   
     }
         
@@ -533,9 +563,14 @@ selectSearchResult(item){
   
   myModal.onDidDismiss().then((dataReturned) => {
     console.log(dataReturned);
-    let data = dataReturned
-    if(data != null){
-      this.submit()
+    let data = dataReturned.data
+    console.log(data);
+    
+    if(data !== null && data !== undefined){
+      let submitInfo = data[0]
+      console.log(submitInfo);
+      
+      this.submit(submitInfo)
     }
   });
   
@@ -543,12 +578,27 @@ selectSearchResult(item){
      myModal.present()
        }
 
-      submitToFirebase(){
-        this.firebaseService.submit()
+      
+       checkModalOption(){
+         this.events.subscribe('openModal', (boolean, lat, lng)=>{
+          if(boolean === true){
+            this.openModal(lat, lng)
+          }else{
+            
+          }
+         })
+       }
+
+      submitToFirebase(submitInfo){
+        console.log('And we all just');
+        
+        this.firebaseService.submit(submitInfo)
       }
       
-      submit(){
-        this.submitToFirebase()
+      submit(submitInfo){
+        console.log('And we are all just entertainers, and we stupid and contagious');
+        
+        this.submitToFirebase(submitInfo)
         //this.tweet()
       }
  

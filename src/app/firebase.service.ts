@@ -60,13 +60,22 @@ export class FirebaseService {
 }
 
   //Submitting data to firebase /// Pinning new report
-  submit(){
+  submit(submitInfo){
     let userId = 'Willington'
     let place = 'Tembisa' 
-    let description ='I done got raped'
-    let lat = '2333423434.234234'
-    let lng = '342432.34324'
+    let description = submitInfo.description
+    let lat = submitInfo.lat
+    let lng = submitInfo.lng
+
+    console.log(lat);
+    console.log(lng);
+    console.log(description);
+    
+    
+    
     var newPostKey = firebase.database().ref().child('Category/' + userId + "/" + place + "/").push().key;
+    console.log(newPostKey);
+    
     firebase.database().ref().child('Category/' + userId + "/" + place + "/" + newPostKey + "/").update({
       description: description,
       lat : lat,

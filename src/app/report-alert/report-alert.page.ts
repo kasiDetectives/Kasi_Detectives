@@ -95,15 +95,15 @@ constructor(public zone: NgZone,public alertController: AlertController,public n
    this.fetchCrimeCategories()
 
    ////
-    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
+    //this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
     this.autocomplete = { input: '' };
     this.autocompleteItems = [];
   ////
-    this.geocoder = new google.maps.Geocoder;
+    //this.geocoder = new google.maps.Geocoder;
     this.markers = [];
 
     ///
-   this.calcDistance();
+   //this.calcDistance();
    ///
 
    /////////////////////////constructor notification start
@@ -332,7 +332,7 @@ calcDistance () {
        }
     }
   }
-
+  
   LandMarks(){
       // below manually insert user location
       this.loc =  ['Ewc', new google.maps.LatLng(-26.209469, 28.157037)];
@@ -530,7 +530,7 @@ myModal.onDidDismiss().then((dataReturned) => {
     
   }
   submitToFirebase(){
-    this.firebaseService.submit()
+    //this.firebaseService.submit()
   }
   
   submit(){
