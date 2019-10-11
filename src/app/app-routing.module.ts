@@ -6,15 +6,10 @@ const routes: Routes = [
   { path: 'registration', loadChildren: './registration/registration.module#RegistrationPageModule' },
   { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
   { path: 'community-event', loadChildren: './community-event/community-event.module#CommunityEventPageModule' }, 
-<<<<<<< HEAD
-  
-  { path: 'report-alert', loadChildren: './report-alert/report-alert.module#ReportAlertPageModule' },
-  { path: '', redirectTo: 'home', pathMatch: 'full' },  { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' },
-=======
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'report-alert', loadChildren: './report-alert/report-alert.module#ReportAlertPageModule' },
-  { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' },  { path: 'popup', loadChildren: './popup/popup.module#PopupPageModule' },
->>>>>>> 6fd30b1ad3cc379bff9a45d5b3ba700de68b6681
+  { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' },
+  { path: 'popup', loadChildren: './popup/popup.module#PopupPageModule' },
 
 
 ];
