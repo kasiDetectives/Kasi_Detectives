@@ -42,7 +42,7 @@ export class HomePage implements OnInit  {
   user = []
   result = []
   loc =[]
-  email = ''
+  email = null
  
   
  message
@@ -275,7 +275,7 @@ map.addListener('dblclick',(event)=>{
   
 
   console.log(lat, lng, this.result)
-  if(this.email){
+  if(this.email != null){
     console.log(this.email);
     this.events.publish('openModal', false, null, null)
     this.openModal(lat, lng)
@@ -581,11 +581,14 @@ selectSearchResult(item){
       
        checkModalOption(){
          this.events.subscribe('openModal', (boolean, lat, lng)=>{
-          if(boolean === true){
-            this.openModal(lat, lng)
-          }else{
-            
-          }
+           if(this.email !== null){
+            if(boolean === true){
+              this.openModal(lat, lng)
+            }else{
+                        
+            }
+           }
+          
          })
        }
 
