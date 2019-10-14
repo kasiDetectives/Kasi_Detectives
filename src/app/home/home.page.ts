@@ -19,6 +19,7 @@ import {
 import { Icon } from 'ionicons/dist/types/icon/icon';
 import { PopupPage } from '../popup/popup.page';
 import { FirebaseService } from '../firebase.service';
+import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 
 declare var google
 var map;
@@ -274,6 +275,7 @@ map.addListener('dblclick',(event)=>{
 //  //delete marker end
   //this.addMarker(event.latLng);
   var marker = new google.maps.Marker({
+  
     position: event.latLng,
     map: map,
     icon: selectImage
@@ -285,28 +287,41 @@ map.addListener('dblclick',(event)=>{
   console.log(event.latLng,"location of new marker")
 
    ////// listener on marker start
-
+// Report incident
  marker.addListener('click', (event) => {
   infoWindowMarker.open(map,marker);
-  infoWindowMarker.setContent(String(event.latLng));
+  infoWindowMarker.setContent(String(event.place));
+
+  let lat = event.latLng.lat()
+  let lng = event.latLng.lng()
+  this.geocoder.geocode({'location': event.latLng}, (results, status) =>{
+
+    if(status === "OK"){
+      console.log(results[0].formatted_address);
+      
+
+      if(this.email === null){
+        //this.events.publish('openModal', true, lat, lng)
+        //this.router.navigate(['/login'])
+        
+      }else{
+        
+        console.log(this.email);
+        //this.events.publish('openModal', false, null, null)
+        this.openModal(results[0].formatted_address, lat, lng)  }
+    }
+  } )
+
+  console.log(infoWindowMarker.setContent(String(event.place)))
   console.log(marker,"marker selected")
   console.log(event.latLng.lat());
   
-  let lat = event.latLng.lat()
-  let lng = event.latLng.lng()
+
   
   
 
   console.log(lat, lng, this.result)
-  if(this.email === null){
-    this.events.publish('openModal', true, lat, lng)
-    this.router.navigate(['/login'])
-    
-  }else{
-    
-    console.log(this.email);
-    this.events.publish('openModal', false, null, null)
-    this.openModal(lat, lng)  }
+  
   /////////////////////////////////////
   
 
@@ -575,13 +590,14 @@ selectSearchResult(item){
   }
 
 
-   async openModal(lat, lng){
+   async openModal(address, lat, lng){
      console.log(lat, lng);
      
     const myModal = await this.modal.create({
     component: PopupPage,
     componentProps:{
       result : this.result,
+      address: address,
       lat : lat,
       lng: lng
   

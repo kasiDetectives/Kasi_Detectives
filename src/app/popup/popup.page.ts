@@ -3,6 +3,7 @@ import {NavController, NavParams, Events} from '@ionic/angular'
 import { ViewController } from '@ionic/core';
 import {ModalController} from '@ionic/angular'
 import { FirebaseService } from '../firebase.service';
+import { LatLng } from '@ionic-native/google-maps';
 
 //import * as firebase from
 @Component({
@@ -14,6 +15,9 @@ export class PopupPage implements OnInit {
   result : Array<string>
   optionSelectedValue
   showInput : boolean = false
+  lat
+  lng
+  address
   constructor(public modCtrl:ModalController, public events : Events, public navParam:NavParams) {
     // this.fetchCrimeCategories()
     this.events.subscribe('crimeTypes:List', (data) =>{
@@ -76,7 +80,9 @@ export class PopupPage implements OnInit {
     console.log('why');
 
     this.result = this.navParam.get("result")
-    
+    this.lat = this.navParam.get('lat')
+    this.lng = this.navParam.get('lng')
+    this.address = this.navParam.get('address')
   }
 
 }
