@@ -275,16 +275,15 @@ map.addListener('dblclick',(event)=>{
   
 
   console.log(lat, lng, this.result)
-  if(this.email != null){
-    console.log(this.email);
-    this.events.publish('openModal', false, null, null)
-    this.openModal(lat, lng)
-    
-  }else{
+  if(this.email === null){
     this.events.publish('openModal', true, lat, lng)
     this.router.navigate(['/login'])
     
-  }
+  }else{
+    
+    console.log(this.email);
+    this.events.publish('openModal', false, null, null)
+    this.openModal(lat, lng)  }
   /////////////////////////////////////
   
 
@@ -502,12 +501,7 @@ selectSearchResult(item){
    })
  }
 
-  checkEmail(){
-    this.events.subscribe('user:created', (data)=>{
-      this.email = data
-      console.log(this.email);
-    })
-  }
+
   checkUserState(){
     console.log('checking state');
     console.log(this.user);
@@ -516,8 +510,20 @@ selectSearchResult(item){
       console.log(boolean);
       if(boolean === true){
         this.userService.destroyUserData()
-        this.events.publish('user:created', false);
+        this.events.publish('user:loggedIn', false);
       }
+    })
+  }
+  checkEmail(){
+    this.events.subscribe('user:loggedIn', (data)=>{
+      if(data === false){
+        this.email = null
+        console.log(this.email);
+      }else{
+        this.email = data
+        console.log(this.email);
+      }
+      
     })
   }
   run(){
@@ -580,13 +586,22 @@ selectSearchResult(item){
 
       
        checkModalOption(){
+         console.log('checking modals')
          this.events.subscribe('openModal', (boolean, lat, lng)=>{
-           if(this.email !== null){
+           console.log('openModal:', boolean);
+           if(this.email != null){
+             console.log(this.email);
+             
             if(boolean === true){
+              console.log('boolean too: ', boolean);
+              console.log('opening modal');
+              
               this.openModal(lat, lng)
             }else{
                         
             }
+           }else{
+             console.log('why are you like this')
            }
           
          })
