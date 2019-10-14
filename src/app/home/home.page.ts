@@ -185,6 +185,29 @@ ngOnInit() {
    this.loadMap();
    this.initMap();
    this.checkUserState()
+   this.checkModalOption()
+
+   //
+   ///
+   ///
+   this.events.subscribe('openModalAgain', (boolean, lat, lng)=>{
+    console.log('openModal:', boolean);
+    if(this.email != null){
+      console.log(this.email);
+      
+     if(boolean === true){
+       console.log('boolean too: ', boolean);
+       console.log('opening modal');
+       
+       this.openModal(lat, lng)
+     }else{
+                 
+     }
+    }else{
+      console.log('why are you like this')
+    }
+   
+  })
 }
 
     loadMap(){
@@ -587,7 +610,7 @@ selectSearchResult(item){
       
        checkModalOption(){
          console.log('checking modals')
-         this.events.subscribe('openModal', (boolean, lat, lng)=>{
+         this.events.subscribe('openModalAgain', (boolean, lat, lng)=>{
            console.log('openModal:', boolean);
            if(this.email != null){
              console.log(this.email);

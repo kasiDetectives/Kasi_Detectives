@@ -16,6 +16,9 @@ export class LoginPage implements OnInit {
   passwordPattern = "^(?=.*\[0-9])(?=.*\[a-z])(?=.*\[A-Z])(?=.*\[@#$!%^&*,.<>]).{8,}$"
   loginForm
   pageURL = "und"
+  boolean
+  latitude
+  longitude
   constructor(
     public userService: UsersService,
     public alertController: AlertController,
@@ -66,14 +69,20 @@ export class LoginPage implements OnInit {
           let link = "home"
           this.route.navigate([link])
         }
-        this.events.subscribe('openModal', (boolean, lat, lng) =>{
-          let latitude =  lat
-          let longitude = lng
-          if(boolean === true){
-            this.events.publish('openModal', boolean, latitude, longitude)
-          }
+        console.log('why are you running again?');
         
+        this.events.subscribe('openModal', (boolean, lat, lng) =>{
+          this.latitude =  lat
+          this.longitude = lng
+          this.boolean = boolean
+          console.log(this.boolean);
+          
         })
+        if(this.boolean === true){
+          console.log(true);
+          
+          this.events.publish('openModalAgain', this.boolean, this.latitude, this.longitude)
+        }
       }else{
         console.log(result.message)
       }
