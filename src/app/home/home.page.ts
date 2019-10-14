@@ -41,6 +41,7 @@ export class HomePage implements OnInit  {
   mySelected
   pic = '\assets\icon\magnifying-glass (10).png'
   user = []
+  userId
   result = []
   loc =[]
   email = null
@@ -70,7 +71,9 @@ export class HomePage implements OnInit  {
   this.fetchCrimeCategories()
   this.checkModalOption()
   console.log("why");
-
+  this.userService.signIn().then(data => {
+    this.userId = data
+     })
   ////
    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
    this.autocomplete = { input: '' };
@@ -191,25 +194,7 @@ ngOnInit() {
    //
    ///
    ///
-   this.events.subscribe('openModalAgain', (boolean, lat, lng)=>{
-    console.log('openModal:', boolean);
-    if(this.email != null){
-      console.log(this.email);
-      
-     if(boolean === true){
-       console.log('boolean too: ', boolean);
-       console.log('opening modal');
-       
-       this.openModal(lat, lng)
-     }else{
-                 
-     }
-    }else{
-      console.log('why are you like this')
-    }
-   
-  })
-}
+   }
 
     loadMap(){
       
@@ -297,7 +282,16 @@ map.addListener('dblclick',(event)=>{
   this.geocoder.geocode({'location': event.latLng}, (results, status) =>{
 
     if(status === "OK"){
-      console.log(results[0].formatted_address);
+      //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+      let addressArray = {
+        street: results[0].address_components[1].long_name,
+        section: results[0].address_components[2].long_name,
+        surburb: results[0].address_components[3].long_name
+      }
+      // addressArray.push()
+      console.log(addressArray);
+      console.log(results);
+      
       
 
       if(this.email === null){
@@ -305,10 +299,9 @@ map.addListener('dblclick',(event)=>{
         //this.router.navigate(['/login'])
         
       }else{
-        
         console.log(this.email);
         //this.events.publish('openModal', false, null, null)
-        this.openModal(results[0].formatted_address, lat, lng)  }
+        this.openModal(addressArray, lat, lng)  }
     }
   } )
 
@@ -592,15 +585,15 @@ selectSearchResult(item){
 
    async openModal(address, lat, lng){
      console.log(lat, lng);
-     
+    
     const myModal = await this.modal.create({
     component: PopupPage,
     componentProps:{
       result : this.result,
       address: address,
       lat : lat,
-      lng: lng
-  
+      lng: lng,
+      userId: this.userId
     }
         
     });
@@ -635,7 +628,7 @@ selectSearchResult(item){
               console.log('boolean too: ', boolean);
               console.log('opening modal');
               
-              this.openModal(lat, lng)
+              //this.openModal(address, lat, lng)
             }else{
                         
             }

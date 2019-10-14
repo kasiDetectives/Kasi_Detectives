@@ -59,10 +59,12 @@ export class FirebaseService {
        })
 }
 
+
+
   //Submitting data to firebase /// Pinning new report
   submit(submitInfo){
-    let userId = 'Willington'
-    let place = 'Tembisa' 
+    let userId = submitInfo.userId
+    let place = submitInfo.address
     let description = submitInfo.description
     let lat = submitInfo.lat
     let lng = submitInfo.lng
@@ -73,13 +75,14 @@ export class FirebaseService {
     
     
     
-    var newPostKey = firebase.database().ref().child('Category/' + userId + "/" + place + "/").push().key;
+    var newPostKey = firebase.database().ref().child('Incident/' + "/" + place + "/").push().key;
     console.log(newPostKey);
     
-    firebase.database().ref().child('Category/' + userId + "/" + place + "/" + newPostKey + "/").update({
+    firebase.database().ref().child('Incident/'+ "/" + place + "/" + newPostKey + "/").update({
       description: description,
       lat : lat,
-      lng : lng
+      lng : lng,
+      userId: userId
     })
   }
 

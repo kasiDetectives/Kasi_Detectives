@@ -22,6 +22,7 @@ export class PopupPage implements OnInit {
   reportFormValid
   checkboxState
   crimeText
+  userId
   constructor(public modCtrl:ModalController, public events : Events, public navParam:NavParams) {
     // this.fetchCrimeCategories()
     this.events.subscribe('crimeTypes:List', (data) =>{
@@ -75,15 +76,24 @@ export class PopupPage implements OnInit {
       this.showInput = true
     }else{
       this.showInput =false
+      this.crimeDescription =  this.optionSelectedValue
     }
   }
   sendData(){
+    console.log(this.crimeDescription);
+    console.log(this.lat);
+    console.log(this.lng);
+    console.log(this.checkboxState);
+    console.log(this.address);
+    
+    
     let report = [{
       description: this.crimeDescription,
       lat: this.lat,
       lng: this.lng,
       postToTweeter : this.checkboxState,
-      address: this.address
+      address: this.address.surburb,
+      userId: this.userId
     }]
     this.modCtrl.dismiss(report) 
   }
@@ -120,6 +130,7 @@ export class PopupPage implements OnInit {
     this.lat = this.navParam.get('lat')
     this.lng = this.navParam.get('lng')
     this.address = this.navParam.get('address')
+    this.userId = this.navParam.get('userId')
   }
 
 }

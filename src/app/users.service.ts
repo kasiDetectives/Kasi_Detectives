@@ -153,7 +153,7 @@ export class UsersService {
       })
     })
   }
-
+  
   savePic(image)
   {
     this.signIn().then((userID) =>

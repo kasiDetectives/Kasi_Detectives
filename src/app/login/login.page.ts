@@ -71,17 +71,9 @@ export class LoginPage implements OnInit {
         }
         console.log('why are you running again?');
         
-        this.events.subscribe('openModal', (boolean, lat, lng) =>{
-          this.latitude =  lat
-          this.longitude = lng
-          this.boolean = boolean
-          console.log(this.boolean);
-          
-        })
+        
         if(this.boolean === true){
           console.log(true);
-          
-          this.events.publish('openModalAgain', this.boolean, this.latitude, this.longitude)
         }
       }else{
         console.log(result.message)
