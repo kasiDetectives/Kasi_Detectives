@@ -18,6 +18,10 @@ export class PopupPage implements OnInit {
   lat
   lng
   address
+  crimeDescription
+  reportFormValid
+  checkboxState
+  crimeText
   constructor(public modCtrl:ModalController, public events : Events, public navParam:NavParams) {
     // this.fetchCrimeCategories()
     this.events.subscribe('crimeTypes:List', (data) =>{
@@ -73,6 +77,39 @@ export class PopupPage implements OnInit {
       this.showInput =false
     }
   }
+  sendData(){
+    let report = [{
+      description: this.crimeDescription,
+      lat: this.lat,
+      lng: this.lng,
+      postToTweeter : this.checkboxState,
+      address: this.address
+    }]
+    this.modCtrl.dismiss(report) 
+  }
+  
+  setCheckState(event){
+    this.checkboxState = event.detail.checked
+    console.log(this.checkboxState);
+  }
+
+  setInput(event){
+    console.log(event.detail.value);
+    console.log(this.crimeText);
+    this.crimeDescription = event.detail.value
+    this.checkValidity()
+  }
+
+  checkValidity(){
+    if(this.crimeDescription === ''){
+        this.reportFormValid = false
+        console.log(this.reportFormValid);
+    }else{
+      this.reportFormValid = true
+      console.log(this.reportFormValid);
+    }
+  }
+
   
   
   ngOnInit() {
