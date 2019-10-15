@@ -1,3 +1,6 @@
+///
+
+
 import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
@@ -40,6 +43,7 @@ export class HomePage implements OnInit  {
   scheduled=[];
   mySelected
   pic = '\assets\icon\magnifying-glass (10).png'
+  //user : Array<any> = []
   user = []
   userId
   result = []
@@ -57,7 +61,7 @@ export class HomePage implements OnInit  {
   geocoder: any
   autocompleteItems: any;
   
- 
+  backButton
 
   directionsService
   array = []
@@ -65,14 +69,28 @@ export class HomePage implements OnInit  {
  constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
   private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
   {
+  //this.userService.checkingAuthState()
+  this.exit()
   this.checkUserState()
   this.checkEmail()
   this.run()
   this.fetchCrimeCategories()
   this.checkModalOption()
+  //this.loadUserIncidents()
   console.log("why");
-  this.userService.signIn().then(data => {
-    this.userId = data
+  this.userService.checkingAuthState().then(data => {
+   //this.userId = data
+   console.log('this is a user');
+   
+    this.user.push(data)
+    console.log(this.user);
+    
+    this.userId = this.user[0].uid
+    this.email = this.user[0].email
+    this.events.publish('user:loggedIn', this.email)
+    console.log(this.user);
+    console.log(this.userId);
+    console.log(this.email);
      })
   ////
    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
@@ -297,7 +315,7 @@ map.addListener('dblclick',(event)=>{
       if(this.email === null){
         //this.events.publish('openModal', true, lat, lng)
         //this.router.navigate(['/login'])
-        
+        this.alertUserToLogin()
       }else{
         console.log(this.email);
         //this.events.publish('openModal', false, null, null)
@@ -360,31 +378,31 @@ map.addListener('dblclick',(event)=>{
       map.setCenter(pos[0].location);
 ​
 ///  popular map with crime hotspots start
-this.loadLocations().then(info =>{
-  console.log( info.length);
-for( let x = 0; x < info.length; x++ ){
-   console.log(info[x]);    
-var  markers = new google.maps.Marker({
-map: map,
-draggable: true,
-position: new google.maps.LatLng(info[x].lat, info[x].lng),
-icon: dangerImage,
-});
-console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
+// this.loadLocations().then(info =>{   /////////////////////////////////////////////////////// Load items into an array
+//   console.log( info.length);
+// for( let x = 0; x < info.length; x++ ){
+//    console.log(info[x]);    
+// var  markers = new google.maps.Marker({
+// map: map,
+// draggable: true,
+// position: new google.maps.LatLng(info[x].lat, info[x].lng),
+// icon: dangerImage,
+// });
+// console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
 
-    console.log(  markers , "vvvv");
+//     console.log(  markers , "vvvv");
    
-google.maps.event.addListener(markers, 'click', ((markers, x) => {
-  return() => {
-      infoWindow.setContent(info[x].crimeType);
-      infoWindow.setPosition(new google.maps.LatLng(info[x].lat, info[x].lng));
-      infoWindow.open(map, markers);
+// google.maps.event.addListener(markers, 'click', ((markers, x) => {
+//   return() => {
+//       infoWindow.setContent(info[x].crimeType);
+//       infoWindow.setPosition(new google.maps.LatLng(info[x].lat, info[x].lng));
+//       infoWindow.open(map, markers);
       
-    }
-  })(markers, x));
+//     }
+//   })(markers, x));
 
-}
-})
+// }
+// })
 
 
 ///popular map with crime hotspots end
@@ -447,7 +465,7 @@ LandMarks(){
   // console.log(this.firebaseService.fetchSavedLocations());
   // console.log(result.length);
   return new Promise((resolve, reject) => {
-    this.loadLocations().then(data =>{
+    this.loadLocations().then(data =>{            /////////////////////////////////////////////////////// Load items into an array
      
      console.log( data.length);
      for( let x = 0; x < data.length; x++ ){
@@ -540,7 +558,7 @@ selectSearchResult(item){
     this.events.subscribe('user:loggedOut', (boolean)=>{
       console.log(boolean);
       if(boolean === true){
-        this.userService.destroyUserData()
+        this.userService.signOut()
         this.events.publish('user:loggedIn', false);
       }
     })
@@ -566,13 +584,25 @@ selectSearchResult(item){
     let result :any
     await this.firebaseService.fetchSavedLocations().then(data =>{
       result = data
- ​
+ ​  
      console.log(result.length);
     })
     console.log(result);
    //this.LandMarks()
     return  result 
    }
+
+//    async loadUserIncidents(){
+//     let result :any
+//     await this.firebaseService.fetchUserIncidents().then(data =>{
+//       result = data
+//  ​
+//      console.log(result.length);
+//     })
+//     console.log(result);
+//    //this.LandMarks()
+//     return  result 
+//    }
 
 
    fetchCrimeCategories(){
@@ -582,6 +612,15 @@ selectSearchResult(item){
     })
   }
 
+  async alertUserToLogin() {
+    const alert = await this.alertController.create({
+      header: 'Login',
+      message: 'You need to be logged in to use this function',
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
 
    async openModal(address, lat, lng){
      console.log(lat, lng);
@@ -650,6 +689,17 @@ selectSearchResult(item){
         
         this.submitToFirebase(submitInfo)
         //this.tweet()
+      }
+
+      ///Exiting the app
+      exit(){
+        this.backButton = this.platform.backButton.subscribeWithPriority((1000), () => {
+          if(this.constructor.name === 'HomePage'){
+            if(window.confirm('Do you want to exit the app?')){
+              navigator['app'].exitApp
+            }
+          }
+        })
       }
  
 

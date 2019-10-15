@@ -23,7 +23,8 @@ export class UsersService {
   // Logging users in to the app
   login(email, password){
     return firebase.auth().signInWithEmailAndPassword(email, password).then((result)=>{
-    this.setCurrentSession(firebase.auth())
+    // this.setCurrentSession(firebase.auth())
+    // this.checkingAuthState()
      return result
     }).catch((error) => {
       var errorMessage = error.message;
@@ -35,7 +36,8 @@ export class UsersService {
   //Adding new users to the database
   register(email, password, name){
     return firebase.auth().createUserWithEmailAndPassword(email, password).then((data) =>{
-      this.setCurrentSession(firebase.auth())
+      // this.setCurrentSession(firebase.auth())
+      // this.checkingAuthState()
 
       let userEmail = email;
       let userName = name;
@@ -80,7 +82,12 @@ export class UsersService {
   }
 
   setCurrentSession(user){
-    console.log("running");
+    console.log("I am running to add stupid shixt to our app even though i shouldnt");
+    console.log("I am running to add stupid shixt to our app even though i shouldnt");
+    console.log("I am running to add stupid shixt to our app even though i shouldnt");
+    console.log("I am running to add stupid shixt to our app even though i shouldnt");
+    console.log("I am running to add stupid shixt to our app even though i shouldnt");
+    console.log("I am running to add stupid shixt to our app even though i shouldnt");
     var uid
     if (user !== null){
       uid = user.currentUser.uid;
@@ -107,10 +114,24 @@ export class UsersService {
      console.log(this.user);
      
   }
-  destroyUserData(){
+  signOut(){
     this.userProfile.pop()
     console.log(this.userProfile);
+    return new Promise((resolve, reject) =>{
+      firebase.auth().signOut().then(()=> {
+        // Sign-out successful.
+        
+        resolve()
+        this.checkingAuthState().then(data=>{
+          console.log(data);
+        });
+        
+      }).catch(error => {
+        // An error happened.
+      });
+    })
     
+
   }
   readCurrentSession(){
     console.log(this.user);
@@ -137,33 +158,25 @@ export class UsersService {
     })
   }
 
-  signIn()
-  {
-    return new Promise((resolve, reject) =>
-    {
-      firebase.auth().onAuthStateChanged((user) =>
-      {
-        if(user)
-        {
-          resolve (user.uid)
-        } else
-        {
+  checkingAuthState(){
+    return new Promise((resolve, reject) =>{
+      firebase.auth().onAuthStateChanged((user) =>{
+        if(user){
+          console.log(user);
+          
+          resolve (user)
+        }else{
 
         }
       })
     })
   }
   
-  savePic(image)
-  {
-    this.signIn().then((userID) =>
-    {
+  savePic(image){
+    this.checkingAuthState().then((userID) =>{
       let storageRef = firebase.storage().ref('userDisplayPic/' + userID)
-      
-      return storageRef.put(image).then((data) =>
-      {
+      return storageRef.put(image).then((data) => {
         console.log('Saved');
-        
       })
     })
   }
