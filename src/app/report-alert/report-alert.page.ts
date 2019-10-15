@@ -90,7 +90,7 @@ constructor(public zone: NgZone,public alertController: AlertController,public n
       console.log(data);
     })
    console.log("why");
-   this.checkState()
+  //  this.checkState()
    this.events.publish('currentPage:home', false)
    this.fetchCrimeCategories()
 
@@ -207,14 +207,14 @@ showAlert(header,sub,msg)
 } 
 
  
- checkState(){
-   this.user = this.userService.returnUserProfile()
-   console.log(this.user);
-   if(this.user[0] ===undefined){
-     console.log(true);
-     this.router.navigate(['/login'])
-   }
- }
+//  checkState(){
+//    this.user = this.userService.returnUserProfile()
+//    console.log(this.user);
+//    if(this.user[0] ===undefined){
+//      console.log(true);
+//      this.router.navigate(['/login'])
+//    }
+//  }
 
 //////-----------------------
 initMap() {
@@ -524,11 +524,11 @@ myModal.onDidDismiss().then((dataReturned) => {
   
    myModal.present()
      }
-  getCurrentSessionUser(){
-    this.user = this.userService.readCurrentSession()
-    console.log(this.user);
+  // getCurrentSessionUser(){
+  //   this.user = this.userService.readCurrentSession()
+  //   console.log(this.user);
     
-  }
+  // }
   submitToFirebase(){
     //this.firebaseService.submit()
   }

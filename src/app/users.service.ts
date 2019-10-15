@@ -32,13 +32,11 @@ export class UsersService {
     return error
     });
   }
-
   //Adding new users to the database
   register(email, password, name){
     return firebase.auth().createUserWithEmailAndPassword(email, password).then((data) =>{
       // this.setCurrentSession(firebase.auth())
       // this.checkingAuthState()
-
       let userEmail = email;
       let userName = name;
       let userID = data.user.uid;
@@ -58,7 +56,6 @@ export class UsersService {
        return error
      })
   }
-  
    //Allowing users to reset their password
    passwordReset(emailAddress){
     firebase.auth().sendPasswordResetEmail(emailAddress).then(() => {
@@ -69,51 +66,7 @@ export class UsersService {
       console.log(error)
     });
   }
-
   //Function : Routing logged out users to the login page
-  checkState(){
-    if(!this.currentState){
-     this.router.navigate(['/login'])
-    }
-  }
-
-  returnState(){
-    return this.currentState
-  }
-
-  setCurrentSession(user){
-    console.log("I am running to add stupid shixt to our app even though i shouldnt");
-    console.log("I am running to add stupid shixt to our app even though i shouldnt");
-    console.log("I am running to add stupid shixt to our app even though i shouldnt");
-    console.log("I am running to add stupid shixt to our app even though i shouldnt");
-    console.log("I am running to add stupid shixt to our app even though i shouldnt");
-    console.log("I am running to add stupid shixt to our app even though i shouldnt");
-    var uid
-    if (user !== null){
-      uid = user.currentUser.uid;
-      this.user = user.currentUser
-      console.log(uid);
-      
-      var userRoot = firebase.database().ref("Users").child(uid)
-      userRoot.once("value", snap => {
-        //console.log(userRoot);
-        let values = snap.val()
-          console.log(values["name"]);
-          console.log(values["email"]);
-          this.userProfile.push({
-          key: snap.key,
-          displayName : values["name"],
-          email : values["email"],
-
-          })
-      })  
-    }
-     this.currentSessionId = uid
-     console.log(uid);
-     console.log(user);
-     console.log(this.user);
-     
-  }
   signOut(){
     this.userProfile.pop()
     console.log(this.userProfile);
@@ -130,23 +83,13 @@ export class UsersService {
         // An error happened.
       });
     })
-    
-
-  }
-  readCurrentSession(){
-    console.log(this.user);
-    return this.user
   }
 
-  getUserProfile(userId)
-  {
-    return firebase.database().ref("Users/" + userId).once('value').then((snapshot) =>
-    {
+  getUserProfile(userId)  {
+    return firebase.database().ref("Users/" + userId).once('value').then((snapshot) =>{
       let profile = snapshot.val()
-    
       if(profile.hasProfilePic){
-        return firebase.storage().ref('userDisplayPic/' + userId).getDownloadURL().then(url =>
-          {
+        return firebase.storage().ref('userDisplayPic/' + userId).getDownloadURL().then(url =>{
             profile['profilePicUrl'] = url
             return profile
           })
@@ -154,7 +97,6 @@ export class UsersService {
           profile['profilePicUrl'] = "../assets/icon/person.png"
           return profile
       }
-    
     })
   }
 
@@ -171,7 +113,7 @@ export class UsersService {
       })
     })
   }
-  
+
   savePic(image){
     this.checkingAuthState().then((userID) =>{
       let storageRef = firebase.storage().ref('userDisplayPic/' + userID)
@@ -180,12 +122,52 @@ export class UsersService {
       })
     })
   }
-
-
-
   returnUserProfile(){
     console.log(this.userProfile);
     return this.userProfile
   }
 }
 
+// readCurrentSession(){
+  //   console.log(this.user);
+  //   return this.user
+  // }
+
+
+  // setCurrentSession(user){
+  //   var uid
+  //   if (user !== null){
+  //     uid = user.currentUser.uid;
+  //     this.user = user.currentUser
+  //     console.log(uid);
+      
+  //     var userRoot = firebase.database().ref("Users").child(uid)
+  //     userRoot.once("value", snap => {
+  //       //console.log(userRoot);
+  //       let values = snap.val()
+  //         console.log(values["name"]);
+  //         console.log(values["email"]);
+  //         this.userProfile.push({
+  //         key: snap.key,
+  //         displayName : values["name"],
+  //         email : values["email"],
+
+  //         })
+  //     })  
+  //   }
+  //    this.currentSessionId = uid
+  //    console.log(uid);
+  //    console.log(user);
+  //    console.log(this.user);
+     
+  // }
+
+  // checkState(){
+  //   if(!this.currentState){
+  //    this.router.navigate(['/login'])
+  //   }
+  // }
+
+  // returnState(){
+  //   return this.currentState
+  // }

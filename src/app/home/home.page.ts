@@ -44,13 +44,13 @@ export class HomePage implements OnInit  {
   mySelected
   pic = '\assets\icon\magnifying-glass (10).png'
   //user : Array<any> = []
-  user = []
+  user = {}
   userId
   result = []
   loc =[]
   email = null
- 
-  
+  highRiskLocations = {}
+  reportedLocations = {}
  message
 ///
   mapz : any;
@@ -69,29 +69,15 @@ export class HomePage implements OnInit  {
  constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
   private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
   {
-  //this.userService.checkingAuthState()
   this.exit()
   this.checkUserState()
   this.checkEmail()
   this.run()
   this.fetchCrimeCategories()
-  this.checkModalOption()
+  this.setUser()
   //this.loadUserIncidents()
   console.log("why");
-  this.userService.checkingAuthState().then(data => {
-   //this.userId = data
-   console.log('this is a user');
-   
-    this.user.push(data)
-    console.log(this.user);
-    
-    this.userId = this.user[0].uid
-    this.email = this.user[0].email
-    this.events.publish('user:loggedIn', this.email)
-    console.log(this.user);
-    console.log(this.userId);
-    console.log(this.email);
-     })
+  
   ////
    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
    this.autocomplete = { input: '' };
@@ -207,7 +193,6 @@ ngOnInit() {
    this.loadMap();
    this.initMap();
    this.checkUserState()
-   this.checkModalOption()
 
    //
    ///
@@ -579,12 +564,28 @@ selectSearchResult(item){
     console.log("running");
     this.events.publish('currentPage:home', true)
   }
-
+  async setUser(){
+    this.userService.checkingAuthState().then(data => {
+      //this.userId = data
+      console.log('this is a user');
+      
+       this.user = data
+       
+       this.userId = this.user['uid']
+       this.email = this.user['email']
+       this.events.publish('user:loggedIn', this.email)
+       console.log(this.user);
+       console.log(this.userId);
+       console.log(this.email);
+        })
+  }
   async loadLocations(){
     let result :any
     await this.firebaseService.fetchSavedLocations().then(data =>{
       result = data
- ​  
+      this.highRiskLocations = data
+      console.log(this.highRiskLocations[0]);
+      
      console.log(result.length);
     })
     console.log(result);
@@ -592,18 +593,16 @@ selectSearchResult(item){
     return  result 
    }
 
-//    async loadUserIncidents(){
-//     let result :any
-//     await this.firebaseService.fetchUserIncidents().then(data =>{
-//       result = data
-//  ​
-//      console.log(result.length);
-//     })
-//     console.log(result);
-//    //this.LandMarks()
-//     return  result 
-//    }
-
+   async loadUserIncidents(){
+    let result :any
+    await this.firebaseService.fetchUserIncidents().then(data =>{
+      result = data
+      this.reportedLocations = data
+     console.log(result.length);
+    })
+    console.log(result);
+    return  result 
+   }
 
    fetchCrimeCategories(){
     this.firebaseService.fetchCrimeCategories().then(data=>{
@@ -624,7 +623,6 @@ selectSearchResult(item){
 
    async openModal(address, lat, lng){
      console.log(lat, lng);
-    
     const myModal = await this.modal.create({
     component: PopupPage,
     componentProps:{
@@ -633,11 +631,9 @@ selectSearchResult(item){
       lat : lat,
       lng: lng,
       userId: this.userId
-    }
-        
+    } 
     });
-  
-  
+    
   myModal.onDidDismiss().then((dataReturned) => {
     console.log(dataReturned);
     let data = dataReturned.data
@@ -650,47 +646,18 @@ selectSearchResult(item){
       this.submit(submitInfo)
     }
   });
-  
-    
      myModal.present()
-       }
-
-      
-       checkModalOption(){
-         console.log('checking modals')
-         this.events.subscribe('openModalAgain', (boolean, lat, lng)=>{
-           console.log('openModal:', boolean);
-           if(this.email != null){
-             console.log(this.email);
-             
-            if(boolean === true){
-              console.log('boolean too: ', boolean);
-              console.log('opening modal');
-              
-              //this.openModal(address, lat, lng)
-            }else{
-                        
-            }
-           }else{
-             console.log('why are you like this')
-           }
-          
-         })
-       }
-
+    }
       submitToFirebase(submitInfo){
         console.log('And we all just');
-        
         this.firebaseService.submit(submitInfo)
       }
       
       submit(submitInfo){
         console.log('And we are all just entertainers, and we stupid and contagious');
-        
         this.submitToFirebase(submitInfo)
         //this.tweet()
       }
-
       ///Exiting the app
       exit(){
         this.backButton = this.platform.backButton.subscribeWithPriority((1000), () => {
@@ -701,6 +668,4 @@ selectSearchResult(item){
           }
         })
       }
- 
-
-}
+ }
