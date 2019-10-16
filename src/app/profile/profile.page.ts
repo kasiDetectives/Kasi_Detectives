@@ -102,7 +102,6 @@ export class ProfilePage implements OnInit {
 
         }
       })
-      // let base64Image = this.pics + ImageData
     }, (err) =>
     {
 
@@ -165,19 +164,6 @@ export class ProfilePage implements OnInit {
       this.image = data.profilePicUrl
         loader.dismiss()
       })
-
-
-
-
-
-
-    
-    
-  
-    // this.userService.getUserProfile(this.user[0].key).then( profile =>{
-    //   this.image = profile.profilePicUrl
-      
-    // })
 
   }
 
