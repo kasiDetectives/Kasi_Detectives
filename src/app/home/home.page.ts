@@ -33,12 +33,20 @@ var markers= [];
 export class HomePage implements OnInit  {
   
 
+  
+  // currentPosition
+  // directionsDisplay
+  // directionsService
 
+   //targetDestination = ("#target-dest").valueOf();
+   targetDestination
   /////////////////////////////////////////////////////////////////////////////////////////////
   address:string;
   DBLocation=[]
   scheduled=[];
-  mySelected
+
+  selectedMode
+
   pic = '\assets\icon\magnifying-glass (10).png'
   user = []
   result = []
@@ -56,8 +64,8 @@ export class HomePage implements OnInit  {
   autocompleteItems: any;
   
  
-
-  directionsService
+  ZeroLocation = []
+ // directionsService
   array = []
  
  constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
@@ -178,13 +186,20 @@ ngOnInit() {
    this.platform.ready();
    this.loadMap();
    this.initMap();
+  
 }
 
   loadMap(){
- 
-    }
+
+ }
 
 initMap() {
+ var directionsRenderer = new google.maps.DirectionsRenderer;
+ var directionsService = new google.maps.DirectionsService;
+ /////
+var LocationStart = 0;
+
+  ///
   var infoWindowMarker;
   var selectedMarker
   var  infoWindow
@@ -212,7 +227,7 @@ initMap() {
 
   ///my location image
   var myLocationimage = {
-    url: 'assets/icon/pin (1).png',
+    url: 'assets/icon/placeholder.png',
     // This marker is 20 pixels wide by 32 pixels high.
     size: new google.maps.Size(32, 32),
     // The origin for this image is (0, 0).
@@ -222,15 +237,33 @@ initMap() {
   };
 
 
-
-
   map = new google.maps.Map(document.getElementById('map_canvas'), {
     center: {lat: -34.397, lng: 150.644},
-    zoom: 17,
-    animation: GoogleMapsAnimation.BOUNCE,
-    icon: myLocationimage
-   
+    zoom: 17
+    // animation: GoogleMapsAnimation.BOUNCE,
+    // icon: myLocationimage
   });
+
+////// for directions start
+directionsRenderer.setMap(map);
+
+   this.calculateAndDisplayRoute(directionsService, directionsRenderer);
+   document.getElementById('mode').addEventListener('change', () => {
+   this.calculateAndDisplayRoute(directionsService, directionsRenderer);
+});
+
+// outputAtoB = document.getElementById('a2b'),
+// flightPath = new google.maps.Polyline({
+//   path: [pointA, pointB],
+//   geodesic: true,
+//   strokeColor: '#FF0000',
+//   strokeOpacity: 1.0,
+//   strokeWeight: 2
+// });
+
+/////// directions end
+
+
   infoWindow = new google.maps.InfoWindow;
   infoWindowMarker= new google.maps.InfoWindow;
 
@@ -258,23 +291,16 @@ map.addListener('dblclick',(event)=>{
  marker.addListener('click', (event) => {
   infoWindowMarker.open(map,marker);
   infoWindowMarker.setContent(String(event.latLng));
+  console.log(event);
+  
   console.log(marker,"marker selected")
  });
 
 //// listener on marker end
 });
 
-// /// map click listener end
 
-////add marker
-
-
-
-///add marker
-
-
-
-   // Get the location of you
+   // Get the location of user
    if (navigator.geolocation) {
     //this.array =[]
     navigator.geolocation.getCurrentPosition((position)=> {
@@ -299,20 +325,23 @@ map.addListener('dblclick',(event)=>{
       infoWindow.open(map);
       map.setCenter(pos[0].location);
 ​
+
+////
+
+  
 ///  popular map with crime hotspots start
 this.loadLocations().then(info =>{
   console.log( info.length);
 for( let x = 0; x < info.length; x++ ){
-   console.log(info[x]);    
+  // console.log(info[x]);    
 var  markers = new google.maps.Marker({
 map: map,
 draggable: true,
 position: new google.maps.LatLng(info[x].lat, info[x].lng),
 icon: dangerImage,
 });
-console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
+//console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
 
-    console.log(  markers , "vvvv");
    
 google.maps.event.addListener(markers, 'click', ((markers, x) => {
   return() => {
@@ -326,10 +355,13 @@ google.maps.event.addListener(markers, 'click', ((markers, x) => {
 }
 })
 
-
 ///popular map with crime hotspots end
       this.array.push(pos[0])
       console.log(this.array, "zzz");
+
+      pos[0] = LocationStart;
+      this.ZeroLocation.push(pos[0] )
+      console.log(LocationStart, "Zero");
       
     }, () => {
       this.handleLocationError(true, infoWindow, map.getCenter());
@@ -376,7 +408,6 @@ calcDistance () {
 
 LandMarks(){
 
-  
   let result : Array<any> = []
   console.log(  this.loc ,"inside array");
   var temp = 0;
@@ -391,7 +422,7 @@ LandMarks(){
      
      console.log( data.length);
      for( let x = 0; x < data.length; x++ ){
-      console.log(x);
+    //  console.log(x);
       
       this.DBLocation.push({
         crimeType: data[x].crimeType,
@@ -404,9 +435,9 @@ LandMarks(){
       
     for(let y = 0; y < this.DBLocation.length; y++){
       console.log(this.DBLocation[y]);
-      console.log(this.array, 'array')
+     // console.log(this.array, 'array')
       console.log(this.array[0].location)
-      console.log(this.array[0].location, 'running');
+    //  console.log(this.array[0].location, 'running');
       
       temp = +(dist(this.array[0].location,this.DBLocation[y].location)/1000).toFixed(1)
       var pttwo = this.DBLocation[y].crimeType
@@ -472,87 +503,6 @@ selectSearchResult(item){
    })
  }
 
-//////////////////////////////////////////////////////------- end here.
-
- ///////////// start here
-  ModeMap() {
-  let pointA = new google.maps.LatLng(-26.027056,28.186148),
-    pointB = new google.maps.LatLng(51.5379, 0.7138),
-    center = new google.maps.LatLng(51.3, 0.8),
-    myOptions = {
-      zoom: 8,
-      center: center,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    },
-    map = new google.maps.Map(document.getElementById('map-canvas'), myOptions),
-    // Instantiate a directions service.
-    directionsService = new google.maps.DirectionsService,
-    directionsDisplay = new google.maps.DirectionsRenderer({
-      map: map
-    }),
-
-    outputAtoB = document.getElementById('a2b'),
-    flightPath = new google.maps.Polyline({
-      path: [pointA, pointB],
-      geodesic: true,
-      strokeColor: '#FF0000',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
-    });
-
-//   // click on marker B to get route from A to B
-   this.calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputAtoB);
-
-  let travelMode = document.getElementById('Travel_mode');
-  travelMode.addEventListener("change", ()=> {
-    console.log(travelMode);
-    
-//     if (travelMode.value == "AIR") {
-      
-//       directionsDisplay.setMap(null);
-//       directionsDisplay.setOptions({
-//         suppressPolylines: true
-//       });
-//       directionsDisplay.setMap(map);
-//       let distance = google.maps.geometry.spherical.computeDistanceBetween(pointA, pointB);
-//       outputAtoB.innerHTML = Math.round(distance / 1000) + "Km";
-//       flightPath.setMap(map);
-//     } else {
-//       flightPath.setMap(null);
-//       directionsDisplay.setOptions({
-//         suppressPolylines: false
-//      });
-//  // calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputAtoB);
-//      }
-
-  });
-}
-
-
- calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB, outputTxt) {
-  let selectedMode = document.getElementById('Travel_mode')["value"];
-
-  directionsService.route({
-    origin: pointA,
-    destination: pointB,
-    unitSystem: google.maps.UnitSystem.METRIC,
-    travelMode: google.maps.TravelMode[selectedMode]
-  },(response, status) => {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setDirections(response);
-      outputTxt.innerHTML = Math.round(directionsDisplay.getDirections().routes[directionsDisplay.getRouteIndex()].legs[0].distance.value / 1000) + "Km";
-    } else {
-      window.alert('Directions request failed due to ' + status);
-    }
-  });
-}
-
-    /////
-
-    // fetchCrimeCategories(){
-    //   this.result = (this.firebaseService.fetchCrimeCategories())
-    //   console.log(this.result);
-    // }
 
   checkUserState(){
     this.events.subscribe('user:loggedOut', (boolean)=>{
@@ -579,12 +529,143 @@ selectSearchResult(item){
    //this.LandMarks()
     return  result 
    }
+   
+   /////////////////////////////////////////////////////////////////////////////
+  // code is working from here
+   calculateAndDisplayRoute(directionsService, directionsRenderer) {
+    
+    var userPosistion = this.array
+     console.log(userPosistion, "wereAre");
 
-  loadLocationss(){
-    // this.firebaseService.fetchSavedLocations().then(data =>{
-    //   let result = data
-    //   console.log(result);
+     var users = this.ZeroLocation
+     console.log(users, "user");
+
+     var Fix = new google.maps.LatLng(users [0],users [1]) 
+     Fix = this.array
+     console.log(Fix, "Fix");
+     
+
+     //var WeAre = {lat: -26.019918, lng: 28.217855}
+
+    this.selectedMode = document.getElementById('mode')["value"];
+    console.log(this.selectedMode);
+    //if (WeAre  && this.targetDestination && this.targetDestination != '') {
+    directionsService.route({ 
+      //origin: userPosistion[0].location,// {lat: -26.019918, lng: 28.217855}, //Fix,//  // this.array[0].location,  // userPosistion[0].location,
+      origin : {lat: -26.019918, lng: 28.217855},//{lat: userPosistion[0].location.lat, lng : userPosistion[0].location.lng},
+      destination: {lat: -26.669239, lng: 27.882660},  //this.targetDestination,// joburg park station.  -26.669239, 27.882660
+      // Note that Javascript allows us to access the constant
+      // using square brackets and a string value as its
+      // "property."
+      travelMode: google.maps.TravelMode[this.selectedMode]
       
-    // })
+    }, (response, status)=> {
+      if (status == 'OK') {
+       // this.directionsDisplay.setPanel(document.getElementById("directions"));
+        directionsRenderer.setDirections(response);
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+
+    });
+    console.log( origin, "ttt");
   }
+//}
+  /////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
+
+
+  ///////////////////////// attemptin this
+//   initialize(lat, lon)
+//   {
+//       this.directionsDisplay = new google.maps.DirectionsRenderer(); 
+//       this.directionsService = new google.maps.DirectionsService();
+
+//       this.currentPosition = new google.maps.LatLng(lat, lon);
+
+//       map = new google.maps.Map(document.getElementById('map_canvas'), {
+//          zoom: 15,
+//          center: this.currentPosition,
+//          mapTypeId: google.maps.MapTypeId.ROADMAP
+//        });
+
+//       this.directionsDisplay.setMap(map);
+
+//        var currentPositionMarker = new google.maps.Marker({
+//           position: this.currentPosition,
+//           map: map,
+//           title: "Current position"
+//       });
+
+//       var infowindow = new google.maps.InfoWindow();
+//       google.maps.event.addListener(currentPositionMarker, 'click', ()=> {
+//           infowindow.setContent("Current position: latitude: " + lat +" longitude: " + lon);
+//           infowindow.open(map, currentPositionMarker);
+//       });
+//    //////////
+   
+//       // 1
+//         navigator.geolocation.getCurrentPosition(this.locSuccess, this.locError);
+
+//       // 2
+//        // this.calculateRoute();
+
+//   }
+
+//   locError(error) {
+//       // initialize map with a static predefined latitude, longitude
+//      this.initialize(59.3426606750, 18.0736160278);
+//   }
+
+//   locSuccess(position) {
+//       this.initialize(position.coords.latitude, position.coords.longitude);
+//   }
+
+//  calculateRoute() {
+
+//     //  var targetDestination = ("#target-dest")["Val"];
+//       this.targetDestination  = document.getElementById('target-dest')["value"];
+//       if (this.currentPosition && this.currentPosition != '' && this.targetDestination && this.targetDestination != '') {
+//           var request = {
+//               origin:this.currentPosition, 
+//               destination:this.targetDestination,
+//               travelMode: google.maps.DirectionsTravelMode["DRIVING"]
+//           };
+
+//           this.directionsService.route(request, (response, status)=> {
+//               if (status == google.maps.DirectionsStatus.OK) {
+//                   this.directionsDisplay.setPanel(document.getElementById("directions"));
+//                   this.directionsDisplay.setDirections(response); 
+
+//                   /*
+//                       var myRoute = response.routes[0].legs[0];
+//                       for (var i = 0; i < myRoute.steps.length; i++) {
+//                           alert(myRoute.steps[i].instructions);
+//                       }
+//                   */
+//                 //  ("#results").show();
+//               }
+//               else {
+//                 console.log("hidden");
+                
+//                  // ("#results").hide();
+//               }
+//           });
+//       }
+//       else {
+//         console.log("hidden2");
+//          // ("#results").hide();
+//       }
+//   }
+
+
+getmode(event) {
+    this.selectedMode= event.detail.value
+  console.log(this.selectedMode);
+
+  this.targetDestination = event.detail.value
+  console.log(this.targetDestination, "ooo");
+  
+}
+
 }

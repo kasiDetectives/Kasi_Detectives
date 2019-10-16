@@ -42,10 +42,62 @@
           </ion-label>
       </ion-item>
   </ion-list>
-<!--  start map -->
-   <div id="map_canvas"> 
+<!--  start map working  -->
+<!-- <div class="ui-bar-c ui-corner-all ui-shadow" style="padding:1em;">
+   <div id="map_canvas" style="height:400px;"> 
   </div>
-<!-- end -->
+  </div> -->
+<!--end -->
+
+
+<!-- <div data-role="fieldcontain">
+    From :<ion-input type="text" id="from" placeholder="start point.."></ion-input>
+</div>
+
+<div data-role="fieldcontain">
+   To : <ion-input type="text" id="to" placeholder="Your Destination.." ></ion-input>
+</div>
+<ion-list id="floating-panel">
+  <ion-item> 
+      <ion-icon slot="icon-only" name="directions"></ion-icon>
+    <ion-label>Mode of Travel:</ion-label> 
+    <ion-select id="mode" (ionChange)='getmode($event);' okText="Ok" cancelText="Cancel">
+       <ion-select-option value="DRIVING">Driving</ion-select-option>
+       <ion-select-option value="WALKING">Walking</ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-list> -->
+
+
+  
+  <div id="basic-map" data-role="page">
+    <div data-role="content">
+
+        <div class="ui-bar-c ui-corner-all ui-shadow" style="padding:1em;">
+            <div id="map_canvas" style="height:350px;"></div>
+        </div>
+        <div data-role="fieldcontain">
+            <label for="target-dest">Target Destination:</label>
+            <ion-input type="text" name="target-dest" (ionChange)='getmode($event);'  id="target-dest" value=""></ion-input>
+        </div>
+        <a href="#" id="directions-button" data-role="button" data-inline="true" data-mini="true">Get Directions</a>
+        <div id="results" style="display:none;">
+            <div id="directions"></div>
+        </div>
+    
+        <ion-list id="floating-panel">
+            <ion-item> 
+                <ion-icon slot="icon-only" name="directions"></ion-icon>
+              <ion-label>Mode of Travel:</ion-label> 
+              <ion-select id="mode" (ionChange)='getmode($event);' value="DRIVING" okText="Ok" cancelText="Cancel">
+                 <ion-select-option value="DRIVING">Driving</ion-select-option>
+                 <ion-select-option value="WALKING">Walking</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+    </div>
+</div>
+
 
 <p id="output"></p>
 
