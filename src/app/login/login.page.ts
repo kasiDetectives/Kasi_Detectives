@@ -16,9 +16,6 @@ export class LoginPage implements OnInit {
   passwordPattern = "^(?=.*\[0-9])(?=.*\[a-z])(?=.*\[A-Z])(?=.*\[@#$!%^&*,.<>]).{8,}$"
   loginForm
   pageURL = "und"
-  boolean
-  latitude
-  longitude
   constructor(
     public userService: UsersService,
     public alertController: AlertController,
@@ -32,6 +29,7 @@ export class LoginPage implements OnInit {
       console.log(this.pageURL);
     //this.checkURL()
     this.loginForm = formBuilder.group({
+    
       email: [this.email, Validators.compose(
         [Validators.required, Validators.pattern(this.emailPattern)]
       )],
@@ -48,6 +46,7 @@ export class LoginPage implements OnInit {
       this.pageURL = this.navigationService.returnPageURL()
       console.log(this.pageURL);
     }
+    
   }
 
   login(){
@@ -56,7 +55,7 @@ export class LoginPage implements OnInit {
     console.log(this.email, this.password)
     this.userService.login(this.email, this.password).then((result) =>{
       if(result.operationType === "signIn"){
-        this.events.publish('user:loggedIn', result.user.email);
+        this.events.publish('user:created', result.user.email);
         
         console.log("Welcome " + result.user.email)
         let userId = result.user.uid
@@ -68,12 +67,6 @@ export class LoginPage implements OnInit {
         }else{
           let link = "home"
           this.route.navigate([link])
-        }
-        console.log('why are you running again?');
-        
-        
-        if(this.boolean === true){
-          console.log(true);
         }
       }else{
         console.log(result.message)

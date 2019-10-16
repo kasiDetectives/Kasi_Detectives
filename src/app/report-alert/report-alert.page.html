@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+      <ion-buttons slot ="start">
+          <ion-menu-button>
+          </ion-menu-button>
+        </ion-buttons>
+        <ion-title style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png">
+        </ion-title>
+  </ion-toolbar>
+</ion-header>
+ <ion-content>
+
+  
+ 
+   <!--  start map -->
+   <div id="map_canvas"> 
+    </div>
+
+    <ion-card class="searchBar">
+    <ion-searchbar color="black" id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
+    <ion-list   [hidden]="autocompleteItems.length == 0">
+      <ion-item class="list"  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
+         {{ item.description }}
+      </ion-item>
+     </ion-list>
+    </ion-card>
+   
+  
+
+   <!-- end -->
+   
+
+   <p id="output"></p>
+
+  <ion-button shape="round" color="tertiary" (click)="calcDistance()">Calculate distance</ion-button>
+  <ion-button shape="round" color="tertiary" (click)="openModal()">Report</ion-button>
+    
+ </ion-content>

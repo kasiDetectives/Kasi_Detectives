@@ -19,11 +19,10 @@ import {
 import { Icon } from 'ionicons/dist/types/icon/icon';
 import { PopupPage } from '../popup/popup.page';
 import { FirebaseService } from '../firebase.service';
-import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 
 declare var google
-var map;
-var markers = [];
+ var map;
+var markers= [];
 
 @Component({
   selector: 'app-home',
@@ -41,10 +40,8 @@ export class HomePage implements OnInit  {
   mySelected
   pic = '\assets\icon\magnifying-glass (10).png'
   user = []
-  userId
   result = []
   loc =[]
-  email = null
  
   
  message
@@ -66,14 +63,10 @@ export class HomePage implements OnInit  {
   private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
   {
   this.checkUserState()
-  this.checkEmail()
   this.run()
-  this.fetchCrimeCategories()
-  this.checkModalOption()
+  this.loadLocations()
   console.log("why");
-  this.userService.signIn().then(data => {
-    this.userId = data
-     })
+
   ////
    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
    this.autocomplete = { input: '' };
@@ -188,13 +181,7 @@ ngOnInit() {
    this.platform.ready();
    this.loadMap();
    this.initMap();
-   this.checkUserState()
-   this.checkModalOption()
-
-   //
-   ///
-   ///
-   }
+}
 
     loadMap(){
       
@@ -260,7 +247,6 @@ map.addListener('dblclick',(event)=>{
 //  //delete marker end
   //this.addMarker(event.latLng);
   var marker = new google.maps.Marker({
-  
     position: event.latLng,
     map: map,
     icon: selectImage
@@ -272,53 +258,11 @@ map.addListener('dblclick',(event)=>{
   console.log(event.latLng,"location of new marker")
 
    ////// listener on marker start
-// Report incident
+
  marker.addListener('click', (event) => {
   infoWindowMarker.open(map,marker);
-  infoWindowMarker.setContent(String(event.place));
-
-  let lat = event.latLng.lat()
-  let lng = event.latLng.lng()
-  this.geocoder.geocode({'location': event.latLng}, (results, status) =>{
-
-    if(status === "OK"){
-      //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
-      let addressArray = {
-        street: results[0].address_components[1].long_name,
-        section: results[0].address_components[2].long_name,
-        surburb: results[0].address_components[3].long_name
-      }
-      // addressArray.push()
-      console.log(addressArray);
-      console.log(results);
-      
-      
-
-      if(this.email === null){
-        //this.events.publish('openModal', true, lat, lng)
-        //this.router.navigate(['/login'])
-        
-      }else{
-        console.log(this.email);
-        //this.events.publish('openModal', false, null, null)
-        this.openModal(addressArray, lat, lng)  }
-    }
-  } )
-
-  console.log(infoWindowMarker.setContent(String(event.place)))
+  infoWindowMarker.setContent(String(event.latLng));
   console.log(marker,"marker selected")
-  console.log(event.latLng.lat());
-  
-
-  
-  
-
-  console.log(lat, lng, this.result)
-  
-  /////////////////////////////////////
-  
-
-  
  });
 
 //// listener on marker end
@@ -534,27 +478,12 @@ selectSearchResult(item){
 
 
   checkUserState(){
-    console.log('checking state');
-    console.log(this.user);
-    
     this.events.subscribe('user:loggedOut', (boolean)=>{
       console.log(boolean);
       if(boolean === true){
         this.userService.destroyUserData()
-        this.events.publish('user:loggedIn', false);
+        this.events.publish('user:created', false);
       }
-    })
-  }
-  checkEmail(){
-    this.events.subscribe('user:loggedIn', (data)=>{
-      if(data === false){
-        this.email = null
-        console.log(this.email);
-      }else{
-        this.email = data
-        console.log(this.email);
-      }
-      
     })
   }
   run(){
@@ -573,84 +502,6 @@ selectSearchResult(item){
    //this.LandMarks()
     return  result 
    }
-
-
-   fetchCrimeCategories(){
-    this.firebaseService.fetchCrimeCategories().then(data=>{
-      this.result = data
-      console.log(this.result);     
-    })
-  }
-
-
-   async openModal(address, lat, lng){
-     console.log(lat, lng);
-    
-    const myModal = await this.modal.create({
-    component: PopupPage,
-    componentProps:{
-      result : this.result,
-      address: address,
-      lat : lat,
-      lng: lng,
-      userId: this.userId
-    }
-        
-    });
-  
-  
-  myModal.onDidDismiss().then((dataReturned) => {
-    console.log(dataReturned);
-    let data = dataReturned.data
-    console.log(data);
-    
-    if(data !== null && data !== undefined){
-      let submitInfo = data[0]
-      console.log(submitInfo);
-      
-      this.submit(submitInfo)
-    }
-  });
-  
-    
-     myModal.present()
-       }
-
-      
-       checkModalOption(){
-         console.log('checking modals')
-         this.events.subscribe('openModalAgain', (boolean, lat, lng)=>{
-           console.log('openModal:', boolean);
-           if(this.email != null){
-             console.log(this.email);
-             
-            if(boolean === true){
-              console.log('boolean too: ', boolean);
-              console.log('opening modal');
-              
-              //this.openModal(address, lat, lng)
-            }else{
-                        
-            }
-           }else{
-             console.log('why are you like this')
-           }
-          
-         })
-       }
-
-      submitToFirebase(submitInfo){
-        console.log('And we all just');
-        
-        this.firebaseService.submit(submitInfo)
-      }
-      
-      submit(submitInfo){
-        console.log('And we are all just entertainers, and we stupid and contagious');
-        
-        this.submitToFirebase(submitInfo)
-        //this.tweet()
-      }
  
 
 }
