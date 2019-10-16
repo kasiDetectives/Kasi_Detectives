@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">kasi_detectives</string>
-    <string name="title_activity_main">kasi_detectives</string>
-    <string name="package_name">io.kasi.detectives</string>
-    <string name="fileprovider_authority">io.kasi.detectives.fileprovider</string>
-    <string name="custom_url_scheme">io.kasi.detectives</string>
-</resources>

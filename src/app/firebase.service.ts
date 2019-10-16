@@ -13,6 +13,7 @@ export class FirebaseService {
   tempArray : Array<any> = []
   constructor() { }
 
+  //Retrieving data from firebase/// Types of crimes
   fetchCrimeCategories(){
   return firebase.database().ref().child('CrimeTypes').once('value').then(result =>{
       let string =  (JSON.stringify(result));
@@ -26,6 +27,7 @@ export class FirebaseService {
     })
   }
 
+  //Retrieving data from firebase/// Reported locations
   fetchSavedLocations(){
     ​
        return new Promise((resolve, reject) => {
@@ -54,14 +56,36 @@ export class FirebaseService {
           console.log(this.savedLocations);
           
         })
-    ​
-        
        })
+}
+
+
+
+  //Submitting data to firebase /// Pinning new report
+  submit(submitInfo){
+    let userId = submitInfo.userId
+    let place = submitInfo.address
+    let description = submitInfo.description
+    let lat = submitInfo.lat
+    let lng = submitInfo.lng
+
+    console.log(lat);
+    console.log(lng);
+    console.log(description);
     
-      
-      }
     
     
+    var newPostKey = firebase.database().ref().child('Incident/' + "/" + place + "/").push().key;
+    console.log(newPostKey);
+    
+    firebase.database().ref().child('Incident/'+ "/" + place + "/" + newPostKey + "/").update({
+      description: description,
+      lat : lat,
+      lng : lng,
+      userId: userId
+    })
+  }
+
   clearArray(array){
     for(let i=0; i < array.length; i++){array.splice(i)}
   }

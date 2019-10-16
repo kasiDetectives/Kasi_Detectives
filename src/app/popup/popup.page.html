@@ -1,0 +1,45 @@
+<ion-header  >
+  <ion-toolbar color="tertiary">
+    <ion-title style="text-align: center">Report</ion-title>
+    <!-- <ion-button slot='end' color="clear" shape="round">X</ion-button> -->
+    <ion-button  slot='end'  (click)='closePopup()' fill="clear" >
+      <ion-icon color='secondary' slot="icon-only" name="close"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+  
+</ion-header>
+
+<ion-content>
+    <p style="text-align: center">{{address.street}}</p>
+    <p style="text-align: center">{{address.section}}</p>
+    <p style="text-align: center">{{address.surburb}}</p>
+  <ion-card>
+
+    <ion-item>
+      <ion-label>Type of Crime</ion-label>
+      <ion-select interface='popover' (ionChange)='options($event);'>
+        <ion-select-option *ngFor="let crime of result" [value]="crime">{{crime}}</ion-select-option>
+      </ion-select>
+    </ion-item> 
+ </ion-card>
+ <ion-item *ngIf='showInput'>
+   <ion-label><ion-icon name ="list-box"></ion-icon></ion-label>
+ <ion-input  position="stacked" placeholder='Describe crime' [ngModel]='crimeText' (ionChange)='setInput($event)'></ion-input>
+ </ion-item>
+ <ion-list>
+   <ion-item>
+   <ion-label>Share on twitter</ion-label>
+ <ion-checkbox slot='start' (ionChange)='setCheckState($event)'></ion-checkbox>
+</ion-item>
+</ion-list>
+<div style="text-align: center">
+     <ion-button  shape="round" color="tertiary" (click)='sendData()'>
+         Submit
+     </ion-button>
+   
+     <!-- <ion-button  shape="round" color="tertiary" [disabled]='!reportForm' (click)='closePopup()'>
+      Submit
+  </ion-button> -->
+     
+ </div>
+</ion-content>

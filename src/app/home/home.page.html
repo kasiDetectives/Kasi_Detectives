@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+      <ion-buttons slot ="start">
+          <ion-menu-button (click)="run()">
+          </ion-menu-button>
+        </ion-buttons>
+        <ion-title  style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png"  >
+      
+        </ion-title>
+
+          
+  </ion-toolbar>
+  <ion-grid color="success">
+    <ion-row>
+      <ion-col>    
+  <ion-searchbar id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
+</ion-col>
+ 
+</ion-row>
+<ion-row>
+    <ion-col>
+  <ion-list  [hidden]="autocompleteItems.length == 0">
+      <ion-item  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
+      {{ item.description }}
+      </ion-item>
+    </ion-list>
+  </ion-col>
+  
+</ion-row>
+   </ion-grid>
+  
+ </ion-header>
+
+    
+<ion-content color="success">
+
+
+  <ion-list>
+      <ion-item *ngFor="let n of scheduled">
+          <ion-label text-wrap>
+            {{n.id}} - {{n.title}}
+            <p> Trigger: {{n.trigger | json }}</p>
+          </ion-label>
+      </ion-item>
+  </ion-list>
+
+<!--  start map -->
+   <div id="map_canvas"> 
+  </div>
+<!-- end -->
+
+<p id="output"></p>
+
+
+    <ion-card color="light">
+        <ion-card-header>
+          <ion-card-title>News Updates.</ion-card-title>
+        </ion-card-header>
+      
+        <ion-card-content>
+          Keep close to Nature's heart... and break clear away, once in awhile,
+          and climb a mountain or spend a week in the woods. Wash your spirit clean.
+        </ion-card-content>
+      </ion-card>
+  
+</ion-content>
