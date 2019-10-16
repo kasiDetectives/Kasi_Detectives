@@ -14,8 +14,8 @@
     <h1 style="text-align: center" class="header"> <b>Profile</b></h1>
     <div class="form-divider">
       <div style="text-align: center">
-        <img [src] ="base64Image" *ngIf="base64Image">
-          <ion-button color="tertiary" shape="round" (click)="getPic()">
+        <img [src] ="image" >
+          <ion-button color="tertiary" shape="round" (click)="selectPic()">
               <ion-icon name="camera"></ion-icon>
           </ion-button>
       </div>  

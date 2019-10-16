@@ -51,7 +51,7 @@ export class AppComponent {
       })
   }
   checkUser(){
-    this.events.subscribe('user:created', (email)=>{
+    this.events.subscribe('user:loggedIn', (email)=>{
       console.log(email);
       this.email = email
     })
@@ -69,6 +69,7 @@ export class AppComponent {
   signOut(url){
     if(url === 'home'){
       this.events.publish('user:loggedOut', true)
+
       this.route.navigate([url])
       this.navigationService.pageNavigator(url)
     }
