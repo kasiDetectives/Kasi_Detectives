@@ -194,6 +194,21 @@ export class ProfilePage implements OnInit {
 
 
   }
+  addImage(){
+    const options: CameraOptions =
+    {
+      quality: 100,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      //encodingType: this.camera.EncodingType.JPEG,
+      //mediaType: this.camera.MediaType.PICTURE,
+      saveToPhotoAlbum: false
+    }
+
+    this.camera.getPicture(options).then(imageData => {
+      this.secImage = 'data:image/jpeg;base64' + imageData
+    })
+  }
 
   addImage(){
     const options: CameraOptions =
