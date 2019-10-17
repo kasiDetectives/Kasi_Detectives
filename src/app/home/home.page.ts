@@ -415,7 +415,7 @@ handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////// Calculating distance
-calcDistance() {
+calcDistance () {
   var input=[]
   return new Promise((resolve, reject) => {
     console.log(resolve,"resolve");
@@ -811,11 +811,6 @@ updateSearchResults(){
           console.log(infoWindowMarker.setContent(String(event.place)))
           console.log(marker,"marker selected")
           console.log(event.latLng.lat());
-          
-        
-          
-          
-        
           console.log(lat, lng, this.result)
           
           /////////////////////////////////////
@@ -874,26 +869,20 @@ updateSearchResults(){
         icon: dangerImage,
         });
         console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
-        
-            console.log(  markers , "vvvv");
+        console.log(  markers , "vvvv");
            
         google.maps.event.addListener(markers, 'click', ((markers, x) => {
           return() => {
               infoWindow.setContent(info[x].crimeType);
               infoWindow.setPosition(new google.maps.LatLng(info[x].lat, info[x].lng));
               infoWindow.open(map, markers);
-              
             }
           })(markers, x));
-        landmarks()
         }
         })
-        
-        
         ///popular map with crime hotspots end
               this.array.push(pos[0])
               console.log(this.array, "zzz");
-              
             }, () => {
               this.handleLocationError(true, infoWindow, map.getCenter());
             });
