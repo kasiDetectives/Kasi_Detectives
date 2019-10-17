@@ -513,7 +513,7 @@ selectSearchResult(item){
    this.autocompleteItems = [];
 
     //Set latitude and longitude of user place
-    this.mapz = new google.maps.Map(document.getElementById('map_canvas'), {
+    this.mapz = google.maps.Map(document.getElementById('map_canvas'), {
       center: {lat: -34.075007, lng: 20.23852},
       zoom: 15
     });
