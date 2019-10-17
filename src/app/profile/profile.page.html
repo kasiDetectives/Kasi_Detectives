@@ -30,4 +30,6 @@
       <ion-button color="tertiary"  class="form-buttons" [disabled]="!profileForm.valid" shape="round" (click)="login()">Update</ion-button><br/><br/>  
     </div>
   </form>
+  <ion-button (click)='addImage()'>Add photo</ion-button>
+  <img [src]='secImage'>
 </ion-content>
