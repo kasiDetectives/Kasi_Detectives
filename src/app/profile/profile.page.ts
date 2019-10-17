@@ -27,11 +27,12 @@ export class ProfilePage implements OnInit {
   namePattern = "^(?=.*\[A-Z])(?=.*\[a-z])(?=.*\[A-Z]).{2,}$"
   emailPattern= "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
   image: any;
+  secImage
 
   constructor(public file:File, public actionSheetController:ActionSheetController, public userService : UsersService,public camera:Camera, public loader:LoadingController, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
-    this.getUserProfile()
-    this.fetchUserProfile()
+    //this.getUserProfile()
+    //this.fetchUserProfile()
     this.events.subscribe('user:created', (email) => {
       if(!email){
         this.router.navigate(['/login'])
@@ -192,6 +193,22 @@ export class ProfilePage implements OnInit {
   ngOnInit() {
 
 
+  }
+
+  addImage(){
+    const options: CameraOptions =
+    {
+      quality: 100,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      //encodingType: this.camera.EncodingType.JPEG,
+      //mediaType: this.camera.MediaType.PICTURE,
+      saveToPhotoAlbum: false
+    }
+
+    this.camera.getPicture(options).then(imageData => {
+      this.secImage = 'data:image/jpeg;base64' + imageData
+    })
   }
 
 }
