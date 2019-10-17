@@ -21,9 +21,10 @@ import { PopupPage } from '../popup/popup.page';
 import { FirebaseService } from '../firebase.service';
 import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 
-declare var google
+declare var google;
 var map;
 var markers = [];
+
 
 @Component({
   selector: 'app-home',
@@ -34,9 +35,10 @@ export class HomePage implements OnInit  {
   
 
   
-  // currentPosition
-  // directionsDisplay
-  // directionsService
+// start 
+// end
+
+//   MarkersArray = []
 
    //targetDestination = ("#target-dest").valueOf();
    targetDestination
@@ -53,7 +55,8 @@ export class HomePage implements OnInit  {
   result = []
   loc =[]
   email = null
- 
+  lat
+  lng
   
  message
 ///
@@ -65,9 +68,6 @@ export class HomePage implements OnInit  {
   geocoder: any
   autocompleteItems: any;
   
- 
-  ZeroLocation = []
- // directionsService
   array = []
  
  constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
@@ -194,10 +194,7 @@ ngOnInit() {
    this.initMap();
    this.checkUserState()
   //  this.checkModalOption()
-
-   //
-   ///
-   ///
+ 
    }
 
   loadMap(){
@@ -255,25 +252,15 @@ var LocationStart = 0;
     // icon: myLocationimage
   });
 
-////// for directions start
+  ////// for directions start
 directionsRenderer.setMap(map);
 
-   this.calculateAndDisplayRoute(directionsService, directionsRenderer);
-   document.getElementById('mode').addEventListener('change', () => {
-   this.calculateAndDisplayRoute(directionsService, directionsRenderer);
+this.calculateAndDisplayRoute(directionsService, directionsRenderer);
+document.getElementById('mode').addEventListener('change', () => {
+this.calculateAndDisplayRoute(directionsService, directionsRenderer);
 });
 
-// outputAtoB = document.getElementById('a2b'),
-// flightPath = new google.maps.Polyline({
-//   path: [pointA, pointB],
-//   geodesic: true,
-//   strokeColor: '#FF0000',
-//   strokeOpacity: 1.0,
-//   strokeWeight: 2
-// });
-
 /////// directions end
-
 
   infoWindow = new google.maps.InfoWindow;
   infoWindowMarker= new google.maps.InfoWindow;
@@ -303,7 +290,8 @@ map.addListener('dblclick',(event)=>{
  marker.addListener('click', (event) => {
   infoWindowMarker.open(map,marker);
   infoWindowMarker.setContent(String(event.place));
-
+  console.log(event.latLng.lat());
+  
   let lat = event.latLng.lat()
   let lng = event.latLng.lng()
   this.geocoder.geocode({'location': event.latLng}, (results, status) =>{
@@ -335,19 +323,10 @@ map.addListener('dblclick',(event)=>{
   console.log(infoWindowMarker.setContent(String(event.place)))
   console.log(marker,"marker selected")
   console.log(event.latLng.lat());
-  
-
-  
-  
 
   console.log(lat, lng, this.result)
-  
-  /////////////////////////////////////
-  
-
-  
+   
  });
-
 //// listener on marker end
 });
 
@@ -378,8 +357,6 @@ map.addListener('dblclick',(event)=>{
       map.setCenter(pos[0].location);
 ​
 
-////
-
   
 ///  popular map with crime hotspots start
 this.loadLocations().then(info =>{
@@ -406,14 +383,15 @@ google.maps.event.addListener(markers, 'click', ((markers, x) => {
 
 }
 })
+///crime hotspots end
 
-///popular map with crime hotspots end
       this.array.push(pos[0])
       console.log(this.array, "zzz");
+      this.lat = this.array[0].location.lat()
+      this.lng = this.array[0].location.lng()
+      console.log(this.lat, 'latitude of user');
+      
 
-      pos[0] = LocationStart;
-      this.ZeroLocation.push(pos[0] )
-      console.log(LocationStart, "Zero");
       
     }, () => {
       this.handleLocationError(true, infoWindow, map.getCenter());
@@ -600,32 +578,17 @@ selectSearchResult(item){
    /////////////////////////////////////////////////////////////////////////////
   // code is working from here
    calculateAndDisplayRoute(directionsService, directionsRenderer) {
+
+    var GrabLocation = {lat: this.lat, lng: this.lng}
+    console.log(GrabLocation,"XXX");
     
     var userPosistion = this.array
-     console.log(userPosistion, "wereAre");
-
-     var users = this.ZeroLocation
-     console.log(users, "user");
-
-     var Fix = new google.maps.LatLng(users [0],users [1]) 
-     Fix = this.array
-     console.log(Fix, "Fix");
-     
-
-     //var WeAre = {lat: -26.019918, lng: 28.217855}
-
+    console.log(userPosistion, "wereAre");
     this.selectedMode = document.getElementById('mode')["value"];
-    console.log(this.selectedMode);
-    //if (WeAre  && this.targetDestination && this.targetDestination != '') {
-    directionsService.route({ 
-      //origin: userPosistion[0].location,// {lat: -26.019918, lng: 28.217855}, //Fix,//  // this.array[0].location,  // userPosistion[0].location,
-      origin : {lat: -26.019918, lng: 28.217855},//{lat: userPosistion[0].location.lat, lng : userPosistion[0].location.lng},
-      destination: {lat: -26.669239, lng: 27.882660},  //this.targetDestination,// joburg park station.  -26.669239, 27.882660
-      // Note that Javascript allows us to access the constant
-      // using square brackets and a string value as its
-      // "property."
-      travelMode: google.maps.TravelMode[this.selectedMode]
-      
+     directionsService.route({ 
+      origin : {lat:-26.671985, lng: 27.904678}, //  {lat: -26.026389, lng: 28.195422},//{lat: userPosistion[0].location.lat, lng : userPosistion[0].location.lng},
+      destination: {lat: -26.026389, lng: 28.195422},  //this.targetDestination,// joburg park station.  -26.669239, 27.882660
+      travelMode: google.maps.TravelMode[this.selectedMode] 
     }, (response, status)=> {
       if (status == 'OK') {
        // this.directionsDisplay.setPanel(document.getElementById("directions"));
@@ -637,93 +600,7 @@ selectSearchResult(item){
     });
     console.log( origin, "ttt");
   }
-//}
   /////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////
-
-
-  ///////////////////////// attemptin this
-//   initialize(lat, lon)
-//   {
-//       this.directionsDisplay = new google.maps.DirectionsRenderer(); 
-//       this.directionsService = new google.maps.DirectionsService();
-
-//       this.currentPosition = new google.maps.LatLng(lat, lon);
-
-//       map = new google.maps.Map(document.getElementById('map_canvas'), {
-//          zoom: 15,
-//          center: this.currentPosition,
-//          mapTypeId: google.maps.MapTypeId.ROADMAP
-//        });
-
-//       this.directionsDisplay.setMap(map);
-
-//        var currentPositionMarker = new google.maps.Marker({
-//           position: this.currentPosition,
-//           map: map,
-//           title: "Current position"
-//       });
-
-//       var infowindow = new google.maps.InfoWindow();
-//       google.maps.event.addListener(currentPositionMarker, 'click', ()=> {
-//           infowindow.setContent("Current position: latitude: " + lat +" longitude: " + lon);
-//           infowindow.open(map, currentPositionMarker);
-//       });
-//    //////////
-   
-//       // 1
-//         navigator.geolocation.getCurrentPosition(this.locSuccess, this.locError);
-
-//       // 2
-//        // this.calculateRoute();
-
-//   }
-
-//   locError(error) {
-//       // initialize map with a static predefined latitude, longitude
-//      this.initialize(59.3426606750, 18.0736160278);
-//   }
-
-//   locSuccess(position) {
-//       this.initialize(position.coords.latitude, position.coords.longitude);
-//   }
-
-//  calculateRoute() {
-
-//     //  var targetDestination = ("#target-dest")["Val"];
-//       this.targetDestination  = document.getElementById('target-dest')["value"];
-//       if (this.currentPosition && this.currentPosition != '' && this.targetDestination && this.targetDestination != '') {
-//           var request = {
-//               origin:this.currentPosition, 
-//               destination:this.targetDestination,
-//               travelMode: google.maps.DirectionsTravelMode["DRIVING"]
-//           };
-
-//           this.directionsService.route(request, (response, status)=> {
-//               if (status == google.maps.DirectionsStatus.OK) {
-//                   this.directionsDisplay.setPanel(document.getElementById("directions"));
-//                   this.directionsDisplay.setDirections(response); 
-
-//                   /*
-//                       var myRoute = response.routes[0].legs[0];
-//                       for (var i = 0; i < myRoute.steps.length; i++) {
-//                           alert(myRoute.steps[i].instructions);
-//                       }
-//                   */
-//                 //  ("#results").show();
-//               }
-//               else {
-//                 console.log("hidden");
-                
-//                  // ("#results").hide();
-//               }
-//           });
-//       }
-//       else {
-//         console.log("hidden2");
-//          // ("#results").hide();
-//       }
-//   }
 
 
 getmode(event) {
