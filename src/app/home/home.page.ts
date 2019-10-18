@@ -60,6 +60,8 @@ export class HomePage implements OnInit  {
   GooglePlaces: any;
   geocoder: any
   autocompleteItems: any;
+
+  dangerImage
   
   backButton
 
@@ -462,7 +464,25 @@ LandMarks(){
         crimeType: data[x].crimeType,
       location:new google.maps.LatLng(data[x].lat,data[x].lng)
       })
-    
+      
+      var  infoWindow = new google.maps.InfoWindow;
+      //var infoWindowMarker = new google.maps.InfoWindow;
+      var  markers = new google.maps.Marker({
+        map: map,
+        draggable: false,
+        position: new google.maps.LatLng(data[x].lat, data[x].lng),
+        icon: this.dangerImage,
+        });
+        console.log(new google.maps.LatLng(data[x].lat, data[x].lng));
+        console.log(  markers , "vvvv");
+           
+        google.maps.event.addListener(markers, 'click', ((markers, x) => {
+          return() => {
+              infoWindow.setContent(data[x].crimeType);
+              infoWindow.setPosition(new google.maps.LatLng(data[x].lat, data[x].lng));
+              infoWindow.open(map, markers);
+            }
+          })(markers, x));
     }
 ​
     console.log(this.DBLocation);
@@ -477,6 +497,14 @@ LandMarks(){
       var pttwo = this.DBLocation[y].crimeType
       output.push({location:temp, desc: pttwo} );
     }
+
+
+
+    ///////////////////////////////
+    
+
+
+
     console.log(output, "output");
       
  resolve(output)
@@ -693,6 +721,7 @@ updateSearchResults(){
             let marker = new google.maps.Marker({
               position: results[0].geometry.location,
               map: map,
+              draggable: true
             });
             this.markers.push(marker);
             map.setCenter(results[0].geometry.location);
@@ -707,35 +736,26 @@ updateSearchResults(){
           var selectedMarker
           var  infoWindow
           ///danger image
-          var dangerImage = {
-            url: 'assets/icon/danger (2).png',
-            // This marker is 20 pixels wide by 32 pixels high.
-            size: new google.maps.Size(32, 32),
-            // The origin for this image is (0, 0).
-            origin: new google.maps.Point(0, 0),
-            // The anchor for this image is the base of the flagpole at (0, 32).
+            this.dangerImage = {
+            url: 'assets/icon/danger (2).png', // This marker is 20 pixels wide by 32 pixels high.
+            size: new google.maps.Size(32, 32), // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
            // anchor: new google.maps.Point(0, 40)
           };
         
           ///selected area image
           var selectImage = {
-            url: 'assets/icon/precision (2).png',
-            // This marker is 20 pixels wide by 32 pixels high.
-            size: new google.maps.Size(40, 40),
-            // The origin for this image is (0, 0).
-            origin: new google.maps.Point(0, 0),
-            // The anchor for this image is the base of the flagpole at (0, 32).
+            url: 'assets/icon/precision (2).png', // This marker is 20 pixels wide by 32 pixels high.
+            size: new google.maps.Size(40, 40), // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
            // anchor: new google.maps.Point(0, 40)
           };
         
           ///my location image
           var myLocationimage = {
-            url: 'assets/icon/placeholder.png',
-            // This marker is 20 pixels wide by 32 pixels high.
-            size: new google.maps.Size(32, 32),
-            // The origin for this image is (0, 0).
-            origin: new google.maps.Point(0, 0),
-            // The anchor for this image is the base of the flagpole at (0, 32).
+            url: 'assets/icon/placeholder.png', // This marker is 20 pixels wide by 32 pixels high.
+            size: new google.maps.Size(32, 32), // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
            // anchor: new google.maps.Point(0, 40)
           };
         
@@ -765,7 +785,8 @@ updateSearchResults(){
           
             position: event.latLng,
             map: map,
-            icon: selectImage
+            icon: selectImage,
+            draggable: true
           });
           markers.push(marker);
           selectedMarker=marker
@@ -777,7 +798,7 @@ updateSearchResults(){
         // Report incident
          marker.addListener('click', (event) => {
           infoWindowMarker.open(map,marker);
-          infoWindowMarker.setContent(String(event.place));
+          infoWindowMarker.setContent(String(event));
         
           let lat = event.latLng.lat()
           let lng = event.latLng.lng()
@@ -808,7 +829,7 @@ updateSearchResults(){
             }
           } )
         
-          console.log(infoWindowMarker.setContent(String(event.place)))
+          console.log(infoWindowMarker.setContent(String(event)))
           console.log(marker,"marker selected")
           console.log(event.latLng.lat());
           console.log(lat, lng, this.result)
@@ -858,28 +879,31 @@ updateSearchResults(){
               map.setCenter(pos[0].location);
         ​
         ///  popular map with crime hotspots start
-        this.loadLocations().then(info =>{   /////////////////////////////////////////////////////// Load items into an array
-          console.log( info.length);
-        for( let x = 0; x < info.length; x++ ){
-           console.log(info[x]);    
-        var  markers = new google.maps.Marker({
-        map: map,
-        draggable: true,
-        position: new google.maps.LatLng(info[x].lat, info[x].lng),
-        icon: dangerImage,
-        });
-        console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
-        console.log(  markers , "vvvv");
+
+
+
+        // this.loadLocations().then(info =>{   /////////////////////////////////////////////////////// Load items into an array
+        //   console.log( info.length);
+        // for( let x = 0; x < info.length; x++ ){
+        //    console.log(info[x]);    
+        // var  markers = new google.maps.Marker({
+        // map: map,
+        // draggable: false,
+        // position: new google.maps.LatLng(info[x].lat, info[x].lng),
+        // icon: dangerImage,
+        // });
+        // console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
+        // console.log(  markers , "vvvv");
            
-        google.maps.event.addListener(markers, 'click', ((markers, x) => {
-          return() => {
-              infoWindow.setContent(info[x].crimeType);
-              infoWindow.setPosition(new google.maps.LatLng(info[x].lat, info[x].lng));
-              infoWindow.open(map, markers);
-            }
-          })(markers, x));
-        }
-        })
+        // google.maps.event.addListener(markers, 'click', ((markers, x) => {
+        //   return() => {
+        //       infoWindow.setContent(info[x].crimeType);
+        //       infoWindow.setPosition(new google.maps.LatLng(info[x].lat, info[x].lng));
+        //       infoWindow.open(map, markers);
+        //     }
+        //   })(markers, x));
+        // }
+        // })
         ///popular map with crime hotspots end
               this.array.push(pos[0])
               console.log(this.array, "zzz");
