@@ -798,25 +798,27 @@ updateSearchResults(){
         // Report incident
          marker.addListener('click', (event) => {
           infoWindowMarker.open(map,marker);
-          infoWindowMarker.setContent(String(event));
+          //infoWindowMarker.setContent(String(event));
         
           let lat = event.latLng.lat()
           let lng = event.latLng.lng()
+          let addressArray = {}
           this.geocoder.geocode({'location': event.latLng}, (results, status) =>{
             console.log(results);
             
             if(status === "OK"){
               //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
-              let addressArray = {
+              addressArray = {
                 street: results[0].address_components[1].long_name,
                 section: results[0].address_components[2].long_name,
                 surburb: results[0].address_components[3].long_name
               }
               // addressArray.push()
               console.log(addressArray);
+              console.log(addressArray['street'])
               console.log(results);
-              
-              
+              //console.log(infoWindowMarker.setContent(addressArray['street']))
+              infoWindowMarker.setContent(addressArray['street'])
         
               if(this.email === null){
                 //this.events.publish('openModal', true, lat, lng)
@@ -826,10 +828,11 @@ updateSearchResults(){
                 console.log(this.email);
                 //this.events.publish('openModal', false, null, null)
                 this.openModal(addressArray, lat, lng)  }
+                
             }
           } )
         
-          console.log(infoWindowMarker.setContent(String(event)))
+          console.log(infoWindowMarker.setContent(addressArray['street']))
           console.log(marker,"marker selected")
           console.log(event.latLng.lat());
           console.log(lat, lng, this.result)
