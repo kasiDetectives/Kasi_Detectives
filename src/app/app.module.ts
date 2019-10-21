@@ -13,6 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { File } from '@ionic-native/file/ngx'
 
 import { PopupPageModule } from './popup/popup.module';
+import { ReportedIncidentPageModule } from './reported-incident/reported-incident.module'
 import * as firebase from 'firebase'
 import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
 var firebaseConfig = {
@@ -31,7 +32,7 @@ firebase.initializeApp(firebaseConfig);
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, PopupPageModule],
+  imports: [BrowserModule, IonicModule.forRoot(), HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, PopupPageModule, ReportedIncidentPageModule],
   providers: [
     StatusBar,
    File,

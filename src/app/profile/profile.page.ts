@@ -32,7 +32,7 @@ export class ProfilePage implements OnInit {
   constructor(public file:File, public actionSheetController:ActionSheetController, public userService : UsersService,public camera:Camera, public loader:LoadingController, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
     this.getUserProfile()
-    this.fetchUserProfile()
+    //this.fetchUserProfile()
     this.events.subscribe('user:created', (email) => {
       if(!email){
         this.router.navigate(['/login'])
@@ -157,7 +157,9 @@ export class ProfilePage implements OnInit {
     this.userService.getUserProfile(this.user[0].key).then(data =>
       
       
+      
       {
+        console.log(this.user[0].key);
         console.log(data);
       // this.name = data.name
       // this.email = data.email
@@ -197,4 +199,5 @@ export class ProfilePage implements OnInit {
     })
   }
 
+    
 }
