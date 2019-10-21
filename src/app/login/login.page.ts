@@ -55,7 +55,7 @@ export class LoginPage implements OnInit {
     console.log(this.email, this.password)
     this.userService.login(this.email, this.password).then((result) =>{
       if(result.operationType === "signIn"){
-        this.events.publish('user:created', result.user.email);
+        this.events.publish('user:loggedIn', result.user.email);
         
         console.log("Welcome " + result.user.email)
         let userId = result.user.uid
