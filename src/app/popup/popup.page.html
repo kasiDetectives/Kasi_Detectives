@@ -33,7 +33,7 @@
 </ion-item>
 </ion-list>
 <div style="text-align: center">
-     <ion-button  shape="round" color="tertiary" (click)='sendData()'>
+     <ion-button [disabled]='!reportFormValid' shape="round" color="tertiary" (click)='verifySubmit()'>
          Submit
      </ion-button>
    

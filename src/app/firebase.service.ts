@@ -88,6 +88,7 @@ fetchUserIncidents(){
 }
   //Submitting data to firebase /// Pinning new report
   submit(submitInfo){
+  return new Promise((resolve, reject) => {
     let userId = submitInfo.userId
     let place = submitInfo.address
     let description = submitInfo.description
@@ -105,7 +106,9 @@ fetchUserIncidents(){
       lng : lng,
       userId: userId
     })
-  }
+    resolve()
+  })
+}
   clearArray(array){
     for(let i=0; i < array.length; i++){array.splice(i)}
   }

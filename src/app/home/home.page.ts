@@ -1,6 +1,3 @@
-///
-
-
 import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
@@ -35,9 +32,6 @@ var markers = [];
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit  {
-  
-
-
   /////////////////////////////////////////////////////////////////////////////////////////////
   address:string;
   DBLocation=[]
@@ -70,7 +64,7 @@ export class HomePage implements OnInit  {
   array = []
  
  constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-  private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
+  private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, public toastController: ToastController) 
   {
   this.exit()
   this.checkUserState()
@@ -694,7 +688,22 @@ updateSearchResults(){
     const alert = await this.alertController.create({
       header: 'Login',
       message: 'You need to be logged in to use this function',
-      buttons: ['OK']
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'success',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Okay',
+          handler: (user) => {
+            console.log('Confirm Okay');
+            this.router.navigate(['/login'])
+          }
+        }
+      ]
     });
 
     await alert.present();
@@ -766,10 +775,22 @@ updateSearchResults(){
   });
      myModal.present()
     }
-      submitToFirebase(submitInfo){
+      async submitToFirebase(submitInfo){
         console.log('And we all just');
-        this.firebaseService.submit(submitInfo)
+        await this.firebaseService.submit(submitInfo).then(data => {
+          console.log(data);
+          this.succesfulSubmission()
+          
+        })
       }
+      
+        async succesfulSubmission() {
+          const toast = await this.toastController.create({
+            message: 'Your report has been submitted to our database.',
+            duration: 2000
+          });
+          toast.present();
+        }
       
       submit(submitInfo){
         console.log(submitInfo);
@@ -925,6 +946,9 @@ updateSearchResults(){
               pos.push({
               location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
                 });
+
+                console.log(location);
+                
                      ///
               let marker = new google.maps.Marker({
                 position: pos[0].location,
@@ -937,11 +961,76 @@ updateSearchResults(){
               this.markers.push(marker);
               map.setCenter(pos[0].location);
                   ///
-              infoWindow.setPosition(pos[0].location);
-              infoWindow.setContent('Your Location.');
+              // infoWindow.setPosition(pos[0].location);
+              //infoWindow.setContent('Your Location.' + pos[0]);
+              console.log(pos[0]);
+              
               infoWindow.open(map);
               map.setCenter(pos[0].location);
-        ​
+              console.log(marker.position.lat())
+              let lat = marker.position.lat()
+              let lng = marker.position.lng()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              var infoWindowMarker;
+            //infoWindowMarker= new google.maps.InfoWindow;
+            //infoWindowMarker.open(map,marker);
+            //infoWindowMarker.setContent(String(event));
+          
+            // let lat = event.latLng.lat()
+            // let lng = event.latLng.lng()
+            let addressArray = {}
+            this.geocoder.geocode({'location': new google.maps.LatLng(lat, lng)}, (results, status) =>{
+              var infoWindowMarker;
+              console.log(results);
+              
+              if(status === "OK"){
+                //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+                addressArray = {
+                  street: results[0].address_components[1].long_name,
+                  section: results[0].address_components[2].long_name,
+                  surburb: results[0].address_components[3].long_name
+                }
+                // addressArray.push()
+                console.log(addressArray);
+                console.log(addressArray['street'])
+                console.log(results);
+                //console.log(infoWindowMarker.setContent(addressArray['street']))
+                //infoWindow.setPosition(pos[0].location);
+                infoWindow.setContent(addressArray['street'] + ', ' + addressArray['section'])
+          
+                if(this.email === null){
+                  //this.events.publish('openModal', true, lat, lng)
+                  //this.router.navigate(['/login'])
+                  //this.alertUserToLogin()
+                }else{
+                  console.log(this.email);
+                  //this.events.publish('openModal', false, null, null)
+                  //this.openModal(addressArray, lat, lng)  }
+                  
+              }
+            } 
+        ​ })
         ///  popular map with crime hotspots start
 
 
