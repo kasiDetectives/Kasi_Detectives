@@ -772,9 +772,11 @@ updateSearchResults(){
       }
       
       submit(submitInfo){
+        console.log(submitInfo);
+        
         console.log('And we are all just entertainers, and we stupid and contagious');
         this.submitToFirebase(submitInfo)
-        this.tweet()
+        this.tweet(submitInfo.description)
       }
       ///Exiting the app
       exit(){
@@ -786,8 +788,9 @@ updateSearchResults(){
           }
         })
       }
-      tweet(){
-        this.socialSharing.shareViaTwitter('A crime has been reported',this.pic,'').then(() => {
+      tweet(message){
+
+        this.socialSharing.shareViaTwitter('A' + message + 'has been shared with users of Kasi_Detectives.', this.pic,'').then(() => {
         
         }).catch(() => {
 
