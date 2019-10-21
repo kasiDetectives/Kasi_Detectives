@@ -103,7 +103,7 @@ constructor(public zone: NgZone,public alertController: AlertController,public n
     this.markers = [];
 
     ///
-   this.calcDistance();
+   //this.calcDistance();
    ///
 
    /////////////////////////constructor notification start

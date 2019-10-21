@@ -76,14 +76,8 @@ export class LoginPage implements OnInit {
   //Resetting user password using email password reset request
   async resetPassword() {
     const alert = await this.alertController.create({
-      header: 'Confirm!',
-      message: 'Message <strong>text</strong>!!!',
-      inputs: [
-        {
-          name: 'email',
-          type: 'text',
-          placeholder: 'Placeholder 1'
-        }],
+      header: 'Reset Password',
+      message: 'Are ypou sure you want to reset your password?',
       buttons: [
         {
           text: 'Cancel',
@@ -93,7 +87,7 @@ export class LoginPage implements OnInit {
             console.log('Confirm Cancel: blah');
           }
         }, {
-          text: 'Okay',
+          text: 'Yes',
           handler: (user) => {
             console.log('Confirm Okay');
             this.userService.passwordReset(user.email)
