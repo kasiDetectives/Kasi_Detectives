@@ -721,15 +721,21 @@ updateSearchResults(){
                 if(dataReturned.data[0].report === true){
                   let data = dataReturned
                   console.log(data)
-                  this.openModal(address, lat, lng)
+                  if(this.email === null){
+                    //this.events.publish('openModal', true, lat, lng)
+                    //this.router.navigate(['/login'])
+                    this.alertUserToLogin()
+                  }else{
+                    console.log(this.email);
+                    //this.events.publish('openModal', false, null, null)
+                    this.openModal(address, lat, lng)  
+                }
                 }
               }
               
             });
             myModal.present()
-            console.log(address);
-            
-      
+            console.log(address);     
     }
    async openModal(address, lat, lng){
      console.log(lat, lng);
@@ -768,11 +774,11 @@ updateSearchResults(){
       submit(submitInfo){
         console.log('And we are all just entertainers, and we stupid and contagious');
         this.submitToFirebase(submitInfo)
-        //this.tweet()
+        this.tweet()
       }
       ///Exiting the app
       exit(){
-        this.backButton = this.platform.backButton.subscribeWithPriority((1000), () => {
+        this.backButton = this.platform.backButton.subscribeWithPriority((1), () => {
           if(this.constructor.name === 'HomePage'){
             if(window.confirm('Do you want to exit the app?')){
               navigator['app'].exitApp
@@ -780,7 +786,13 @@ updateSearchResults(){
           }
         })
       }
+      tweet(){
+        this.socialSharing.shareViaTwitter('A crime has been reported',this.pic,'').then(() => {
+        
+        }).catch(() => {
 
+        })
+      }
       selectSearchResult(item){
         // this.clearMarkers();
         this.autocompleteItems = [];
