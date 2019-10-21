@@ -21,6 +21,7 @@ import {
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
 import { PopupPage } from '../popup/popup.page';
+import { ReportedIncidentPage } from '../reported-incident/reported-incident.page'
 import { FirebaseService } from '../firebase.service';
 import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 
@@ -477,10 +478,58 @@ LandMarks(){
         console.log(  markers , "vvvv");
            
         google.maps.event.addListener(markers, 'click', ((markers, x) => {
+          
           return() => {
               infoWindow.setContent(data[x].crimeType);
               infoWindow.setPosition(new google.maps.LatLng(data[x].lat, data[x].lng));
               infoWindow.open(map, markers);
+              console.log(new google.maps.LatLng);
+              
+              //this.openModal('one', 'two', 'three')
+
+              var infoWindowMarker;
+            infoWindowMarker= new google.maps.InfoWindow;
+            //infoWindowMarker.open(map,marker);
+            //infoWindowMarker.setContent(String(event));
+          
+           
+            let addressArray = {}
+            this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) =>{
+              console.log(results);
+              
+              if(status === "OK"){
+                //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+                addressArray = {
+                  street: results[0].address_components[1].long_name,
+                  section: results[0].address_components[2].long_name,
+                  surburb: results[0].address_components[3].long_name
+                }
+                // addressArray.push()
+                console.log(addressArray);
+                console.log(addressArray['street'])
+                console.log(results);
+                //console.log(infoWindowMarker.setContent(addressArray['street']))
+                infoWindowMarker.setContent(addressArray['street'])
+          
+                // if(this.email === null){
+                //   //this.events.publish('openModal', true, lat, lng)
+                //   //this.router.navigate(['/login'])
+                //   this.alertUserToLogin()
+                // }else{
+                //   console.log(this.email);
+                //   //this.events.publish('openModal', false, null, null)
+                //   //this.openModal(addressArray, lat, lng)  
+                // }
+
+                console.log(addressArray);
+                
+
+                
+              }
+
+              this.openReport(addressArray, data[x].crimeType, data[x].lat, data[x].lng)
+            } )
+              
             }
           })(markers, x));
     }
@@ -650,9 +699,42 @@ updateSearchResults(){
 
     await alert.present();
   }
+    async openReport(address, crimeType, lat, lng){
+      console.log(crimeType, lat, lng);
+      
 
+            const myModal = await this.modal.create({
+        
+        
+              component: ReportedIncidentPage,
+              componentProps: {
+                address: address,
+                lat: lat,
+                lng: lng
+              }
+      
+            });
+            myModal.onDidDismiss().then((data) =>{
+              let dataReturned = data
+              console.log(dataReturned);
+              if(dataReturned.data !== undefined){
+                if(dataReturned.data[0].report === true){
+                  let data = dataReturned
+                  console.log(data)
+                  this.openModal(address, lat, lng)
+                }
+              }
+              
+            });
+            myModal.present()
+            console.log(address);
+            
+      
+    }
    async openModal(address, lat, lng){
      console.log(lat, lng);
+     console.log(address);
+     
     const myModal = await this.modal.create({
     component: PopupPage,
     componentProps:{
@@ -702,6 +784,9 @@ updateSearchResults(){
       selectSearchResult(item){
         // this.clearMarkers();
         this.autocompleteItems = [];
+        
+          var selectedMarker
+          var  infoWindow
      
         //  //Set latitude and longitude of user place
         //  this.mapz = new google.maps.Map(document.getElementById('map_canvas'), {
@@ -718,7 +803,7 @@ updateSearchResults(){
                 lng: results[0].geometry.location.lng
             };
       
-            let marker = new google.maps.Marker({
+            var marker = new google.maps.Marker({
               position: results[0].geometry.location,
               map: map,
               draggable: true
@@ -727,6 +812,10 @@ updateSearchResults(){
             map.setCenter(results[0].geometry.location);
           }
           console.log(this.markers);
+          marker.addListener('click', (event) => {
+            this.reportIncident(event, marker)
+           });
+          
           
         })
       }
@@ -785,7 +874,7 @@ updateSearchResults(){
           
             position: event.latLng,
             map: map,
-            icon: selectImage,
+            // icon: selectImage,
             draggable: true
           });
           markers.push(marker);
@@ -797,50 +886,7 @@ updateSearchResults(){
            ////// listener on marker start
         // Report incident
          marker.addListener('click', (event) => {
-          infoWindowMarker.open(map,marker);
-          //infoWindowMarker.setContent(String(event));
-        
-          let lat = event.latLng.lat()
-          let lng = event.latLng.lng()
-          let addressArray = {}
-          this.geocoder.geocode({'location': event.latLng}, (results, status) =>{
-            console.log(results);
-            
-            if(status === "OK"){
-              //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
-              addressArray = {
-                street: results[0].address_components[1].long_name,
-                section: results[0].address_components[2].long_name,
-                surburb: results[0].address_components[3].long_name
-              }
-              // addressArray.push()
-              console.log(addressArray);
-              console.log(addressArray['street'])
-              console.log(results);
-              //console.log(infoWindowMarker.setContent(addressArray['street']))
-              infoWindowMarker.setContent(addressArray['street'])
-        
-              if(this.email === null){
-                //this.events.publish('openModal', true, lat, lng)
-                //this.router.navigate(['/login'])
-                this.alertUserToLogin()
-              }else{
-                console.log(this.email);
-                //this.events.publish('openModal', false, null, null)
-                this.openModal(addressArray, lat, lng)  }
-                
-            }
-          } )
-        
-          console.log(infoWindowMarker.setContent(addressArray['street']))
-          console.log(marker,"marker selected")
-          console.log(event.latLng.lat());
-          console.log(lat, lng, this.result)
-          
-          /////////////////////////////////////
-          
-        
-          
+          this.reportIncident(event, marker)
          });
         
         //// listener on marker end
@@ -918,4 +964,49 @@ updateSearchResults(){
             this.handleLocationError(false, infoWindow, map.getCenter());
           }
         }
+
+    reportIncident(event, marker){
+      var infoWindowMarker;
+            infoWindowMarker= new google.maps.InfoWindow;
+            infoWindowMarker.open(map,marker);
+            //infoWindowMarker.setContent(String(event));
+          
+            let lat = event.latLng.lat()
+            let lng = event.latLng.lng()
+            let addressArray = {}
+            this.geocoder.geocode({'location': event.latLng}, (results, status) =>{
+              console.log(results);
+              
+              if(status === "OK"){
+                //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+                addressArray = {
+                  street: results[0].address_components[1].long_name,
+                  section: results[0].address_components[2].long_name,
+                  surburb: results[0].address_components[3].long_name
+                }
+                // addressArray.push()
+                console.log(addressArray);
+                console.log(addressArray['street'])
+                console.log(results);
+                //console.log(infoWindowMarker.setContent(addressArray['street']))
+                infoWindowMarker.setContent(addressArray['street'])
+          
+                if(this.email === null){
+                  //this.events.publish('openModal', true, lat, lng)
+                  //this.router.navigate(['/login'])
+                  this.alertUserToLogin()
+                }else{
+                  console.log(this.email);
+                  //this.events.publish('openModal', false, null, null)
+                  this.openModal(addressArray, lat, lng)  }
+                  
+              }
+            } )
+          
+            console.log(infoWindowMarker.setContent(addressArray['street']))
+            console.log(marker,"marker selected")
+            console.log(event.latLng.lat());
+            console.log(lat, lng, this.result)
+      
+    }
  }
