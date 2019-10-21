@@ -666,33 +666,6 @@ updateSearchResults(){
               infoWindow.open(map);
               map.setCenter(pos[0].location);
         ​
-        ///  popular map with crime hotspots start
-
-
-
-        // this.loadLocations().then(info =>{   /////////////////////////////////////////////////////// Load items into an array
-        //   console.log( info.length);
-        // for( let x = 0; x < info.length; x++ ){
-        //    console.log(info[x]);    
-        // var  markers = new google.maps.Marker({
-        // map: map,
-        // draggable: false,
-        // position: new google.maps.LatLng(info[x].lat, info[x].lng),
-        // icon: dangerImage,
-        // });
-        // console.log(new google.maps.LatLng(info[x].lat, info[x].lng));
-        // console.log(  markers , "vvvv");
-           
-        // google.maps.event.addListener(markers, 'click', ((markers, x) => {
-        //   return() => {
-        //       infoWindow.setContent(info[x].crimeType);
-        //       infoWindow.setPosition(new google.maps.LatLng(info[x].lat, info[x].lng));
-        //       infoWindow.open(map, markers);
-        //     }
-        //   })(markers, x));
-        // }
-        // })
-        ///popular map with crime hotspots end
 
               this.array.push(pos[0])
               console.log(this.array, "zzz");
