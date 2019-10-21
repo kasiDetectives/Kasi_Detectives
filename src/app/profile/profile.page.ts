@@ -31,7 +31,7 @@ export class ProfilePage implements OnInit {
 
   constructor(public file:File, public actionSheetController:ActionSheetController, public userService : UsersService,public camera:Camera, public loader:LoadingController, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
-    this.getUserProfile()
+    //this.getUserProfile()
     //this.fetchUserProfile()
     this.events.subscribe('user:created', (email) => {
       if(!email){
@@ -142,32 +142,32 @@ export class ProfilePage implements OnInit {
     this.name = this.profileForm.get('name').value
   }    
 
-  getUserProfile(){
-    this.user = this.userService.returnUserProfile()
-    console.log(this.user);
-  }
-   async fetchUserProfile(){
-    const loader = await this.loader.create(
-      {
-        message: 'Loading profile...'
-      }
-    )
+  // getUserProfile(){
+  //   this.user = this.userService.returnUserProfile()
+  //   console.log(this.user);
+  // }
+  //  async fetchUserProfile(){
+  //   const loader = await this.loader.create(
+  //     {
+  //       message: 'Loading profile...'
+  //     }
+  //   )
 
-    await loader.present()
-    this.userService.getUserProfile(this.user[0].key).then(data =>
+  //   await loader.present()
+  //   this.userService.getUserProfile(this.user[0].key).then(data =>
       
       
       
-      {
-        console.log(this.user[0].key);
-        console.log(data);
-      // this.name = data.name
-      // this.email = data.email
-      this.profileForm.get('email').setValue(data.email)
-      this.profileForm.get('name').setValue(data.name)
-      this.image = data.profilePicUrl
-        loader.dismiss()
-      })
+  // getUserProfile(){
+  //       console.log(this.user[0].key);
+  //       console.log(data);
+  //     // this.name = data.name
+  //     // this.email = data.email
+  //     this.profileForm.get('email').setValue(data.email)
+  //     this.profileForm.get('name').setValue(data.name)
+  //     this.image = data.profilePicUrl
+  //       this.loader.dismiss()
+  //     })
 
 
 
@@ -177,12 +177,12 @@ export class ProfilePage implements OnInit {
     
     
   
-    // this.userService.getUserProfile(this.user[0].key).then( profile =>{
-    //   this.image = profile.profilePicUrl
+  //   // this.userService.getUserProfile(this.user[0].key).then( profile =>{
+  //   //   this.image = profile.profilePicUrl
       
-    // })
+  //   // })
 
-  }
+  // }
 
   async presentToast() {
     const toast = await this.toastController.create({
@@ -209,6 +209,8 @@ export class ProfilePage implements OnInit {
 
     this.camera.getPicture(options).then(imageData => {
       this.secImage = 'data:image/jpeg;base64' + imageData
+      console.log(this.secImage);
+      
     })
   }
 }
