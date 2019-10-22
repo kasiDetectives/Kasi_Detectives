@@ -73,7 +73,7 @@ export class ProfilePage implements OnInit {
 
       console.log(names);
       
-      if(sourceType === this.camera.PictureSourceType.PHOTOLIBRARY)
+      if(sourceType == this.camera.PictureSourceType.PHOTOLIBRARY)
       {
         names = names.substring(0, names.lastIndexOf('?'))
       }
@@ -85,6 +85,7 @@ export class ProfilePage implements OnInit {
       {
         console.log(result);
         this.image = result
+        this.secImage =result
       })
 
       this.file.readAsArrayBuffer(dirrectory, names).then((buffer) =>
@@ -103,7 +104,6 @@ export class ProfilePage implements OnInit {
 
         }
       })
-      // let base64Image = this.pics + ImageData
     }, (err) =>
     {
 
@@ -169,19 +169,6 @@ export class ProfilePage implements OnInit {
         loader.dismiss()
       })
 
-
-
-
-
-
-    
-    
-  
-    // this.userService.getUserProfile(this.user[0].key).then( profile =>{
-    //   this.image = profile.profilePicUrl
-      
-    // })
-
   }
 
   async presentToast() {
@@ -211,4 +198,6 @@ export class ProfilePage implements OnInit {
       this.secImage = 'data:image/jpeg;base64' + imageData
     })
   }
+
+    
 }
