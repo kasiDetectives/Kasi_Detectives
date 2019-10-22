@@ -1,6 +1,3 @@
-///
-
-
 import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
@@ -16,6 +13,7 @@ import {
  Marker,
  GoogleMapsAnimation,
  MyLocation,
+ Polyline,
  LatLng,
  GoogleMapOptions
 } from '@ionic-native/google-maps';
@@ -36,8 +34,16 @@ var markers = [];
 })
 export class HomePage implements OnInit  {
   
+selectedMode
+lat
+lng
 
 
+
+Lats = [] 
+Long = []
+
+MarkersArray = []
   /////////////////////////////////////////////////////////////////////////////////////////////
   address:string;
   DBLocation=[]
@@ -85,8 +91,12 @@ export class HomePage implements OnInit  {
    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
    this.autocomplete = { input: '' };
    this.autocompleteItems = [];
+ ////
    this.geocoder = new google.maps.Geocoder;
    this.markers = [];
+
+  // result = []
+  
    ///
   this.calcDistance();
   ///
@@ -191,25 +201,10 @@ ngOnInit() {
    //this.loadMap();
    this.initMap();
    this.checkUserState()
+   //this.Directions();
+   }
 
-   //
-   ///
-   ///
-   
-
-  
-
-/////////---------------
-// marker2 = new google.maps.Marker({
-//   map: map,
-//   draggable: true,
-//   position: {lat:-26.196374, lng: 28.034205},
-//   animation: GoogleMapsAnimation.BOUNCE
-// });
-///////
-
-   // Get the location of you
- }
+    
 
 handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setPosition(pos);
@@ -254,11 +249,8 @@ LandMarks(){
   var  output = []
     var dist = google.maps.geometry.spherical.computeDistanceBetween;
        console.log(dist,"dist");
-  // result = this.firebaseService.fetchSavedLocations()
-  // console.log(this.firebaseService.fetchSavedLocations());
-  // console.log(result.length);
   return new Promise((resolve, reject) => {
-    this.loadLocations().then(data =>{            /////////////////////////////////////////////////////// Load items into an array
+    this.loadLocations().then(data =>{ 
      
      console.log( data.length);
      for( let x = 0; x < data.length; x++ ){
@@ -349,13 +341,6 @@ LandMarks(){
       var pttwo = this.DBLocation[y].crimeType
       output.push({location:temp, desc: pttwo} );
     }
-
-
-
-    ///////////////////////////////
-    
-
-
 
     console.log(output, "output");
       
@@ -570,17 +555,7 @@ updateSearchResults(){
         })
       }
       selectSearchResult(item){
-        // this.clearMarkers();
         this.autocompleteItems = [];
-        
-          var selectedMarker
-          var  infoWindow
-     
-        //  //Set latitude and longitude of user place
-        //  this.mapz = new google.maps.Map(document.getElementById('map_canvas'), {
-        //    center: {lat: -34.075007, lng: 20.23852},
-        //    zoom: 15
-        //  });
       
         this.geocoder.geocode({'placeId': item.place_id}, (results, status) => {
           console.log(this.markers);
@@ -609,12 +584,14 @@ updateSearchResults(){
       }
 
       initMap() {
+
           var infoWindowMarker;
           var selectedMarker
           var  infoWindow
           ///danger image
             this.dangerImage = {
             url: 'assets/icon/danger (2).png', // This marker is 20 pixels wide by 32 pixels high.
+            //  url: 'assets/icon/pin-black-silhouette-in-diagonal-position-pointing-down-right (8).png',
             size: new google.maps.Size(32, 32), // The origin for this image is (0, 0).
             origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
            // anchor: new google.maps.Point(0, 40)
@@ -640,18 +617,38 @@ updateSearchResults(){
         
           console.log('initialising map');
           
-          map = new google.maps.Map(document.getElementById('map_canvas'), {
-            center: {lat: -34.397, lng: 150.644},
-            zoom: 17,
-            animation: GoogleMapsAnimation.BOUNCE,
-            icon: myLocationimage
+          // map = new google.maps.Map(document.getElementById('map_canvas'), {
+          //   center: {lat: -34.397, lng: 150.644},
+          //   zoom: 17,
+          //   animation: GoogleMapsAnimation.BOUNCE,
+          //   icon: myLocationimage
            
-          });
+          // });
+
+   
+    var center = new google.maps.LatLng(0, 0);
+    var myOptions = {
+      zoom: 18,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      center: center
+    }
+  
+    map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
+
+  ///////////////// directions services
+    this.directionsService = new google.maps.DirectionsService();
+
+    var start = "Tembisa, South Africa";
+    var end = "De WATERKANT, South Africa";
+  
+    // get function to do directions 
+    this.plotDirections(start, end);
+
+    ////////////////  end here
+
           infoWindow = new google.maps.InfoWindow;
           infoWindowMarker= new google.maps.InfoWindow;
-        
          
-          
         // /// map click listener start
         map.addListener('dblclick',(event)=>{
         //     //delete marker
@@ -679,17 +676,7 @@ updateSearchResults(){
         
         //// listener on marker end
         });
-        
-        // /// map click listener end
-        
-        ////add marker
-        
-        
-        
-        ///add marker
-        
-        
-        
+       
            // Get the location of you
            if (navigator.geolocation) {
             //this.array =[]
@@ -704,8 +691,8 @@ updateSearchResults(){
                 zoom: 17,
                 map: map,
                 animation: GoogleMapsAnimation.BOUNCE,
-                icon: myLocationimage
-        
+                icon: myLocationimage,
+               
               });
               this.markers.push(marker);
               map.setCenter(pos[0].location);
@@ -715,9 +702,15 @@ updateSearchResults(){
               infoWindow.open(map);
               map.setCenter(pos[0].location);
         ​
-      
               this.array.push(pos[0])
               console.log(this.array, "zzz");
+
+              this.Lats = this.array[0].location.lat;
+              console.log( this.Lats, "weewewe");
+              
+              this.Long = this.array[0].location.lat;
+
+
             }, () => {
               this.handleLocationError(true, infoWindow, map.getCenter());
             });
@@ -771,4 +764,79 @@ updateSearchResults(){
             console.log(lat, lng, this.result)
       
     }
+ 
+          // code is working from here
+  
+  
+  
+  plotDirections(start, end) {
+  
+    var method = 'DRIVING';
+  
+    var request = {
+      origin: start,
+      destination: end,
+      travelMode: google.maps.DirectionsTravelMode[method],
+      provideRouteAlternatives: true
+    };
+  
+    this.directionsService.route(request, (response, status)=> {
+  
+      if (status == google.maps.DirectionsStatus.OK) {
+  
+        var routes = response.routes;
+        var colors = ['red', 'green', 'blue', 'orange', 'yellow', 'black'];
+        var directionsDisplays = [];
+  
+        // Reset the start and end variables to the actual coordinates
+        start = response.routes[0].legs[0].start_location;
+        end = response.routes[0].legs[0].end_location;
+  
+        // Loop through each route
+        for (var i = 0; i < routes.length; i++) {
+  
+          var directionsDisplay = new google.maps.DirectionsRenderer({
+            map: map,
+            directions: response,
+            routeIndex: i,
+            avoidareas: this.markers,
+            draggable: true,
+            polylineOptions: {
+  
+              strokeColor: colors[i],
+              strokeWeight: 4,
+              strokeOpacity: .3
+            }
+          });
+
+  
+          // Push the current renderer to an array
+          directionsDisplays.push(directionsDisplay);
+  
+          // Listen for the directions_changed event for each route
+          google.maps.event.addListener(directionsDisplay, 'directions_changed', ((directionsDisplay, i) => {
+  
+            return ()=> {
+  
+              var directions = directionsDisplay.getDirections();
+              var new_start = directions.routes[0].legs[0].start_location;
+              var new_end = directions.routes[0].legs[0].end_location;
+  
+              if ((new_start.toString() !== start.toString()) || (new_end.toString() !== end.toString())) {
+  
+                // Remove every route from map
+                for (var j = 0; j < directionsDisplays.length; j++) {
+                  directionsDisplays[j].setMap(null);
+                }
+  
+                // Redraw routes with new start/end coordinates
+                this.plotDirections(new_start, new_end);
+              }
+            }
+          })(directionsDisplay, i)); // End listener
+        } // End route loop
+      }
+    });
+  }
+
  }

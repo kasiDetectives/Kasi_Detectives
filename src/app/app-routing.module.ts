@@ -9,7 +9,8 @@ const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'report-alert', loadChildren: './report-alert/report-alert.module#ReportAlertPageModule' },
   { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' },
-  { path: 'popup', loadChildren: './popup/popup.module#PopupPageModule' },  { path: 'reported-incident', loadChildren: './reported-incident/reported-incident.module#ReportedIncidentPageModule' },
+  { path: 'popup', loadChildren: './popup/popup.module#PopupPageModule' },
+  { path: 'reported-incident', loadChildren: './reported-incident/reported-incident.module#ReportedIncidentPageModule' },
 
 
 
