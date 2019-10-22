@@ -569,6 +569,7 @@ updateSearchResults(){
             var marker = new google.maps.Marker({
               position: results[0].geometry.location,
               map: map,
+              zoom: 15,
               draggable: true
             });
             this.markers.push(marker);
@@ -629,7 +630,18 @@ updateSearchResults(){
     var center = new google.maps.LatLng(0, 0);
     var myOptions = {
       zoom: 18,
+      
+      
+      fullscreenControl: true,
+      fullscreenControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_BOTTOM
+      },
       mapTypeId: google.maps.MapTypeId.ROADMAP,
+      mapTypeControl: true,
+      mapTypeControlOptions: {
+        style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+        position: google.maps.ControlPosition.LEFT_BOTTOM
+    },
       center: center
     }
   
@@ -771,6 +783,7 @@ updateSearchResults(){
   
   plotDirections(start, end) {
   
+   // var locations =
     var method = 'DRIVING';
   
     var request = {
