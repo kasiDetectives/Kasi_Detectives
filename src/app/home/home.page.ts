@@ -41,7 +41,7 @@ selectedMode
 lat
 lng
 
-
+start
 
 Lats = [] 
 Long = []
@@ -548,7 +548,7 @@ updateSearchResults(){
         this.backButton = this.platform.backButton.subscribeWithPriority((1), () => {
           if(this.constructor.name === 'HomePage'){
             if(window.confirm('Do you want to exit the app?')){
-              navigator['app'].exitApp
+              navigator['app'].exitApp()
             }
           }
         })
@@ -655,11 +655,11 @@ updateSearchResults(){
   ///////////////// directions services
     this.directionsService = new google.maps.DirectionsService();
 
-    var start = "Tembisa, South Africa";
+   // var start = "Tembisa, South Africa";
     var end = "De WATERKANT, South Africa";
   
     // get function to do directions 
-    this.plotDirections(start, end);
+    
 
     ////////////////  end here
 
@@ -722,12 +722,12 @@ updateSearchResults(){
               this.array.push(pos[0])
               console.log(this.array, "zzz");
 
-              this.Lats = this.array[0].location.lat;
+              this.Lats = this.array[0].location.lat();
               console.log( this.Lats, "weewewe");
               
-              this.Long = this.array[0].location.lat;
+              this.Long = this.array[0].location.lng();
 
-
+              this.plotDirections(this.start, end);
             }, () => {
               this.handleLocationError(true, infoWindow, map.getCenter());
             });
@@ -788,11 +788,13 @@ updateSearchResults(){
   
   plotDirections(start, end) {
   
-   // var locations =
+    var locations = {lat: this.Lats, lng: this.Long}
+    console.log(locations, 'runninnnng');
+     this.start = locations
     var method = 'DRIVING';
   
     var request = {
-      origin: start,
+      origin: this.start,
       destination: end,
       travelMode: google.maps.DirectionsTravelMode[method],
       provideRouteAlternatives: true
@@ -890,4 +892,9 @@ closeKeyboard(){
   document.getElementById("place-id").blur()
 }
 
+
+scrollStart() {
+  this.keyboard.hide();
+  document.getElementById("place-id").blur()
+}
  }
