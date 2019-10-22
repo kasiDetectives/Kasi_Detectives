@@ -5,7 +5,7 @@
       </ion-buttons>
       <ion-title  style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png"></ion-title>   
   </ion-toolbar>
-  <ion-grid color="success">
+  <!-- <ion-grid color="success">
     <ion-row>
       <ion-col>
         <ion-searchbar id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
@@ -18,24 +18,18 @@
         </ion-list>
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
 </ion-header>
     
 <ion-content color="success">
 
-    <!-- <ion-button shape="round" color="tertiary" style="float: right;" [routerLink]="['/login']">
-      <ion-icon name="log-in"></ion-icon>Sign In
-    </ion-button>
-  <ion-button shape="round" color="tertiary" style="float: right;"  [routerLink]="['/registration']"> 
-    <ion-icon name="person"></ion-icon>Sign Up
-  </ion-button><br><br> -->
-  
-  <ion-searchbar color= "light"showCancelButton="never"></ion-searchbar>
 
-  <!--  start map -->
-  <!-- <div id="map_canvas"></div> -->
-  <!-- end -->
-  <ion-list>
+
+  
+<!--  start map -->
+   <div id="map_canvas"></div>
+<!-- end -->
+<ion-list>
       <ion-item *ngFor="let n of scheduled">
           <ion-label text-wrap>
             {{n.id}} - {{n.title}}
@@ -43,9 +37,15 @@
           </ion-label>
       </ion-item>
   </ion-list>
-<!--  start map -->
-   <div id="map_canvas"></div>
-<!-- end -->
+​
+    <ion-card class="searchBar">
+    <ion-searchbar  id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
+    <ion-list   [hidden]="autocompleteItems.length == 0">
+      <ion-item class="list"  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
+         {{ item.description }}
+      </ion-item>
+     </ion-list>
+    </ion-card>
 
 <p id="output"></p>
 

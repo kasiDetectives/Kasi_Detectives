@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import * as firebase from 'firebase'
 import { ValueAccessor } from '@ionic/angular/dist/directives/control-value-accessors/value-accessor';
 
+
+
+var database = firebase.database();
 @Injectable({
   providedIn: 'root'
 })
