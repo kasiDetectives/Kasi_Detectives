@@ -715,6 +715,7 @@ updateSearchResults(){
         
         
               component: ReportedIncidentPage,
+              cssClass: 'my-custom-modal-css',
               componentProps: {
                 address: address,
                 lat: lat,
