@@ -22,6 +22,9 @@ import { PopupPage } from '../popup/popup.page';
 import { ReportedIncidentPage } from '../reported-incident/reported-incident.page'
 import { FirebaseService } from '../firebase.service';
 import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
+//import { Keyboard } from '@ionic-native/keyboard/ngx';
+
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 declare var google
 var map;
@@ -43,6 +46,8 @@ lng
 Lats = [] 
 Long = []
 
+
+keyboardShow = false
 MarkersArray = []
   /////////////////////////////////////////////////////////////////////////////////////////////
   address:string;
@@ -76,7 +81,7 @@ MarkersArray = []
   array = []
  
  constructor(public zone: NgZone,public alertController: AlertController,public navigationService : NavigationService,private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-  private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing) 
+  private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, private keyboard: Keyboard) 
   {
   this.exit()
   this.checkUserState()
@@ -851,5 +856,38 @@ updateSearchResults(){
       }
     });
   }
+
+
+
+
+
+
+//   ionViewDidEnter() {
+//     this.platform.ready().then(() => {
+//       Keyboard.disableScroll(true);
+//     });
+// }
+
+// ionViewWillLeave() {
+//     this.platform.ready().then(() => {
+//       Keyboard.disableScroll(false);
+//     });
+// }
+
+
+openKeyboard(){
+  this.keyboard.show();
+  //this.keyboard.setResizeMode(mode)
+  this.keyboard.onKeyboardDidShow()
+  this.keyboard.setResizeMode
+  window.addEventListener('keyboardWillShow', () => console.log('keyboard showing'))
+}
+
+closeKeyboard(){
+  this.keyboard.hide()
+  console.log('closing keys');
+  
+  document.getElementById("place-id").blur()
+}
 
  }
