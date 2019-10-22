@@ -123,9 +123,8 @@ notifyDanger(desc)
 // Schedule a single notification
 this.localNotifications.schedule({
   id: 1,
-  title:'High Crime Zone ! ',
-  text: desc,
-  data:{mydata: desc},
+  title:'High Crime Area! ',
+  text: 'A ' + desc + 'has been reported here.',
   sound: this.setSound(),
  trigger: {in: 2, unit: ELocalNotificationTriggerUnit.SECOND},
  foreground: true
@@ -686,7 +685,7 @@ updateSearchResults(){
 
   async alertUserToLogin() {
     const alert = await this.alertController.create({
-      header: 'Login',
+      header: '',
       message: 'You need to be logged in to use this function',
       buttons: [
         {
@@ -810,11 +809,9 @@ updateSearchResults(){
         })
       }
       tweet(message){
-
-        this.socialSharing.shareViaTwitter('A' + message + 'has been shared with users of Kasi_Detectives.', this.pic,'').then(() => {
-        
+        this.socialSharing.shareViaTwitter('A ' + message + ' has been shared with users of Kasi_Detectives.', this.pic,'').then(() => {
+            
         }).catch(() => {
-
         })
       }
       selectSearchResult(item){

@@ -73,7 +73,7 @@ export class ProfilePage implements OnInit {
 
       console.log(names);
       
-      if(sourceType === this.camera.PictureSourceType.PHOTOLIBRARY)
+      if(sourceType == this.camera.PictureSourceType.PHOTOLIBRARY)
       {
         names = names.substring(0, names.lastIndexOf('?'))
       }
@@ -85,6 +85,7 @@ export class ProfilePage implements OnInit {
       {
         console.log(result);
         this.image = result
+        this.secImage =result
       })
 
       this.file.readAsArrayBuffer(dirrectory, names).then((buffer) =>
@@ -103,7 +104,6 @@ export class ProfilePage implements OnInit {
 
         }
       })
-      // let base64Image = this.pics + ImageData
     }, (err) =>
     {
 
@@ -213,4 +213,6 @@ export class ProfilePage implements OnInit {
       
     })
   }
+
+    
 }

@@ -95,11 +95,11 @@ constructor(public zone: NgZone,public alertController: AlertController,public n
    //this.fetchCrimeCategories()
 
    ////
-    //this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
+    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
     this.autocomplete = { input: '' };
     this.autocompleteItems = [];
   ////
-    //this.geocoder = new google.maps.Geocoder;
+    this.geocoder = new google.maps.Geocoder;
     this.markers = [];
 
     ///
