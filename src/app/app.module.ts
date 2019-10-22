@@ -10,17 +10,19 @@ import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
+import { File } from '@ionic-native/file/ngx'
 
 import { PopupPageModule } from './popup/popup.module';
+import { ReportedIncidentPageModule } from './reported-incident/reported-incident.module'
 import * as firebase from 'firebase'
-
+import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
 var firebaseConfig = {
   apiKey: "AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI",
   authDomain: "kasidetectives.firebaseapp.com",
   databaseURL: "https://kasidetectives.firebaseio.com",
   projectId: "kasidetectives",
   
-  storageBucket: "",
+  storageBucket: "kasidetectives.appspot.com",
   messagingSenderId: "207670776123",
   appId: "1:207670776123:web:b1f7be1f7bb88f7d70271e"
 };
@@ -30,11 +32,13 @@ firebase.initializeApp(firebaseConfig);
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, PopupPageModule],
+  imports: [BrowserModule, IonicModule.forRoot(), HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, PopupPageModule, ReportedIncidentPageModule],
   providers: [
     StatusBar,
+   File,
     SocialSharing,
     Camera,
+    LocalNotifications, 
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
