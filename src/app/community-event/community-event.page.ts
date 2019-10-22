@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GooglemapService } from '../googlemap.service';
+import { Geolocation } from '@capacitor/core'
 
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
@@ -24,17 +25,19 @@ lng :number
 resp
   constructor(public navigationService : NavigationService, public userService : UsersService, public mapboxService : MapboxService, public router : Router, public events: Events) {
     console.log("why");
-    this.checkState()
+    // this.checkState()
     this.events.publish('currentPage:home', false)
+
+   
   }
-  checkState(){
-    this.user = this.userService.returnUserProfile()
-    console.log(this.user);
-    if(this.user[0] ===undefined){
-      console.log(true);
-      this.router.navigate(['/login'])
-    }
-  }
+  // checkState(){
+  //   this.user = this.userService.returnUserProfile()
+  //   console.log(this.user);
+  //   if(this.user[0] ===undefined){
+  //     console.log(true);
+  //     this.router.navigate(['/login'])
+  //   }
+  // }
 
   autocomplete(){
    this.clearArray(this.place)
