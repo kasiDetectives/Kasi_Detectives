@@ -536,6 +536,9 @@ updateSearchResults(){
     }
       async submitToFirebase(submitInfo){
         console.log('And we all just');
+        let date = Date()
+        console.log(date);
+        
         await this.firebaseService.submit(submitInfo).then(data => {
           console.log(data);
           this.succesfulSubmission()
