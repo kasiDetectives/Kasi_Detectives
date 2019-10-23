@@ -24,6 +24,7 @@ import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 //import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 declare var google
 var map;
@@ -41,6 +42,11 @@ export class HomePage implements OnInit  {
   lng
 
   start
+  end : string
+  destinations: string
+
+
+  myDest
 
   Lats = [] 
   Long = []
@@ -48,7 +54,7 @@ export class HomePage implements OnInit  {
 
   keyboardShow = false
   MarkersArray = []
-  /////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////
   address:string;
   DBLocation=[]
   scheduled=[];
@@ -67,10 +73,12 @@ export class HomePage implements OnInit  {
   mapz : any;
   markers : any;
   autocomplete: any;
+  autocompletez: any;
   GoogleAutocomplete: any;
   GooglePlaces: any;
   geocoder: any
   autocompleteItems: any;
+  autocompleteItemz: any;
 
   dangerImage
   
@@ -94,7 +102,9 @@ export class HomePage implements OnInit  {
     ////
     this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
     this.autocomplete = { input: '' };
+    this.autocompletez = { inputz: '' };
     this.autocompleteItems = [];
+    this.autocompleteItemz = [];
     ////
     this.geocoder = new google.maps.Geocoder;
     this.markers = [];
@@ -496,7 +506,7 @@ export class HomePage implements OnInit  {
     };
     ///selected area image
     var selectImage = {
-      url: 'assets/icon/precision (2).png', // This marker is 20 pixels wide by 32 pixels high.
+      url: 'assets/icon/pin-black-silhouette-in-diagonal-position-pointing-down-right (2).png', // This marker is 20 pixels wide by 32 pixels high.
       size: new google.maps.Size(40, 40), // The origin for this image is (0, 0).
       origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
       // anchor: new google.maps.Point(0, 40)
@@ -509,12 +519,7 @@ export class HomePage implements OnInit  {
       // anchor: new google.maps.Point(0, 40)
     };
     console.log('initialising map');
-    // map = new google.maps.Map(document.getElementById('map_canvas'), {
-      //   center: {lat: -34.397, lng: 150.644},
-      //   zoom: 17,
-      //   animation: GoogleMapsAnimation.BOUNCE,
-      //   icon: myLocationimage
-      // });
+
     var center = new google.maps.LatLng(0, 0);
     var myOptions = {
       zoom: 18,
@@ -531,11 +536,8 @@ export class HomePage implements OnInit  {
       center: center
     }
     map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
-    this.directionsService = new google.maps.DirectionsService();     ///////////////// directions services
-    // var start = "Tembisa, South Africa";
-    var end = "De WATERKANT, South Africa";
-    // get function to do directions
-    ////////////////  end here
+    this.directionsService = new google.maps.DirectionsService();     // directions services
+
     infoWindow = new google.maps.InfoWindow;
     infoWindowMarker= new google.maps.InfoWindow;
     // /// map click listener start
@@ -574,7 +576,7 @@ export class HomePage implements OnInit  {
           zoom: 17,
           map: map,
           animation: GoogleMapsAnimation.BOUNCE,
-          icon: myLocationimage,
+          icon: myLocationimage, //icon: selectImage
         });
         this.markers.push(marker);
         map.setCenter(pos[0].location);
@@ -587,7 +589,8 @@ export class HomePage implements OnInit  {
         this.Lats = this.array[0].location.lat();
         console.log( this.Lats, "weewewe");
         this.Long = this.array[0].location.lng();
-        this.plotDirections(this.start, end);
+        // calling function to plot
+        this.plotDirections(this.start, this.end);
       }, () => {
         this.handleLocationError(true, infoWindow, map.getCenter());
       });
@@ -596,6 +599,7 @@ export class HomePage implements OnInit  {
       this.handleLocationError(false, infoWindow, map.getCenter());
     }
   }
+
   reportIncident(event, marker){
     var infoWindowMarker;
     infoWindowMarker = new google.maps.InfoWindow;
@@ -635,15 +639,22 @@ export class HomePage implements OnInit  {
     console.log(event.latLng.lat());
     console.log(lat, lng, this.result)
   }
+
       // code is working from here
   plotDirections(start, end) {
+    
+      // start for getting user location
     var locations = {lat: this.Lats, lng: this.Long}
     console.log(locations, 'runninnnng');
     this.start = locations
+
+      //end for getting user destinations
+      this.end = this.destinations 
+      console.log(this.end, "kokoko");
     var method = 'DRIVING';
     var request = {
       origin: this.start,
-      destination: end,
+      destination: this.end,
       travelMode: google.maps.DirectionsTravelMode[method],
       provideRouteAlternatives: true
     };
@@ -690,18 +701,56 @@ export class HomePage implements OnInit  {
         } // End route loop
       }
     });
-  }
-  //   ionViewDidEnter() {
-  //     this.platform.ready().then(() => {
-  //       Keyboard.disableScroll(true);
-  //     });
-  // }
+ }
 
-  // ionViewWillLeave() {
-  //     this.platform.ready().then(() => {
-  //       Keyboard.disableScroll(false);
+  setDestination(event){
+    console.log(event.detail.value);
+    this.destinations = event.detail.value
+    console.log(this.destinations);
+  }
+/////////////////////////////////////////////////////////////////////////////////////
+  /////////////  places
+  // SearchPlaces(){
+  //   console.log(this.autocompletez.inputz);
+  //   if(this.autocompletez.inputz === '') {
+  //     this.autocompleteItemz = [];
+  //     return;
+  //   }
+  //   this.GoogleAutocomplete.getPlacePredictions({ inputz: this.autocompletez.inputz },
+  //   (predictions, status) => {
+  //     this.autocompleteItemz = [];
+  //     this.zone.run(() => {
+  //       predictions.forEach((prediction) => {
+  //         this.autocompleteItemz.push(prediction);
+  //       });
   //     });
+  //   });
   // }
+  // SearchedResult(itemz){
+  //   this.autocompleteItemz = [];
+  //   this.geocoder.geocode({'Here': itemz.place_id}, (results, status) => {
+  //     console.log(this.markers);
+  //     if(status === 'OK' && results[0]) {
+  //       let position = {
+  //         lat: results[0].geometry.location.lat,
+  //         lng: results[0].geometry.location.lng
+  //       };
+  //       var marker = new google.maps.Marker({
+  //         position: results[0].geometry.location,
+  //         map: map,
+  //         zoom: 15,
+  //         draggable: true
+  //       });
+  //       this.markers.push(marker);
+  //       map.setCenter(results[0].geometry.location);
+  //     }
+  //     console.log(this.markers);
+  //     marker.addListener('click', (event) => {
+  //       this.reportIncident(event, marker)
+  //     })
+  //   })
+  // }
+  ////////////////////////////////////////////////////////////////////////////////
   openKeyboard(){
     this.keyboard.show();
     //this.keyboard.setResizeMode(mode)
