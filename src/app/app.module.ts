@@ -12,6 +12,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { File } from '@ionic-native/file/ngx'
 
+//import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+
 import { PopupPageModule } from './popup/popup.module';
 import { ReportedIncidentPageModule } from './reported-incident/reported-incident.module'
 import * as firebase from 'firebase'
@@ -32,11 +35,12 @@ firebase.initializeApp(firebaseConfig);
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, PopupPageModule, ReportedIncidentPageModule],
+  imports: [  BrowserModule, IonicModule.forRoot(), HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, PopupPageModule, ReportedIncidentPageModule],
   providers: [
     StatusBar,
    File,
     SocialSharing,
+    Keyboard,
     Camera,
     LocalNotifications, 
     SplashScreen,
