@@ -57,8 +57,21 @@ export class LoginPage implements OnInit {
       //   }
       // }else{
       //   console.log(result.message)
-       }
+       }else{
+        this.invalidPassword(result)
+      }
     })
+  }
+
+  async invalidPassword(result)
+  {
+    const alert = await this.alertController.create({
+      header: "Alert",
+      message: result,
+      buttons: ['OK']
+    })
+
+    await alert.present()
   }
   //Resetting user password using email password reset request
   async resetPassword() {
