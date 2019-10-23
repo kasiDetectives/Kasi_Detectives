@@ -87,7 +87,7 @@ export class HomePage implements OnInit  {
   directionsService
   array = []
  
-  constructor(public zone: NgZone,public alertController: AlertController, private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
+  constructor(public zone: NgZone,public toastController : ToastController, public alertController: AlertController, private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
     private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, private keyboard: Keyboard) 
     {
     this.exit()
@@ -443,7 +443,16 @@ export class HomePage implements OnInit  {
   }
   submitToFirebase(submitInfo){
     console.log('And we all just');
-    this.firebaseService.submit(submitInfo)
+    this.firebaseService.submit(submitInfo).then(data => {
+      this.succesfulSubmission()
+    })
+  }
+  async succesfulSubmission() {
+    const toast = await this.toastController.create({
+      message: 'Your report has been submitted to our database.',
+      duration: 2000
+    });
+    toast.present();
   }
   submit(submitInfo){
     console.log(submitInfo);
