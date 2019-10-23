@@ -5,20 +5,6 @@
       </ion-buttons>
       <ion-title  style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png"></ion-title>   
   </ion-toolbar>
-  <!-- <ion-grid color="success">
-    <ion-row>
-      <ion-col>
-        <ion-searchbar id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-list  [hidden]="autocompleteItems.length == 0">
-          <ion-item  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">{{ item.description }}</ion-item>
-        </ion-list>
-      </ion-col>
-    </ion-row>
-  </ion-grid> -->
 </ion-header>
     
 <ion-content color="success">
@@ -49,14 +35,26 @@
 
 <p id="output"></p>
 
-    <ion-card color="light">
-        <ion-card-header>
-          <ion-card-title>News Updates.</ion-card-title>
-        </ion-card-header>
-      
-        <ion-card-content>
-          Keep close to Nature's heart... and break clear away, once in awhile,
-          and climb a mountain or spend a week in the woods. Wash your spirit clean.
-        </ion-card-content>
-      </ion-card>
+
+<!-- <div id="basic-map" data-role="page">
+  <div data-role="content">   
+      <div data-role="fieldcontain">
+          <ion-label for="myDest">Target Destination:</ion-label>
+          <ion-input type="text" name="myDest" id="myDest" [ngModel]='myDest' (ionChange)='setDestination($event)' placeholder="User Destination" value=""></ion-input>
+      </div>
+
+      <a href="#" id="directions-button" data-role="button" data-inline="true" (click)='  sendDestination()' data-mini="true"> Get Directions<ion-icon name="map"></ion-icon></a>
+      <div id="results" style="display:none;">
+          <div id="directions"></div>
+      </div>
+  </div>
+</div> -->
+
+  
+    <ion-label>Target Destination:</ion-label>
+    <ion-input type="text" name="myDest" id="myDest" [ngModel]='myDest' (ionChange)='setDestination($event)' placeholder="Your Destination" value=""></ion-input>
+  <ion-button id="directions-button" data-inline="true" data-mini="true" (click)='sendDestination()' >
+      <ion-icon name="map"></ion-icon>
+  </ion-button>
+
 </ion-content>

@@ -35,13 +35,18 @@ var markers = [];
 export class HomePage implements OnInit  {
   
 selectedMode
+
+////
 lat
 lng
+destinations
+myDest
+////////
+start 
+end
 
-
-
-Lats = [] 
-Long = []
+Latingz =[]
+Longingz = []
 
 MarkersArray = []
   /////////////////////////////////////////////////////////////////////////////////////////////
@@ -655,7 +660,7 @@ updateSearchResults(){
   
     // get function to do directions 
     this.plotDirections(start, end);
-
+    this.sendDestination();
     ////////////////  end here
 
           infoWindow = new google.maps.InfoWindow;
@@ -717,11 +722,10 @@ updateSearchResults(){
               this.array.push(pos[0])
               console.log(this.array, "zzz");
 
-              this.Lats = this.array[0].location.lat;
-              console.log( this.Lats, "weewewe");
-              
-              this.Long = this.array[0].location.lat;
-
+              this.Latingz = this.array[0].latLng.lat;
+              console.log( this.Latingz, "oneLat");
+              this.Longingz = this.array[0].latLng.lng;
+              console.log( this.Longingz, "oneTwo");
 
             }, () => {
               this.handleLocationError(true, infoWindow, map.getCenter());
@@ -778,12 +782,9 @@ updateSearchResults(){
     }
  
           // code is working from here
-  
-  
-  
+
   plotDirections(start, end) {
   
-   // var locations =
     var method = 'DRIVING';
   
     var request = {
@@ -850,6 +851,39 @@ updateSearchResults(){
         } // End route loop
       }
     });
+ }
+
+  ///
+  sendDestination(){
+    this.array
+    console.log(this.array);
+
+    var start
+    var end 
+    end = this.myDest
+   // start = this.array
+    start = { lat: this.array[0].lat, lng: this.array[0].lat}
+    var starts = {lat: this.Latingz[0].location, lng: this.Longingz[0].location}
+    console.log(end );
+    console.log(starts,  "sss");
+    console.log(start,  "ttt");
+    
+    
+    // let setHere = [{
+    //   lat: this.lat,
+    //   lng: this.lng
+    // }]
+    //this.modCtrl.dismiss(report) 
+    var method = 'DRIVING';
+
+
+
+  }
+
+  setDestination(event){
+    console.log(event.detail.value);
+    console.log(this.myDest);
+    this.destinations = event.detail.value
   }
 
  }
