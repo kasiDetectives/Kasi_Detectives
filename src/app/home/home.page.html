@@ -5,20 +5,6 @@
       </ion-buttons>
       <ion-title  style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png"></ion-title>   
   </ion-toolbar>
-  <!-- <ion-grid color="success">
-    <ion-row>
-      <ion-col>
-        <ion-searchbar id="place-id" [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-list  [hidden]="autocompleteItems.length == 0">
-          <ion-item  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">{{ item.description }}</ion-item>
-        </ion-list>
-      </ion-col>
-    </ion-row>
-  </ion-grid> -->
 </ion-header>
     
 <ion-content color="success">
@@ -48,15 +34,20 @@
     </ion-card>
 
 <p id="output"></p>
+<ion-card class="directions">
+  <ion-item>
+    <ion-label>Directions:</ion-label>
+    <ion-input type="text" name="myDest" id="myDest" [ngModel]='myDest' (ionChange)='setDestination($event)' placeholder="choose destination.." value=""></ion-input>
+    <ion-button id="directions-button" data-inline="true" data-mini="true" (click)='plotDirections()'>
+      <ion-icon name="Walk" ></ion-icon>
+  </ion-button>
+  <!-- <ion-input type="text" name="myDest" id="Here"  [(ngModel)]="autocompletez.inputz" (ionChange)="SearchPlaces()"></ion-input>
+    <ion-list   [hidden]="autocompleteItems.length == 0">
+    <ion-item class="list"  *ngFor="let itemz of autocompleteItemz" tappable id="submit" (click)="SearchedResult(itemz)">
+       {{ itemz.description }}
+    </ion-item>
+   </ion-list> -->
+  </ion-item>
+</ion-card>
 
-    <ion-card color="light">
-        <ion-card-header>
-          <ion-card-title>News Updates.</ion-card-title>
-        </ion-card-header>
-      
-        <ion-card-content>
-          Keep close to Nature's heart... and break clear away, once in awhile,
-          and climb a mountain or spend a week in the woods. Wash your spirit clean.
-        </ion-card-content>
-      </ion-card>
 </ion-content>
