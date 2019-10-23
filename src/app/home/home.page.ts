@@ -2,7 +2,7 @@ import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
-import { Component, OnInit, NgZone, asNativeElements} from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild, asNativeElements} from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { Events, ToastController, Platform, ModalController } from '@ionic/angular';
 import {
@@ -25,6 +25,10 @@ import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+///
+// import { TextInput } from 'ionic-angular';
+
+import { IonInput } from '@ionic/angular';
 
 declare var google
 var map;
@@ -36,7 +40,7 @@ var markers = [];
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit  {
-  
+  @ViewChild('searchInput', {static: false})  inputElement: IonInput;
   selectedMode
   lat
   lng
@@ -846,6 +850,20 @@ export class HomePage implements OnInit  {
     
   }
   scrollStart() {
+    console.log(this.inputElement);
+    this.inputElement.setFocus()
+    this.inputElement.getInputElement().then(data => {
+      let value = data
+      console.log(value);
+    })
+    
+    
+    console.log(this.inputElement.setFocus());
+    
+    //padding.getElementRef().nativeElement.blur();
+    this.inputElement.ionBlur
+    console.log(this.inputElement.ionBlur);
+    
     document.getElementById("place-id").blur()
     this.keyboard.onKeyboardHide()
     this.autocompleteItems = [];
