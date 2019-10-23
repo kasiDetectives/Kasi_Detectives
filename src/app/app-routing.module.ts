@@ -18,6 +18,6 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
   ],
-  exports: [RouterModule]
+  exports: [Route:;;;;;;;rModule]
 })
 export class AppRoutingModule { }
