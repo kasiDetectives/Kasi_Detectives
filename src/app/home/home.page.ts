@@ -2,7 +2,7 @@ import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
-import { Component, OnInit, NgZone} from '@angular/core';
+import { Component, OnInit, NgZone, asNativeElements} from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { Events, ToastController, Platform, ModalController } from '@ionic/angular';
 import {
@@ -63,7 +63,7 @@ export class HomePage implements OnInit  {
   highRiskLocations = {}
   reportedLocations = {}
   message
-
+  selectImage
   mapz : any;
   markers : any;
   autocomplete: any;
@@ -88,6 +88,7 @@ export class HomePage implements OnInit  {
     this.run()
     this.fetchCrimeCategories()
     this.setUser()
+    this.getDate()
     //this.loadUserIncidents()
     console.log("why");
     
@@ -122,6 +123,37 @@ export class HomePage implements OnInit  {
       });
     });
     //////////////////// constructor notification end
+  }
+  getDate(){
+    let currentDate = new Date()
+    console.log(currentDate);
+    let date = currentDate.getDate()
+    console.log(date);
+    let month 
+    let monthArray = [
+      {key: 0, value: 'January'},
+      {key: 1, value: 'February'},
+      {key: 2, value: 'March'},
+      {key: 3, value: 'April'},
+      {key: 4, value: 'May'},
+      {key: 5, value: 'June'},
+      {key: 6, value: 'July'},
+      {key: 7, value: 'August'},
+      {key: 8, value: 'September'},
+      {key: 9, value: 'October'},
+      {key: 10, value: 'November'},
+      {key: 11, value: 'December'}
+    ]
+    
+    let monthNum = currentDate.getMonth()
+    for(let i = 0; i < monthArray.length; i++){
+      if(monthNum === monthArray[i].key){
+        month = monthArray[i].value
+      }
+    }
+    console.log(month);
+    let year = currentDate.getFullYear()
+    console.log(year);
   }
   ///////// notification start
   notifyDanger(desc){
@@ -219,7 +251,7 @@ export class HomePage implements OnInit  {
     var dist = google.maps.geometry.spherical.computeDistanceBetween;
     console.log(dist,"dist");
     return new Promise((resolve, reject) => {
-      this.loadLocations().then(data =>{ 
+      this.loadLocations().then(data => { 
         console.log( data.length);
         for( let x = 0; x < data.length; x++ ){
           console.log(x);
@@ -246,7 +278,7 @@ export class HomePage implements OnInit  {
               var infoWindowMarker;
               infoWindowMarker= new google.maps.InfoWindow;
               let addressArray = {}
-              this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) =>{
+              this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) => {
                 console.log(results);
                 if(status === "OK"){
                   addressArray = {
@@ -265,6 +297,53 @@ export class HomePage implements OnInit  {
             }
           })(markers, x));
         }
+        ///
+        //
+        ///
+        
+        this.loadUserIncidents().then(data => {
+          console.log(data.length);
+          // duplicated code
+              ///selected area image
+    
+          for( let x = 0; x < data.length; x++ ){
+            var  markers = new google.maps.Marker({
+              map: map,
+              draggable: false,
+              position: new google.maps.LatLng(data[x].lat, data[x].lng),
+              icon:  this.selectImage,
+            });
+            google.maps.event.addListener(markers, 'click', ((markers, x) => {
+              return() => {
+                infoWindow.setContent(data[x].crimeType);
+                infoWindow.setPosition(new google.maps.LatLng(data[x].lat, data[x].lng));
+                infoWindow.open(map, markers);
+                console.log(new google.maps.LatLng);
+                var infoWindowMarker;
+                infoWindowMarker= new google.maps.InfoWindow;
+                let addressArray = {}
+                this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) => {
+                  console.log(results);
+                  if(status === "OK"){
+                    addressArray = {
+                      street: results[0].address_components[1].long_name,
+                      section: results[0].address_components[2].long_name,
+                      surburb: results[0].address_components[3].long_name
+                    }
+                    console.log(addressArray);
+                    console.log(addressArray['street'])
+                    console.log(results);
+                    infoWindowMarker.setContent(addressArray['street'])
+                    console.log(addressArray);
+                  }
+                  this.openReportModal(addressArray, data[x].crimeType, data[x].lat, data[x].lng)
+                })
+              }
+            })(markers, x));
+          }
+        })
+        
+        
         console.log(this.DBLocation);
         for(let y = 0; y < this.DBLocation.length; y++){
           console.log(this.DBLocation[y]);
@@ -379,6 +458,7 @@ export class HomePage implements OnInit  {
     const myModal = await this.modal.create({
       component: ReportedIncidentPage,
       componentProps: {
+        crimeType: crimeType,
         address: address,
         lat: lat,
         lng: lng
@@ -494,10 +574,9 @@ export class HomePage implements OnInit  {
       origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
       // anchor: new google.maps.Point(0, 40)
     };
-    ///selected area image
-    var selectImage = {
-      url: 'assets/icon/precision (2).png', // This marker is 20 pixels wide by 32 pixels high.
-      size: new google.maps.Size(40, 40), // The origin for this image is (0, 0).
+    this.selectImage = {
+      url: 'assets/icon/pin-black-silhouette-in-diagonal-position-pointing-down-right (2).png', // This marker is 20 pixels wide by 32 pixels high.
+      size: new google.maps.Size(32, 32), // The origin for this image is (0, 0).
       origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
       // anchor: new google.maps.Point(0, 40)
     };
@@ -710,12 +789,16 @@ export class HomePage implements OnInit  {
     window.addEventListener('keyboardWillShow', () => console.log('keyboard showing'))
   }
   closeKeyboard(){
-    this.keyboard.hide()
-    console.log('closing keys');
-    document.getElementById("place-id").blur()
+    // document.getElementById("place-id").blur()
+    // console.log('closing keyboard');
+    
+    // this.keyboard.hide()
+    // console.log('closing keys');
+    
   }
   scrollStart() {
-    this.keyboard.hide();
     document.getElementById("place-id").blur()
+    this.keyboard.onKeyboardHide()
+    this.autocompleteItems = [];
   }
 }
