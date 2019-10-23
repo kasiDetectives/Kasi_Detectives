@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router'
 import * as firebase from 'firebase'
 import { url } from 'inspector';
+import {AlertController} from '@ionic/angular'
 
 var database = firebase.database();
 
@@ -18,7 +19,9 @@ export class UsersService {
   userProfile = []
   currentState : boolean                         
   rootRef = database.ref().child("Categories")
-  constructor(public router : Router) { }
+  email
+  password
+  constructor(public router : Router, public alertController:AlertController) { }
 
   // Logging users in to the app
   login(email, password){
@@ -56,6 +59,15 @@ export class UsersService {
        return error
      })
   }
+
+  // async presentAlert(errorMessage)
+  // {
+  //   const alert = await this.alertController.create({
+  //     header: "Alert",
+  //     message: errorMessage,
+  //     buttons: ['OK']
+  //   })
+  // }
    //Allowing users to reset their password
    passwordReset(emailAddress){
     firebase.auth().sendPasswordResetEmail(emailAddress).then(() => {
@@ -115,7 +127,7 @@ export class UsersService {
   }
 
   savePic(image){
-    this.checkingAuthState().then((userID) =>{
+    this.login(this.email, this.password).then((userID) =>{
       let storageRef = firebase.storage().ref('userDisplayPic/' + userID)
       return storageRef.put(image).then((data) => {
         console.log('Saved');

@@ -4,10 +4,7 @@ import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angu
 import { Router } from '@angular/router';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { UsersService } from '../users.service';
-import * as firebase from 'firebase'
-import { promise } from 'protractor';
-import { resolve } from 'dns';
-import { reject } from 'q';
+
 import { File } from '@ionic-native/file/ngx';
 
 
@@ -165,7 +162,10 @@ export class ProfilePage implements OnInit {
       // this.email = data.email
       this.profileForm.get('email').setValue(data.email)
       this.profileForm.get('name').setValue(data.name)
+    
       this.image = data.profilePicUrl
+        console.log(data.profilePicUrl);
+        
         loader.dismiss()
       })
 

@@ -19,6 +19,8 @@ export class RegistrationPage implements OnInit {
   namePattern = "^(?=.*\[A-Z])(?=.*\[a-z])(?=.*\[A-Z]).{2,}$"
   passwordPattern = "^(?=.*\[0-9])(?=.*\[a-z])(?=.*\[A-Z])(?=.*\[@#$!%^&*,.<>]).{8,}$"
   pageURL
+  passwordType
+  passwordIcon
 
   constructor(
     public userService : UsersService,
@@ -74,6 +76,8 @@ export class RegistrationPage implements OnInit {
           this.route.navigate([link])
           }
             this.presentToast()
+          }else{
+            this.emailAlert(data)
           }
         }).catch((error) => {
           console.log(error)
@@ -86,6 +90,16 @@ export class RegistrationPage implements OnInit {
     }
   }
 
+  async emailAlert(data)
+  {
+    const alert = await this.alertController.create({
+      header: "Alert",
+      message: data,
+      buttons: ['OK']
+    })
+
+    await alert.present()
+  }
 
   async loadPasswordAlert(){
       const alert = await this.alertController.create({
@@ -106,6 +120,12 @@ export class RegistrationPage implements OnInit {
     });
     toast.present();
   }
+
+  // showPassword()
+  // {
+  //   this.passwordType = this.passwordType === 'text'?'password':'text'
+  //   this.passwordIcon = this.passwordIcon === 'eye-off'?'eye':'eye-off'
+  // }
   ngOnInit() {
     
   }
