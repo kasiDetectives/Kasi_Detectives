@@ -2,7 +2,7 @@ import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
-import { Component, OnInit, NgZone} from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild, asNativeElements} from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { Events, ToastController, Platform, ModalController } from '@ionic/angular';
 import {
@@ -14,7 +14,8 @@ import {
  MyLocation,
  Polyline,
  LatLng,
- GoogleMapOptions
+ GoogleMapOptions,
+ LatLngBounds
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
 import { PopupPage } from '../popup/popup.page';
@@ -26,6 +27,10 @@ import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { GooglemapService } from '../googlemap.service';
+///
+// import { TextInput } from 'ionic-angular';
+
+import { IonInput } from '@ionic/angular';
 
 declare var google
 var map;
@@ -37,11 +42,11 @@ var markers = [];
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit  {
-  
+  @ViewChild('searchInput', {static: false})  inputElement: IonInput;
   selectedMode
   lat
   lng
-
+  hide = true
   start
   end 
   destinations
@@ -67,10 +72,12 @@ export class HomePage implements OnInit  {
   result = []
   loc =[]
   email = null
+  lats
+  long
   highRiskLocations = {}
   reportedLocations = {}
   message
-
+  selectImage
   mapz : any;
   markers : any;
   autocomplete: any;
@@ -97,6 +104,7 @@ export class HomePage implements OnInit  {
     this.run()
     this.fetchCrimeCategories()
     this.setUser()
+    this.getDate()
     //this.loadUserIncidents()
     console.log("why");
     
@@ -133,6 +141,37 @@ export class HomePage implements OnInit  {
       });
     });
     //////////////////// constructor notification end
+  }
+  getDate(){
+    let currentDate = new Date()
+    console.log(currentDate);
+    let date = currentDate.getDate()
+    console.log(date);
+    let month 
+    let monthArray = [
+      {key: 0, value: 'January'},
+      {key: 1, value: 'February'},
+      {key: 2, value: 'March'},
+      {key: 3, value: 'April'},
+      {key: 4, value: 'May'},
+      {key: 5, value: 'June'},
+      {key: 6, value: 'July'},
+      {key: 7, value: 'August'},
+      {key: 8, value: 'September'},
+      {key: 9, value: 'October'},
+      {key: 10, value: 'November'},
+      {key: 11, value: 'December'}
+    ]
+    
+    let monthNum = currentDate.getMonth()
+    for(let i = 0; i < monthArray.length; i++){
+      if(monthNum === monthArray[i].key){
+        month = monthArray[i].value
+      }
+    }
+    console.log(month);
+    let year = currentDate.getFullYear()
+    console.log(year);
   }
   ///////// notification start
   notifyDanger(desc){
@@ -230,7 +269,7 @@ export class HomePage implements OnInit  {
     var dist = google.maps.geometry.spherical.computeDistanceBetween;
     console.log(dist,"dist");
     return new Promise((resolve, reject) => {
-      this.loadLocations().then(data =>{ 
+      this.loadLocations().then(data => { 
         console.log( data.length);
         for( let x = 0; x < data.length; x++ ){
           console.log(x);
@@ -257,7 +296,7 @@ export class HomePage implements OnInit  {
               var infoWindowMarker;
               infoWindowMarker= new google.maps.InfoWindow;
               let addressArray = {}
-              this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) =>{
+              this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) => {
                 console.log(results);
                 if(status === "OK"){
                   addressArray = {
@@ -276,6 +315,53 @@ export class HomePage implements OnInit  {
             }
           })(markers, x));
         }
+        ///
+        //
+        ///
+        
+        this.loadUserIncidents().then(data => {
+          console.log(data.length);
+          // duplicated code
+              ///selected area image
+    
+          for( let x = 0; x < data.length; x++ ){
+            var  markers = new google.maps.Marker({
+              map: map,
+              draggable: false,
+              position: new google.maps.LatLng(data[x].lat, data[x].lng),
+              icon:  this.selectImage,
+            });
+            google.maps.event.addListener(markers, 'click', ((markers, x) => {
+              return() => {
+                infoWindow.setContent(data[x].crimeType);
+                infoWindow.setPosition(new google.maps.LatLng(data[x].lat, data[x].lng));
+                infoWindow.open(map, markers);
+                console.log(new google.maps.LatLng);
+                var infoWindowMarker;
+                infoWindowMarker= new google.maps.InfoWindow;
+                let addressArray = {}
+                this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) => {
+                  console.log(results);
+                  if(status === "OK"){
+                    addressArray = {
+                      street: results[0].address_components[1].long_name,
+                      section: results[0].address_components[2].long_name,
+                      surburb: results[0].address_components[3].long_name
+                    }
+                    console.log(addressArray);
+                    console.log(addressArray['street'])
+                    console.log(results);
+                    infoWindowMarker.setContent(addressArray['street'])
+                    console.log(addressArray);
+                  }
+                  this.openReportModal(addressArray, data[x].crimeType, data[x].lat, data[x].lng)
+                })
+              }
+            })(markers, x));
+          }
+        })
+        
+        
         console.log(this.DBLocation);
         for(let y = 0; y < this.DBLocation.length; y++){
           console.log(this.DBLocation[y]);
@@ -381,7 +467,22 @@ export class HomePage implements OnInit  {
     const alert = await this.alertController.create({
       header: '',
       message: 'You need to be logged in to use this function',
-      buttons: ['OK']
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'success',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Okay',
+          handler: (user) => {
+            console.log('Confirm Okay');
+            this.router.navigate(['/login'])
+          }
+        }
+      ]
     });
     await alert.present();
   }
@@ -389,39 +490,66 @@ export class HomePage implements OnInit  {
     console.log(crimeType, lat, lng);
     const myModal = await this.modal.create({
       component: ReportedIncidentPage,
+      cssClass: 'my-custom-modal-css',
       componentProps: {
+        crimeType: crimeType,
         address: address,
         lat: lat,
         lng: lng
       }
     });
-    myModal.onDidDismiss().then((data) => {
-      let dataReturned = data
-      console.log(dataReturned);
-      if(dataReturned.data !== undefined){
-        if(dataReturned.data[0].report === true){
-          let data = dataReturned
-          console.log(data)
-          if(this.email === null){
-            //this.events.publish('openModal', true, lat, lng)
-            //this.router.navigate(['/login'])
-            this.alertUserToLogin()
-          }else{
-            console.log(this.email);
-            //this.events.publish('openModal', false, null, null)
-            this.openModal(address, lat, lng)
+    
+  myModal.onDidDismiss().then((dataReturned) => {
+    console.log(dataReturned);
+    let data = dataReturned.data
+    console.log(data);
+    
+    if(data !== null && data !== undefined){
+     
+                if(dataReturned.data[0].report === true){
+                  let data = dataReturned
+                  console.log(data)
+                  if(this.email === null){
+                    this.alertUserToLogin()
+                  }else{
+                    this.openModal(address, lat, lng)  
+                }
+                }
+              }
+            });
+            myModal.present()
+            console.log(address);     
           }
-        }
+        
+    
+  
+      async submitToFirebase(submitInfo){
+        console.log('And we all just');
+        let date = Date()
+        console.log(date);
+        
+        await this.firebaseService.submit(submitInfo).then(data => {
+          console.log(data);
+          this.succesfulSubmission()
+          
+        })
       }
-    });
-    myModal.present()
-    console.log(address);
-  }
+      
+        async succesfulSubmission() {
+          const toast = await this.toastCtrl.create({
+            message: 'Your report has been submitted to our database.',
+            duration: 2000
+          });
+          toast.present();
+        }
+      
+      
   async openModal(address, lat, lng){
     console.log(lat, lng);
     console.log(address);
     const myModal = await this.modal.create({
       component: PopupPage,
+      cssClass: 'my-custom-modal-css',
       componentProps:{
         result : this.result,
         address: address,
@@ -442,10 +570,7 @@ export class HomePage implements OnInit  {
     });
     myModal.present()
   }
-  submitToFirebase(submitInfo){
-    console.log('And we all just');
-    this.firebaseService.submit(submitInfo)
-  }
+  
   submit(submitInfo){
     console.log(submitInfo);
     console.log('And we are all just entertainers, and we stupid and contagious');
@@ -505,10 +630,9 @@ export class HomePage implements OnInit  {
       origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
       // anchor: new google.maps.Point(0, 40)
     };
-    ///selected area image
-    var selectImage = {
+    this.selectImage = {
       url: 'assets/icon/pin-black-silhouette-in-diagonal-position-pointing-down-right (2).png', // This marker is 20 pixels wide by 32 pixels high.
-      size: new google.maps.Size(40, 40), // The origin for this image is (0, 0).
+      size: new google.maps.Size(32, 32), // The origin for this image is (0, 0).
       origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
       // anchor: new google.maps.Point(0, 40)
     };
@@ -560,6 +684,8 @@ export class HomePage implements OnInit  {
       ////// listener on marker start
       // Report incident
       marker.addListener('click', (event) => {
+        
+        
         this.reportIncident(event, marker)
       });
       //// listener on marker end
@@ -572,6 +698,7 @@ export class HomePage implements OnInit  {
         pos.push({
           location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
         });
+        let addressArray
         let marker = new google.maps.Marker({
           position: pos[0].location,
           zoom: 17,
@@ -582,7 +709,36 @@ export class HomePage implements OnInit  {
         this.markers.push(marker);
         map.setCenter(pos[0].location);
         infoWindow.setPosition(pos[0].location);
-        infoWindow.setContent('Your Location.');
+        infoWindow.setContent('haha');
+
+        console.log('runner world');
+        
+        this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
+          console.log(results);
+          if(status === "OK") {
+          //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+            let addressArray = {
+              street: results[0].address_components[1].long_name,
+              section: results[0].address_components[2].long_name,
+              surburb: results[0].address_components[3].long_name
+            }
+            //infoWindow = new google.maps.InfoWindow;
+            // addressArray.push()
+            console.log(addressArray);
+            console.log(addressArray['street'])
+            console.log(results);
+            // console.log(infoWindow.setContent(addressArray['street']))
+            // infoWindow.setContent(addressArray['street'])
+            // infoWindow.setPosition(pos[0].location);
+          }
+        })
+        console.log(infoWindowMarker.setContent(addressArray['street']))
+        console.log(marker,"marker selected")
+
+
+        
+        console.log(position);
+        
         infoWindow.open(map);
         map.setCenter(pos[0].location);
         this.array.push(pos[0])
@@ -611,6 +767,7 @@ export class HomePage implements OnInit  {
     let lat = event.latLng.lat()
     let lng = event.latLng.lng()
     let addressArray = {}
+    
     this.geocoder.geocode({'location': event.latLng}, (results, status) => {
       console.log(results);
       if(status === "OK") {
@@ -858,12 +1015,30 @@ export class HomePage implements OnInit  {
     window.addEventListener('keyboardWillShow', () => console.log('keyboard showing'))
   }
   closeKeyboard(){
-    this.keyboard.hide()
-    console.log('closing keys');
-    document.getElementById("place-id").blur()
+    // document.getElementById("place-id").blur()
+    // console.log('closing keyboard');
+    
+    // this.keyboard.hide()
+    // console.log('closing keys');
+    
   }
   scrollStart() {
-    this.keyboard.hide();
+    console.log(this.inputElement);
+    this.inputElement.setFocus()
+    this.inputElement.getInputElement().then(data => {
+      let value = data
+      console.log(value);
+    })
+    
+    
+    console.log(this.inputElement.setFocus());
+    
+    //padding.getElementRef().nativeElement.blur();
+    this.inputElement.ionBlur
+    console.log(this.inputElement.ionBlur);
+    
     document.getElementById("place-id").blur()
+    this.keyboard.onKeyboardHide()
+    this.autocompleteItems = [];
   }
 }

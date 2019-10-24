@@ -4,10 +4,7 @@ import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angu
 import { Router } from '@angular/router';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { UsersService } from '../users.service';
-import * as firebase from 'firebase'
-import { promise } from 'protractor';
-import { resolve } from 'dns';
-import { reject } from 'q';
+
 import { File } from '@ionic-native/file/ngx';
 
 
@@ -31,7 +28,7 @@ export class ProfilePage implements OnInit {
 
   constructor(public file:File, public actionSheetController:ActionSheetController, public userService : UsersService,public camera:Camera, public loader:LoadingController, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
-    this.getUserProfile()
+    //this.getUserProfile()
     //this.fetchUserProfile()
     this.events.subscribe('user:created', (email) => {
       if(!email){
@@ -165,9 +162,23 @@ export class ProfilePage implements OnInit {
       // this.email = data.email
       this.profileForm.get('email').setValue(data.email)
       this.profileForm.get('name').setValue(data.name)
+    
       this.image = data.profilePicUrl
+        console.log(data.profilePicUrl);
+        
         loader.dismiss()
       })
+
+
+
+
+    
+    
+  
+    this.userService.getUserProfile(this.user[0].key).then( profile =>{
+      this.image = profile.profilePicUrl
+      
+    })
 
   }
 
@@ -196,6 +207,8 @@ export class ProfilePage implements OnInit {
 
     this.camera.getPicture(options).then(imageData => {
       this.secImage = 'data:image/jpeg;base64' + imageData
+      console.log(this.secImage);
+      
     })
   }
 
