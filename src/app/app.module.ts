@@ -11,11 +11,12 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { File } from '@ionic-native/file/ngx'
-
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { PopupPageModule } from './popup/popup.module';
 import { ReportedIncidentPageModule } from './reported-incident/reported-incident.module'
 import * as firebase from 'firebase'
 import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
+
 var firebaseConfig = {
   apiKey: "AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI",
   authDomain: "kasidetectives.firebaseapp.com",
@@ -38,6 +39,7 @@ firebase.initializeApp(firebaseConfig);
    File,
     SocialSharing,
     Camera,
+    Geolocation,
     LocalNotifications, 
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
