@@ -19,13 +19,13 @@
     <!--  -->
   
     <ion-item>
-        <ion-label color="primary" position="floating">email</ion-label>
-        <ion-input [(ngModel)]="email"></ion-input>
+        <ion-label color="primary" position="floating">Phone Number</ion-label>
+        <ion-input [(ngModel)]="cellNo"></ion-input>
       </ion-item>
    <!-- email -->
    
  <!-- start tracking -->
-   <ion-button (click)="start(email)" *ngIf="!isTracking" ><ion-icon style="zoom:1;" name="send"></ion-icon></ion-button>
+   <ion-button (click)="start(cellNo)" *ngIf="!isTracking" ><ion-icon style="zoom:1;" name="send"></ion-icon></ion-button>
    <!-- start tracking -->
 
     <!-- end tracking -->
