@@ -45,7 +45,7 @@ export class HomePage implements OnInit  {
   selectedMode
   lat
   lng
-
+  hide = true
   start
   end : string
   destinations: string
