@@ -28,7 +28,7 @@ export class TrackModalPage implements OnInit {
   msg
   positionSubscription: any;
   geocoder: any
-  username
+  username: String
   constructor( public userService: UsersService,private androidPermissions: AndroidPermissions,private sms: SMS,private socialSharing: SocialSharing,public navCtrl: NavController, private plt: Platform, private geolocation: Geolocation) {
 
     this.geocoder = new google.maps.Geocoder;
@@ -102,12 +102,12 @@ export class TrackModalPage implements OnInit {
             //console.log(userRoot);
             let values = snap.val()
               
-            this.username=  values["name"]
+            this.username= values["name"]
             console.log(this.username," the username");
              
           
           
-        })
+       
          //username
         console.log(lastLocation, "last one")
         console.log(loc, "address")
@@ -115,6 +115,7 @@ export class TrackModalPage implements OnInit {
         console.log(this.msg, "msg")
         console.log(cellNo,"phone numbers")
         //send sms in the app
+      })
       })
       })
        //location name
