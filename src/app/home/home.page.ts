@@ -548,6 +548,7 @@ export class HomePage implements OnInit  {
     console.log(address);
     const myModal = await this.modal.create({
       component: PopupPage,
+      cssClass: 'my-custom-modal-css',
       componentProps:{
         result : this.result,
         address: address,
@@ -682,7 +683,7 @@ export class HomePage implements OnInit  {
       ////// listener on marker start
       // Report incident
       marker.addListener('click', (event) => {
-        console.log(event);
+        
         
         this.reportIncident(event, marker)
       });
@@ -696,6 +697,7 @@ export class HomePage implements OnInit  {
         pos.push({
           location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
         });
+        let addressArray
         let marker = new google.maps.Marker({
           position: pos[0].location,
           zoom: 17,
@@ -706,7 +708,34 @@ export class HomePage implements OnInit  {
         this.markers.push(marker);
         map.setCenter(pos[0].location);
         infoWindow.setPosition(pos[0].location);
-        infoWindow.setContent(position);
+        infoWindow.setContent('haha');
+
+        console.log('runner world');
+        
+        this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
+          console.log(results);
+          if(status === "OK") {
+          //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+            let addressArray = {
+              street: results[0].address_components[1].long_name,
+              section: results[0].address_components[2].long_name,
+              surburb: results[0].address_components[3].long_name
+            }
+            //infoWindow = new google.maps.InfoWindow;
+            // addressArray.push()
+            console.log(addressArray);
+            console.log(addressArray['street'])
+            console.log(results);
+            // console.log(infoWindow.setContent(addressArray['street']))
+            // infoWindow.setContent(addressArray['street'])
+            // infoWindow.setPosition(pos[0].location);
+          }
+        })
+        console.log(infoWindowMarker.setContent(addressArray['street']))
+        console.log(marker,"marker selected")
+
+
+        
         console.log(position);
         
         infoWindow.open(map);
@@ -735,6 +764,7 @@ export class HomePage implements OnInit  {
     let lat = event.latLng.lat()
     let lng = event.latLng.lng()
     let addressArray = {}
+    
     this.geocoder.geocode({'location': event.latLng}, (results, status) => {
       console.log(results);
       if(status === "OK") {
