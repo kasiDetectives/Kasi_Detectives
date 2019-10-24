@@ -27,9 +27,15 @@ export class TrackModalPage implements OnInit {
   cellNo
   msg
   positionSubscription: any;
+  geocoder: any
+  username
+  constructor( public userService: UsersService,private androidPermissions: AndroidPermissions,private sms: SMS,private socialSharing: SocialSharing,public navCtrl: NavController, private plt: Platform, private geolocation: Geolocation) {
 
-  constructor( public userService: UsersService,private androidPermissions: AndroidPermissions,private sms: SMS,private socialSharing: SocialSharing,public navCtrl: NavController, private plt: Platform, private geolocation: Geolocation) { }
+    this.geocoder = new google.maps.Geocoder;
+    
+   }
 
+   
   ngOnInit() {
     this.plt.ready().then(() =>{
       this.geolocation.getCurrentPosition().then( position =>{
@@ -39,25 +45,43 @@ export class TrackModalPage implements OnInit {
       }).catch(error =>{
       })
       })
+
+     
   }
   //
   start(cellNo)
   {
     this.isTracking = true
     this.trackedRoute = []
-​ 
-    //  let userProfile=this.userService.returnUserProfile()
-    // console.log(userProfile[0].displayName,"the current user")
-  
-    // let displayName= userProfile[0].displayName
+​  
+//   let user=this.userService.readCurrentSession()
+//  console.log(user['uid'],"the current user profile")
+  // let displayName= userProfile[0].displayName
     // console.log(displayName,"the current user NAME")
+
+  
 
     this.plt.ready().then(() =>{
       this.sub = timer(0,10000).subscribe(result =>{
         console.log("timer");
     //curr position
         this.geolocation.getCurrentPosition().then( position =>{
-
+            //username
+         this.userService.checkingAuthState().then(data => {
+              // location name
+    this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
+      console.log(results);
+      if(status === "OK") {
+      //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+        let addressArray = {
+          street: results[0].address_components[1].long_name,
+          section: results[0].address_components[2].long_name,
+          surburb: results[0].address_components[3].long_name
+        }
+      var  loc= addressArray['street']+" "+addressArray['section']+" "+addressArray['surburb']
+      }
+   
+   
         //push to array
         this.trackedRoute.push({lat: position.coords.latitude, lng:position.coords.longitude})
         console.log(this.trackedRoute, "routes")
@@ -66,12 +90,34 @@ export class TrackModalPage implements OnInit {
            var siz=this.trackedRoute.length
         var lastLocation= position.coords.latitude+","+position.coords.longitude;
 
+        //  //username
+        //  this.userService.checkingAuthState().then(data => {
+          console.log(data);
+          let user = data
+         
+          console.log(user['uid']," user ID 1");
+         
+          var userRoot = firebase.database().ref("Users").child(user['uid'])
+          userRoot.once("value", snap => {
+            //console.log(userRoot);
+            let values = snap.val()
+              
+            this.username=  values["name"]
+            console.log(this.username," the username");
+             
+          
+          
+        })
+         //username
         console.log(lastLocation, "last one")
-        this.msg="The location of " +" is "+" Copy These Coordinates "+lastLocation +" and search them on any map for directions.";
+        console.log(loc, "address")
+        this.msg="The location of "+  this.username +" is "+loc+" Copy These Coordinates "+lastLocation +" and search them on any map for directions.";
         console.log(this.msg, "msg")
         console.log(cellNo,"phone numbers")
         //send sms in the app
-        
+      })
+      })
+       //location name
         this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(
           result => console.log('Has permission?', result.hasPermission),
           err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS)

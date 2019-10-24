@@ -11,13 +11,9 @@ const routes: Routes = [
   { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' },
   { path: 'popup', loadChildren: './popup/popup.module#PopupPageModule' },
   { path: 'reported-incident', loadChildren: './reported-incident/reported-incident.module#ReportedIncidentPageModule' },
-<<<<<<< HEAD
   { path: 'track-modal', loadChildren: './track-modal/track-modal.module#TrackModalPageModule' }
 
 
-=======
-  { path: 'track-modal', loadChildren: './track-modal/track-modal.module#TrackModalPageModule' },
->>>>>>> 70d7fce85424f9328d136a13c0168699589ed1a1
 ];
 
 @NgModule({

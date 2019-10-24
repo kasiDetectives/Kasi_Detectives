@@ -11,9 +11,9 @@
 
 <div>
 
-    <span>Not feeling safe? </span>
-    <span>Share your Current location with your family </span>
-    <span> This will send out your location every 5 minute to your family</span>
+    <span style="zoom:1.2;">Not feeling safe? </span>
+    <span style="zoom:1.2;"> Share your Current location with your family </span>
+    <span style="zoom:1.2;"> This will send out your location every 5 minute to your family</span>
 
 <!-- email -->
     <!--  -->
@@ -38,8 +38,15 @@
     </ion-card-content>
     
   </ion-card>
-
+ <!-- back-->
+ <ion-button color="light" routerLink='/home' ><ion-icon style="zoom:1;"  name="arrow-back"></ion-icon></ion-button>
+ <!-- back -->
   
-  
+  <!-- show lock-->
+<div text-center>
+    <ion-icon  color="light" style="zoom:15;"  name="lock" *ngIf="isTracking"></ion-icon>
+    <ion-icon   color="light" style="zoom:15;"  name="unlock" *ngIf="!isTracking" ></ion-icon>
+</div>
+  <!-- show lock-->
 
 </ion-content>

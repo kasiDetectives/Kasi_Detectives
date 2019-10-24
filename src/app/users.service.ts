@@ -170,7 +170,7 @@ readCurrentSession(){
      console.log(uid);
      console.log(user);
      console.log(this.user);
-     
+     return this.user
   }
 
   checkState(){
