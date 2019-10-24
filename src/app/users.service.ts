@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router'
 import * as firebase from 'firebase'
-import { url } from 'inspector';
 import {AlertController} from '@ionic/angular'
 
 var database = firebase.database();
