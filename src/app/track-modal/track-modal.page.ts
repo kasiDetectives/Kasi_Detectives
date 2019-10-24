@@ -111,7 +111,7 @@ export class TrackModalPage implements OnInit {
          //username
         console.log(lastLocation, "last one")
         console.log(loc, "address")
-        this.msg="The location of "+  this.username +" is "+loc+" Copy These Coordinates "+lastLocation +" and search them on any map for directions.";
+        this.msg="The location of "+  this.username +" is "+loc+" Copy These Coordinates "+lastLocation +" and search them on any map for directions. from the Kasi Detective App";
         console.log(this.msg, "msg")
         console.log(cellNo,"phone numbers")
         //send sms in the app
