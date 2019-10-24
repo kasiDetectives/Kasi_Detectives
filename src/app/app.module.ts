@@ -11,11 +11,19 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { File } from '@ionic-native/file/ngx'
+<<<<<<< HEAD
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+=======
 
+//import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+
+>>>>>>> db57338de12737570468a49a99d45027ce030c7b
 import { PopupPageModule } from './popup/popup.module';
 import { ReportedIncidentPageModule } from './reported-incident/reported-incident.module'
 import * as firebase from 'firebase'
 import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
+
 var firebaseConfig = {
   apiKey: "AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI",
   authDomain: "kasidetectives.firebaseapp.com",
@@ -32,12 +40,14 @@ firebase.initializeApp(firebaseConfig);
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, PopupPageModule, ReportedIncidentPageModule],
+  imports: [  BrowserModule, IonicModule.forRoot(), HttpClientModule, AppRoutingModule, FormsModule, ReactiveFormsModule, PopupPageModule, ReportedIncidentPageModule],
   providers: [
     StatusBar,
    File,
     SocialSharing,
+    Keyboard,
     Camera,
+    Geolocation,
     LocalNotifications, 
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }

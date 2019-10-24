@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-
 import { Platform, Events } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Router } from '@angular/router';
 import { Environment } from '@ionic-native/google-maps';
-import { UsersService } from './users.service';
-import * as firebase from 'firebase'
 import { NavigationService } from './navigation.service';
 
 @Component({
@@ -34,21 +31,17 @@ export class AppComponent {
   }
   checkBool(){
     console.log("dddddddddd");
-    
     this.events.subscribe('menu:clicked', (boolean)=>{
-     this.bollean = boolean
+      this.bollean = boolean
       console.log(boolean);
       console.log("dddd");
     })
-    
-    
-  
   }
 
   checkPage(){
-      this.events.subscribe('currentPage:home', (boolean)=>{
-        this.homePage = boolean
-      })
+    this.events.subscribe('currentPage:home', (boolean)=>{
+      this.homePage = boolean
+    })
   }
   checkUser(){
     this.events.subscribe('user:loggedIn', (email)=>{
@@ -60,18 +53,12 @@ export class AppComponent {
   auto(url){
     console.log(url);
     this.route.navigate([url])
-    this.navigationService.pageNavigator(url)
-
-    
-    //this.userService.returnUserProfile()
   }
 
   signOut(url){
     if(url === 'home'){
       this.events.publish('user:loggedOut', true)
-
       this.route.navigate([url])
-      this.navigationService.pageNavigator(url)
     }
   }
   initializeApp() {
@@ -83,10 +70,8 @@ export class AppComponent {
         // api key for local development
         'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI'
       });
-
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      
     });
   }
 }

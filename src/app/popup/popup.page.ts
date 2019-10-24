@@ -161,6 +161,9 @@ export class PopupPage implements OnInit {
     this.lng = this.navParam.get('lng')
     this.address = this.navParam.get('address')
     this.userId = this.navParam.get('userId')
+    this.crimeType = this.navParam.get('crimeType')
+    console.log(this.crimeType);
+    
   }
 
 }

@@ -16,22 +16,18 @@ export class LoginPage implements OnInit {
   passwordPattern = "^(?=.*\[0-9])(?=.*\[a-z])(?=.*\[A-Z])(?=.*\[@#$!%^&*,.<>]).{8,}$"
   loginForm
   pageURL = "und"
-  boolean
-  latitude
-  longitude
   constructor(
     public userService: UsersService,
     public alertController: AlertController,
     public route: Router,
     public formBuilder: FormBuilder,
-    public navigationService : NavigationService,
     public events : Events,
     ) {
       this.events.publish('currentPage:home', false)
-      this.pageURL = this.navigationService.returnPageURL()
       console.log(this.pageURL);
     //this.checkURL()
     this.loginForm = formBuilder.group({
+    
       email: [this.email, Validators.compose(
         [Validators.required, Validators.pattern(this.emailPattern)]
       )],
@@ -42,12 +38,7 @@ export class LoginPage implements OnInit {
    this.loginForm.get('email').setValue('willington.mnisi@gmail.com')
    this.loginForm.get('password').setValue('Will1ngt0n7&')
   }
-  checkURL(){
-    if(this.pageURL==="und"){
-      this.pageURL = this.navigationService.returnPageURL()
-      console.log(this.pageURL);
-    }
-  }
+  
   login(){
     this.email = this.loginForm.get('email').value
     this.password = this.loginForm.get('password').value
@@ -57,34 +48,36 @@ export class LoginPage implements OnInit {
         this.events.publish('user:loggedIn', result.user.email);
         console.log("Welcome " + result.user.email)
         let userId = result.user.uid
-        if(this.pageURL==="report-alert" || this.pageURL==="community-event"){
-          let link = "/" + this.pageURL
-          console.log(link);
-          this.route.navigate([link])
-        }else{
-          let link = "home"
-          this.route.navigate([link])
-        }
+        let link = "home"
+        this.route.navigate([link])
+        
         console.log('why are you running again?');
-        if(this.boolean === true){
-          console.log(true);
-        }
-      }else{
-        console.log(result.message)
+      //   if(this.boolean === true){
+      //     console.log(true);
+      //   }
+      // }else{
+      //   console.log(result.message)
+       }else{
+        this.invalidPassword(result)
       }
     })
+  }
+
+  async invalidPassword(result)
+  {
+    const alert = await this.alertController.create({
+      header: "Alert",
+      message: result,
+      buttons: ['OK']
+    })
+
+    await alert.present()
   }
   //Resetting user password using email password reset request
   async resetPassword() {
     const alert = await this.alertController.create({
-      header: 'Confirm!',
-      message: 'Message <strong>text</strong>!!!',
-      inputs: [
-        {
-          name: 'email',
-          type: 'text',
-          placeholder: 'Placeholder 1'
-        }],
+      header: 'Reset Password',
+      message: 'Are ypou sure you want to reset your password?',
       buttons: [
         {
           text: 'Cancel',
@@ -94,7 +87,7 @@ export class LoginPage implements OnInit {
             console.log('Confirm Cancel: blah');
           }
         }, {
-          text: 'Okay',
+          text: 'Yes',
           handler: (user) => {
             console.log('Confirm Okay');
             this.userService.passwordReset(user.email)

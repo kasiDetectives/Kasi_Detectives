@@ -4,10 +4,7 @@ import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angu
 import { Router } from '@angular/router';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { UsersService } from '../users.service';
-import * as firebase from 'firebase'
-import { promise } from 'protractor';
-import { resolve } from 'dns';
-import { reject } from 'q';
+
 import { File } from '@ionic-native/file/ngx';
 
 
@@ -73,7 +70,7 @@ export class ProfilePage implements OnInit {
 
       console.log(names);
       
-      if(sourceType === this.camera.PictureSourceType.PHOTOLIBRARY)
+      if(sourceType == this.camera.PictureSourceType.PHOTOLIBRARY)
       {
         names = names.substring(0, names.lastIndexOf('?'))
       }
@@ -85,6 +82,7 @@ export class ProfilePage implements OnInit {
       {
         console.log(result);
         this.image = result
+        this.secImage =result
       })
 
       this.file.readAsArrayBuffer(dirrectory, names).then((buffer) =>
@@ -103,7 +101,6 @@ export class ProfilePage implements OnInit {
 
         }
       })
-      // let base64Image = this.pics + ImageData
     }, (err) =>
     {
 
@@ -142,47 +139,37 @@ export class ProfilePage implements OnInit {
     this.name = this.profileForm.get('name').value
   }    
 
-  // getUserProfile(){
-  //   this.user = this.userService.returnUserProfile()
-  //   console.log(this.user);
-  // }
-  //  async fetchUserProfile(){
-  //   const loader = await this.loader.create(
-  //     {
-  //       message: 'Loading profile...'
-  //     }
-  //   )
+  getUserProfile(){
+    this.user = this.userService.returnUserProfile()
+    console.log(this.user);
+  }
+   async fetchUserProfile(){
+    const loader = await this.loader.create(
+      {
+        message: 'Loading profile...'
+      }
+    )
 
-  //   await loader.present()
-  //   this.userService.getUserProfile(this.user[0].key).then(data =>
+    await loader.present()
+    this.userService.getUserProfile(this.user[0].key).then(data =>
       
       
       
-  // getUserProfile(){
-  //       console.log(this.user[0].key);
-  //       console.log(data);
-  //     // this.name = data.name
-  //     // this.email = data.email
-  //     this.profileForm.get('email').setValue(data.email)
-  //     this.profileForm.get('name').setValue(data.name)
-  //     this.image = data.profilePicUrl
-  //       this.loader.dismiss()
-  //     })
-
-
-
-
-
-
+      {
+        console.log(this.user[0].key);
+        console.log(data);
+      // this.name = data.name
+      // this.email = data.email
+      this.profileForm.get('email').setValue(data.email)
+      this.profileForm.get('name').setValue(data.name)
     
-    
-  
-  //   // this.userService.getUserProfile(this.user[0].key).then( profile =>{
-  //   //   this.image = profile.profilePicUrl
-      
-  //   // })
+      this.image = data.profilePicUrl
+        console.log(data.profilePicUrl);
+        
+        loader.dismiss()
+      })
 
-  // }
+  }
 
   async presentToast() {
     const toast = await this.toastController.create({
@@ -213,4 +200,6 @@ export class ProfilePage implements OnInit {
       
     })
   }
+
+    
 }
