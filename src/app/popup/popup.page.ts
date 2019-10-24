@@ -23,6 +23,7 @@ export class PopupPage implements OnInit {
   checkboxState
   crimeText
   userId
+  crimeType
   constructor(public modCtrl:ModalController, public events : Events, public navParam:NavParams, public alertController: AlertController) {
     // this.fetchCrimeCategories()
     this.events.subscribe('crimeTypes:List', (data) =>{

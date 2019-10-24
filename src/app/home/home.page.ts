@@ -665,6 +665,8 @@ export class HomePage implements OnInit  {
       ////// listener on marker start
       // Report incident
       marker.addListener('click', (event) => {
+        console.log(event);
+        
         this.reportIncident(event, marker)
       });
       //// listener on marker end
@@ -687,7 +689,9 @@ export class HomePage implements OnInit  {
         this.markers.push(marker);
         map.setCenter(pos[0].location);
         infoWindow.setPosition(pos[0].location);
-        infoWindow.setContent('Your Location.');
+        infoWindow.setContent(position);
+        console.log(position);
+        
         infoWindow.open(map);
         map.setCenter(pos[0].location);
         this.array.push(pos[0])

@@ -13,7 +13,7 @@
 
   
 <!--  start map -->
-   <div id="map_canvas" (click)='scrollStart()' (tap)='scrollStart()'></div>
+   <div id="map_canvas" (click)='closeKeyboard()'></div>
 <!-- end -->
 <ion-list>
       <ion-item *ngFor="let n of scheduled">
@@ -23,16 +23,12 @@
           </ion-label>
       </ion-item>
   </ion-list>
-<<<<<<< HEAD
-<!--  start map -->
-   <div id="map_canvas"></div>
-<!-- end -->
+
 <ion-fab vertical="top" horizontal="end" slot="fixed">
   <ion-fab-button routerLink='/track-modal'>
     <ion-icon name="share"></ion-icon>
   </ion-fab-button>
 </ion-fab>
-=======
 ​
     <ion-card class="searchBar">
     <ion-searchbar #searchInput id="place-id" (ionFocus)='openKeyboard();' (ionBlur)='closeKeyboard();' [(ngModel)]="autocomplete.input" (ionChange)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
@@ -43,7 +39,6 @@
      </ion-list>
     </ion-card>
 
->>>>>>> db57338de12737570468a49a99d45027ce030c7b
 <p id="output"></p>
 <ion-card class="directions">
   <ion-item>
