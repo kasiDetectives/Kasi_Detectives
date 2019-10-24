@@ -12,9 +12,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { File } from '@ionic-native/file/ngx'
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+<<<<<<< HEAD
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 //import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
+=======
+
+//import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+
+>>>>>>> 70d7fce85424f9328d136a13c0168699589ed1a1
 import { PopupPageModule } from './popup/popup.module';
 import { ReportedIncidentPageModule } from './reported-incident/reported-incident.module'
 import * as firebase from 'firebase'

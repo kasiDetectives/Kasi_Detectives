@@ -14,7 +14,8 @@ import {
  MyLocation,
  Polyline,
  LatLng,
- GoogleMapOptions
+ GoogleMapOptions,
+ LatLngBounds
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
 import { PopupPage } from '../popup/popup.page';
@@ -44,7 +45,7 @@ export class HomePage implements OnInit  {
   selectedMode
   lat
   lng
-
+  hide = true
   start
   end : string
   destinations: string
@@ -70,6 +71,8 @@ export class HomePage implements OnInit  {
   result = []
   loc =[]
   email = null
+  lats
+  long
   highRiskLocations = {}
   reportedLocations = {}
   message
@@ -463,7 +466,22 @@ export class HomePage implements OnInit  {
     const alert = await this.alertController.create({
       header: '',
       message: 'You need to be logged in to use this function',
-      buttons: ['OK']
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'success',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Okay',
+          handler: (user) => {
+            console.log('Confirm Okay');
+            this.router.navigate(['/login'])
+          }
+        }
+      ]
     });
     await alert.present();
   }
@@ -471,6 +489,7 @@ export class HomePage implements OnInit  {
     console.log(crimeType, lat, lng);
     const myModal = await this.modal.create({
       component: ReportedIncidentPage,
+      cssClass: 'my-custom-modal-css',
       componentProps: {
         crimeType: crimeType,
         address: address,
@@ -478,33 +497,58 @@ export class HomePage implements OnInit  {
         lng: lng
       }
     });
-    myModal.onDidDismiss().then((data) => {
-      let dataReturned = data
-      console.log(dataReturned);
-      if(dataReturned.data !== undefined){
-        if(dataReturned.data[0].report === true){
-          let data = dataReturned
-          console.log(data)
-          if(this.email === null){
-            //this.events.publish('openModal', true, lat, lng)
-            //this.router.navigate(['/login'])
-            this.alertUserToLogin()
-          }else{
-            console.log(this.email);
-            //this.events.publish('openModal', false, null, null)
-            this.openModal(address, lat, lng)
+    
+  myModal.onDidDismiss().then((dataReturned) => {
+    console.log(dataReturned);
+    let data = dataReturned.data
+    console.log(data);
+    
+    if(data !== null && data !== undefined){
+     
+                if(dataReturned.data[0].report === true){
+                  let data = dataReturned
+                  console.log(data)
+                  if(this.email === null){
+                    this.alertUserToLogin()
+                  }else{
+                    this.openModal(address, lat, lng)  
+                }
+                }
+              }
+            });
+            myModal.present()
+            console.log(address);     
           }
-        }
+        
+    
+  
+      async submitToFirebase(submitInfo){
+        console.log('And we all just');
+        let date = Date()
+        console.log(date);
+        
+        await this.firebaseService.submit(submitInfo).then(data => {
+          console.log(data);
+          this.succesfulSubmission()
+          
+        })
       }
-    });
-    myModal.present()
-    console.log(address);
-  }
+      
+        async succesfulSubmission() {
+          const toast = await this.toastCtrl.create({
+            message: 'Your report has been submitted to our database.',
+            duration: 2000
+          });
+          toast.present();
+        }
+      
+      
   async openModal(address, lat, lng){
     console.log(lat, lng);
     console.log(address);
     const myModal = await this.modal.create({
       component: PopupPage,
+      cssClass: 'my-custom-modal-css',
       componentProps:{
         result : this.result,
         address: address,
@@ -525,10 +569,7 @@ export class HomePage implements OnInit  {
     });
     myModal.present()
   }
-  submitToFirebase(submitInfo){
-    console.log('And we all just');
-    this.firebaseService.submit(submitInfo)
-  }
+  
   submit(submitInfo){
     console.log(submitInfo);
     console.log('And we are all just entertainers, and we stupid and contagious');
@@ -642,6 +683,8 @@ export class HomePage implements OnInit  {
       ////// listener on marker start
       // Report incident
       marker.addListener('click', (event) => {
+        
+        
         this.reportIncident(event, marker)
       });
       //// listener on marker end
@@ -654,6 +697,7 @@ export class HomePage implements OnInit  {
         pos.push({
           location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
         });
+        let addressArray
         let marker = new google.maps.Marker({
           position: pos[0].location,
           zoom: 17,
@@ -664,7 +708,36 @@ export class HomePage implements OnInit  {
         this.markers.push(marker);
         map.setCenter(pos[0].location);
         infoWindow.setPosition(pos[0].location);
-        infoWindow.setContent('Your Location.');
+        infoWindow.setContent('haha');
+
+        console.log('runner world');
+        
+        this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
+          console.log(results);
+          if(status === "OK") {
+          //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+            let addressArray = {
+              street: results[0].address_components[1].long_name,
+              section: results[0].address_components[2].long_name,
+              surburb: results[0].address_components[3].long_name
+            }
+            //infoWindow = new google.maps.InfoWindow;
+            // addressArray.push()
+            console.log(addressArray);
+            console.log(addressArray['street'])
+            console.log(results);
+            // console.log(infoWindow.setContent(addressArray['street']))
+            // infoWindow.setContent(addressArray['street'])
+            // infoWindow.setPosition(pos[0].location);
+          }
+        })
+        console.log(infoWindowMarker.setContent(addressArray['street']))
+        console.log(marker,"marker selected")
+
+
+        
+        console.log(position);
+        
         infoWindow.open(map);
         map.setCenter(pos[0].location);
         this.array.push(pos[0])
@@ -691,6 +764,7 @@ export class HomePage implements OnInit  {
     let lat = event.latLng.lat()
     let lng = event.latLng.lng()
     let addressArray = {}
+    
     this.geocoder.geocode({'location': event.latLng}, (results, status) => {
       console.log(results);
       if(status === "OK") {

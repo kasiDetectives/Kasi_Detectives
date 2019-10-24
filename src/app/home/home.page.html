@@ -13,7 +13,7 @@
 
   
 <!--  start map -->
-   <div id="map_canvas" (click)='scrollStart()' (tap)='scrollStart()'></div>
+   <div id="map_canvas" (click)='closeKeyboard()'></div>
 <!-- end -->
 <ion-list>
       <ion-item *ngFor="let n of scheduled">
@@ -23,9 +23,13 @@
           </ion-label>
       </ion-item>
   </ion-list>
+<<<<<<< HEAD
 <!--  start map -->
    <div id="map_canvas"></div>
 <!-- end -->
+=======
+
+>>>>>>> 70d7fce85424f9328d136a13c0168699589ed1a1
 <ion-fab vertical="top" horizontal="end" slot="fixed">
   <ion-fab-button routerLink='/track-modal'>
     <ion-icon name="share"></ion-icon>
@@ -42,7 +46,7 @@
     </ion-card>
 
 <p id="output"></p>
-<ion-card class="directions">
+<ion-card class="directions" [hidden]='hide'>
   <ion-item>
     <!-- <ion-label>Directions:</ion-label> -->
     <ion-input type="text" name="myDest" id="myDest" [ngModel]='myDest' (ionChange)='setDestination($event)' placeholder="choose destination.." value=""></ion-input>

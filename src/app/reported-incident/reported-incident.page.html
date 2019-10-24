@@ -8,9 +8,15 @@
 </ion-header>
 
 <ion-content>
-    <p style="text-align: center">{{address.street}}</p>
-    <p style="text-align: center">{{address.section}}</p>
-    <p style="text-align: center">{{address.surburb}}</p>
-    <p>{{crimeType}} has been reported at this address</p>
-  <ion-button color="secondary" (click)='reportCrime()' fill="clear" >Report a crime</ion-button>
+  <div style="background-color:rgba(100, 196, 237, 0.322); padding: 10px;margin: 5px; text-align: center">
+      <span style="text-align: center; color: #204969">{{address.street}}</span><br>
+      <span style="text-align: center;color: #204969">{{address.section}}</span><br>
+      <span style="text-align: center; color: #204969">{{address.surburb}}</span>
+  </div>
+   
+    <div style="justify-content: center;align-content: center; padding: 10px; display: flex">
+      <span style="font-weight: bold; color: red">{{crimeType}} - </span><br>
+      <span style="text-align: center; width: auto;height: auto;"> has been reported at this address</span>
+    </div>
+  <ion-button color="tertiary" slot='end' (click)='reportCrime()' fill="clear" style='position: relative; bottom: 5%;' >Report a crime</ion-button>
 </ion-content>
