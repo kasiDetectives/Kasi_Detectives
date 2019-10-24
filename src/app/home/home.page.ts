@@ -710,7 +710,7 @@ export class HomePage implements OnInit  {
         map.setCenter(pos[0].location);
         infoWindow.setPosition(pos[0].location);
         infoWindow.setContent('haha');
-
+        infoWindow.open(map)
         console.log('runner world');
         
         this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
@@ -727,9 +727,10 @@ export class HomePage implements OnInit  {
             console.log(addressArray);
             console.log(addressArray['street'])
             console.log(results);
-            // console.log(infoWindow.setContent(addressArray['street']))
-            // infoWindow.setContent(addressArray['street'])
-            // infoWindow.setPosition(pos[0].location);
+           //console.log(infoWindow.setContent(addressArray['street']))
+           infoWindow.setContent(addressArray['street'])
+           infoWindow.setPosition(pos[0].location);
+                 infoWindow.open(map)
           }
         })
         console.log(infoWindowMarker.setContent(addressArray['street']))
