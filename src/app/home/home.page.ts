@@ -485,26 +485,26 @@ export class HomePage implements OnInit  {
     });
     await alert.present();
   }
-    async openReportModal(address, crimeType, lat, lng){
-      console.log(crimeType, lat, lng);
-      
-
-            const myModal = await this.modal.create({
-        
-        
-              component: ReportedIncidentPage,
-              cssClass: 'my-custom-modal-css',
-              componentProps: {
-                address: address,
-                lat: lat,
-                lng: lng
-              }
-      
-            });
-            myModal.onDidDismiss().then((data) =>{
-              let dataReturned = data
-              console.log(dataReturned);
-              if(dataReturned.data !== undefined){
+  async openReportModal(address, crimeType, lat, lng){
+    console.log(crimeType, lat, lng);
+    const myModal = await this.modal.create({
+      component: ReportedIncidentPage,
+      cssClass: 'my-custom-modal-css',
+      componentProps: {
+        crimeType: crimeType,
+        address: address,
+        lat: lat,
+        lng: lng
+      }
+    });
+    
+  myModal.onDidDismiss().then((dataReturned) => {
+    console.log(dataReturned);
+    let data = dataReturned.data
+    console.log(data);
+    
+    if(data !== null && data !== undefined){
+     
                 if(dataReturned.data[0].report === true){
                   let data = dataReturned
                   console.log(data)
@@ -518,8 +518,8 @@ export class HomePage implements OnInit  {
             });
             myModal.present()
             console.log(address);     
-    }
-   
+          }
+        
     
   
       async submitToFirebase(submitInfo){
@@ -543,7 +543,6 @@ export class HomePage implements OnInit  {
         }
       
       
-    
   async openModal(address, lat, lng){
     console.log(lat, lng);
     console.log(address);
@@ -569,7 +568,7 @@ export class HomePage implements OnInit  {
     });
     myModal.present()
   }
- 
+  
   submit(submitInfo){
     console.log(submitInfo);
     console.log('And we are all just entertainers, and we stupid and contagious');
@@ -683,6 +682,8 @@ export class HomePage implements OnInit  {
       ////// listener on marker start
       // Report incident
       marker.addListener('click', (event) => {
+        console.log(event);
+        
         this.reportIncident(event, marker)
       });
       //// listener on marker end
@@ -705,7 +706,9 @@ export class HomePage implements OnInit  {
         this.markers.push(marker);
         map.setCenter(pos[0].location);
         infoWindow.setPosition(pos[0].location);
-        infoWindow.setContent('Your Location.');
+        infoWindow.setContent(position);
+        console.log(position);
+        
         infoWindow.open(map);
         map.setCenter(pos[0].location);
         this.array.push(pos[0])

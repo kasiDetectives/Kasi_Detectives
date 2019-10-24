@@ -13,7 +13,7 @@
 
   
 <!--  start map -->
-   <div id="map_canvas"></div>
+   <div id="map_canvas" (click)='closeKeyboard()'></div>
 <!-- end -->
 <ion-list>
       <ion-item *ngFor="let n of scheduled">
@@ -24,7 +24,7 @@
       </ion-item>
   </ion-list>
 
-<ion-fab vertical="center" horizontal="end" slot="fixed">
+<ion-fab vertical="top" horizontal="end" slot="fixed">
   <ion-fab-button routerLink='/track-modal'>
     <ion-icon name="share"></ion-icon>
   </ion-fab-button>
