@@ -28,7 +28,7 @@ export class TrackModalPage implements OnInit {
   msg
   positionSubscription: any;
   geocoder: any
-  username: String
+  username
   constructor( public userService: UsersService,private androidPermissions: AndroidPermissions,private sms: SMS,private socialSharing: SocialSharing,public navCtrl: NavController, private plt: Platform, private geolocation: Geolocation) {
 
     this.geocoder = new google.maps.Geocoder;
@@ -111,7 +111,7 @@ export class TrackModalPage implements OnInit {
          //username
         console.log(lastLocation, "last one")
         console.log(loc, "address")
-        this.msg="The location of "+  this.username +" is "+loc+" Copy These Coordinates "+lastLocation +" and search them on any map for directions. from the Kasi Detective App";
+        this.msg=" Copy These Coordinates "+lastLocation +" and search them on any map for directions. from the Kasi Detective App";
         console.log(this.msg, "msg")
         console.log(cellNo,"phone numbers")
         //send sms in the app
@@ -138,10 +138,12 @@ export class TrackModalPage implements OnInit {
       };
         this.sms.send(cellNo,this.msg, options).then(data => {
         console.log('Msg Data Ok');
+        console.log(this.msg);
         // this.smsText = "Sms sent to the; user!"
         // this.submitFirebaseKin();
   ​
         console.log(data);
+        console.log(this.msg);
       }).catch(error => {
         console.log(error);
       });
