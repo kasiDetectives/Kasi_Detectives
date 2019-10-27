@@ -2,7 +2,7 @@ import { AlertController } from '@ionic/angular';
 import { UsersService } from '../users.service';
 import { Router } from '@angular/router';
 import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
-import { Component, OnInit, NgZone} from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild, asNativeElements} from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { Events, ToastController, Platform, ModalController } from '@ionic/angular';
 import {
@@ -14,7 +14,8 @@ import {
  MyLocation,
  Polyline,
  LatLng,
- GoogleMapOptions
+ GoogleMapOptions,
+ LatLngBounds
 } from '@ionic-native/google-maps';
 import { Icon } from 'ionicons/dist/types/icon/icon';
 import { PopupPage } from '../popup/popup.page';
@@ -25,6 +26,11 @@ import { Placeholder } from '@angular/compiler/src/i18n/i18n_ast';
 
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { GooglemapService } from '../googlemap.service';
+///
+// import { TextInput } from 'ionic-angular';
+
+import { IonInput } from '@ionic/angular';
 
 declare var google
 var map;
@@ -36,15 +42,15 @@ var markers = [];
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit  {
-  
+  @ViewChild('searchInput', {static: false})  inputElement: IonInput;
   selectedMode
   lat
   lng
-
+  hide = true
   start
-  end : string
-  destinations: string
-
+  end 
+  destinations
+  dangerPlek
 
   myDest
 
@@ -66,10 +72,12 @@ export class HomePage implements OnInit  {
   result = []
   loc =[]
   email = null
+  lats
+  long
   highRiskLocations = {}
   reportedLocations = {}
   message
-
+  selectImage
   mapz : any;
   markers : any;
   autocomplete: any;
@@ -87,8 +95,8 @@ export class HomePage implements OnInit  {
   directionsService
   array = []
  
-  constructor(public zone: NgZone,public toastController : ToastController, public alertController: AlertController, private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
-    private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, private keyboard: Keyboard) 
+  constructor(public zone: NgZone,public alertController: AlertController, private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
+    private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, private keyboard: Keyboard, public googlemapservice : GooglemapService) 
     {
     this.exit()
     this.checkUserState()
@@ -96,13 +104,14 @@ export class HomePage implements OnInit  {
     this.run()
     this.fetchCrimeCategories()
     this.setUser()
+    this.getDate()
     //this.loadUserIncidents()
     console.log("why");
     
     ////
     this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
     this.autocomplete = { input: '' };
-    this.autocompletez = { inputz: '' };
+    this.autocompletez = { input: '' };
     this.autocompleteItems = [];
     this.autocompleteItemz = [];
     ////
@@ -132,6 +141,37 @@ export class HomePage implements OnInit  {
       });
     });
     //////////////////// constructor notification end
+  }
+  getDate(){
+    let currentDate = new Date()
+    console.log(currentDate);
+    let date = currentDate.getDate()
+    console.log(date);
+    let month 
+    let monthArray = [
+      {key: 0, value: 'January'},
+      {key: 1, value: 'February'},
+      {key: 2, value: 'March'},
+      {key: 3, value: 'April'},
+      {key: 4, value: 'May'},
+      {key: 5, value: 'June'},
+      {key: 6, value: 'July'},
+      {key: 7, value: 'August'},
+      {key: 8, value: 'September'},
+      {key: 9, value: 'October'},
+      {key: 10, value: 'November'},
+      {key: 11, value: 'December'}
+    ]
+    
+    let monthNum = currentDate.getMonth()
+    for(let i = 0; i < monthArray.length; i++){
+      if(monthNum === monthArray[i].key){
+        month = monthArray[i].value
+      }
+    }
+    console.log(month);
+    let year = currentDate.getFullYear()
+    console.log(year);
   }
   ///////// notification start
   notifyDanger(desc){
@@ -192,7 +232,7 @@ export class HomePage implements OnInit  {
     this.platform.ready();
     this.initMap();
     this.checkUserState()
-    //this.Directions();
+   // this.AvoidRoutes()
   }
   handleLocationError(browserHasGeolocation, infoWindow, pos){
     infoWindow.setPosition(pos);
@@ -229,7 +269,7 @@ export class HomePage implements OnInit  {
     var dist = google.maps.geometry.spherical.computeDistanceBetween;
     console.log(dist,"dist");
     return new Promise((resolve, reject) => {
-      this.loadLocations().then(data =>{ 
+      this.loadLocations().then(data => { 
         console.log( data.length);
         for( let x = 0; x < data.length; x++ ){
           console.log(x);
@@ -256,7 +296,7 @@ export class HomePage implements OnInit  {
               var infoWindowMarker;
               infoWindowMarker= new google.maps.InfoWindow;
               let addressArray = {}
-              this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) =>{
+              this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) => {
                 console.log(results);
                 if(status === "OK"){
                   addressArray = {
@@ -275,6 +315,53 @@ export class HomePage implements OnInit  {
             }
           })(markers, x));
         }
+        ///
+        //
+        ///
+        
+        this.loadUserIncidents().then(data => {
+          console.log(data.length);
+          // duplicated code
+              ///selected area image
+    
+          for( let x = 0; x < data.length; x++ ){
+            var  markers = new google.maps.Marker({
+              map: map,
+              draggable: false,
+              position: new google.maps.LatLng(data[x].lat, data[x].lng),
+              icon:  this.selectImage,
+            });
+            google.maps.event.addListener(markers, 'click', ((markers, x) => {
+              return() => {
+                infoWindow.setContent(data[x].crimeType);
+                infoWindow.setPosition(new google.maps.LatLng(data[x].lat, data[x].lng));
+                infoWindow.open(map, markers);
+                console.log(new google.maps.LatLng);
+                var infoWindowMarker;
+                infoWindowMarker= new google.maps.InfoWindow;
+                let addressArray = {}
+                this.geocoder.geocode({'location': new google.maps.LatLng(data[x].lat, data[x].lng)}, (results, status) => {
+                  console.log(results);
+                  if(status === "OK"){
+                    addressArray = {
+                      street: results[0].address_components[1].long_name,
+                      section: results[0].address_components[2].long_name,
+                      surburb: results[0].address_components[3].long_name
+                    }
+                    console.log(addressArray);
+                    console.log(addressArray['street'])
+                    console.log(results);
+                    infoWindowMarker.setContent(addressArray['street'])
+                    console.log(addressArray);
+                  }
+                  this.openReportModal(addressArray, data[x].crimeType, data[x].lat, data[x].lng)
+                })
+              }
+            })(markers, x));
+          }
+        })
+        
+        
         console.log(this.DBLocation);
         for(let y = 0; y < this.DBLocation.length; y++){
           console.log(this.DBLocation[y]);
@@ -380,7 +467,22 @@ export class HomePage implements OnInit  {
     const alert = await this.alertController.create({
       header: '',
       message: 'You need to be logged in to use this function',
-      buttons: ['OK']
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'success',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Okay',
+          handler: (user) => {
+            console.log('Confirm Okay');
+            this.router.navigate(['/login'])
+          }
+        }
+      ]
     });
     await alert.present();
   }
@@ -388,39 +490,66 @@ export class HomePage implements OnInit  {
     console.log(crimeType, lat, lng);
     const myModal = await this.modal.create({
       component: ReportedIncidentPage,
+      cssClass: 'my-custom-modal-css',
       componentProps: {
+        crimeType: crimeType,
         address: address,
         lat: lat,
         lng: lng
       }
     });
-    myModal.onDidDismiss().then((data) => {
-      let dataReturned = data
-      console.log(dataReturned);
-      if(dataReturned.data !== undefined){
-        if(dataReturned.data[0].report === true){
-          let data = dataReturned
-          console.log(data)
-          if(this.email === null){
-            //this.events.publish('openModal', true, lat, lng)
-            //this.router.navigate(['/login'])
-            this.alertUserToLogin()
-          }else{
-            console.log(this.email);
-            //this.events.publish('openModal', false, null, null)
-            this.openModal(address, lat, lng)
+    
+  myModal.onDidDismiss().then((dataReturned) => {
+    console.log(dataReturned);
+    let data = dataReturned.data
+    console.log(data);
+    
+    if(data !== null && data !== undefined){
+     
+                if(dataReturned.data[0].report === true){
+                  let data = dataReturned
+                  console.log(data)
+                  if(this.email === null){
+                    this.alertUserToLogin()
+                  }else{
+                    this.openModal(address, lat, lng)  
+                }
+                }
+              }
+            });
+            myModal.present()
+            console.log(address);     
           }
-        }
+        
+    
+  
+      async submitToFirebase(submitInfo){
+        console.log('And we all just');
+        let date = Date()
+        console.log(date);
+        
+        await this.firebaseService.submit(submitInfo).then(data => {
+          console.log(data);
+          this.succesfulSubmission()
+          
+        })
       }
-    });
-    myModal.present()
-    console.log(address);
-  }
+      
+        async succesfulSubmission() {
+          const toast = await this.toastCtrl.create({
+            message: 'Your report has been submitted to our database.',
+            duration: 2000
+          });
+          toast.present();
+        }
+      
+      
   async openModal(address, lat, lng){
     console.log(lat, lng);
     console.log(address);
     const myModal = await this.modal.create({
       component: PopupPage,
+      cssClass: 'my-custom-modal-css',
       componentProps:{
         result : this.result,
         address: address,
@@ -441,19 +570,7 @@ export class HomePage implements OnInit  {
     });
     myModal.present()
   }
-  submitToFirebase(submitInfo){
-    console.log('And we all just');
-    this.firebaseService.submit(submitInfo).then(data => {
-      this.succesfulSubmission()
-    })
-  }
-  async succesfulSubmission() {
-    const toast = await this.toastController.create({
-      message: 'Your report has been submitted to our database.',
-      duration: 2000
-    });
-    toast.present();
-  }
+  
   submit(submitInfo){
     console.log(submitInfo);
     console.log('And we are all just entertainers, and we stupid and contagious');
@@ -513,10 +630,9 @@ export class HomePage implements OnInit  {
       origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
       // anchor: new google.maps.Point(0, 40)
     };
-    ///selected area image
-    var selectImage = {
+    this.selectImage = {
       url: 'assets/icon/pin-black-silhouette-in-diagonal-position-pointing-down-right (2).png', // This marker is 20 pixels wide by 32 pixels high.
-      size: new google.maps.Size(40, 40), // The origin for this image is (0, 0).
+      size: new google.maps.Size(32, 32), // The origin for this image is (0, 0).
       origin: new google.maps.Point(0, 0), // The anchor for this image is the base of the flagpole at (0, 32).
       // anchor: new google.maps.Point(0, 40)
     };
@@ -568,6 +684,8 @@ export class HomePage implements OnInit  {
       ////// listener on marker start
       // Report incident
       marker.addListener('click', (event) => {
+        
+        
         this.reportIncident(event, marker)
       });
       //// listener on marker end
@@ -575,11 +693,32 @@ export class HomePage implements OnInit  {
     // Get the location of you
     if(navigator.geolocation) {
       //this.array =[]
+      console.log('Why are you not running?');
       navigator.geolocation.getCurrentPosition((position) => {
+        console.log(position);
+        let latitude = position.coords.latitude
+        console.log(latitude, 'latitude of user');
+        let longitude = position.coords.longitude
+        console.log(longitude);
+        
         var pos=[]
         pos.push({
-          location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
+          location: new google.maps.LatLng(latitude, longitude)
         });
+        console.log(pos[0].location, 'position');
+        
+
+
+        this.array.push(pos[0])
+        console.log(this.array, "zzz");
+        this.Lats = this.array[0].location.lat();
+        console.log( this.Lats, "weewewe");
+        this.Long = this.array[0].location.lng();
+
+        var locations = {lat: this.Lats, lng: this.Long}
+    console.log(locations, 'runninnnng');
+        this.start = locations
+        
         let marker = new google.maps.Marker({
           position: pos[0].location,
           zoom: 17,
@@ -590,7 +729,37 @@ export class HomePage implements OnInit  {
         this.markers.push(marker);
         map.setCenter(pos[0].location);
         infoWindow.setPosition(pos[0].location);
-        infoWindow.setContent('Your Location.');
+        infoWindow.setContent('haha');
+        infoWindow.open(map)
+        console.log('runner world');
+        
+        this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
+          console.log(results);
+          if(status === "OK") {
+          //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+            let addressArray = {
+              street: results[0].address_components[1].long_name,
+              section: results[0].address_components[2].long_name,
+              surburb: results[0].address_components[3].long_name
+            }
+            //infoWindow = new google.maps.InfoWindow;
+            // addressArray.push()
+            console.log(addressArray);
+            console.log(addressArray['street'])
+            console.log(results);
+           //console.log(infoWindow.setContent(addressArray['street']))
+           infoWindow.setContent(addressArray['street'])
+           infoWindow.setPosition(pos[0].location);
+                 infoWindow.open(map)
+          }
+        })
+        //console.log(infoWindowMarker.setContent(addressArray['street']))
+        console.log(marker,"marker selected")
+
+
+        
+        console.log(position);
+        
         infoWindow.open(map);
         map.setCenter(pos[0].location);
         this.array.push(pos[0])
@@ -600,6 +769,8 @@ export class HomePage implements OnInit  {
         this.Long = this.array[0].location.lng();
         // calling function to plot
         this.plotDirections(this.start, this.end);
+
+       // this.AvoidRoutes() 
       }, () => {
         this.handleLocationError(true, infoWindow, map.getCenter());
       });
@@ -617,6 +788,7 @@ export class HomePage implements OnInit  {
     let lat = event.latLng.lat()
     let lng = event.latLng.lng()
     let addressArray = {}
+    
     this.geocoder.geocode({'location': event.latLng}, (results, status) => {
       console.log(results);
       if(status === "OK") {
@@ -649,24 +821,85 @@ export class HomePage implements OnInit  {
     console.log(lat, lng, this.result)
   }
 
+
+  //////////////////////////// creating avoid routes
+  // AvoidRoutes() {
+  //   //var router = platform.getEnterpriseRoutingService(),
+  //   this.googlemapservice.AvoidArea().subscribe((data)=>{
+
+  //   var parameters = data
+  //       parameters = {
+  //       // waypoint0: '-26.007142, 28.219275',
+  //       // waypoint1: '-26.100721, 28.050423',
+  //       // mode: 'fastest;truck',
+  //       avoidareas: '-26.097961, 28.057662;-26.083711, 28.060538'
+  //     }
+
+  //     console.log(data, "ooo");
+  //     console.log(parameters, "www");
+  //   }) 
+  // }
+
+  /////////////////////////////
+
       // code is working from here
   plotDirections(start, end) {
+    console.log(start);
+    console.log(end);
+    
+    
+    var avoidareas;
+    let latlng;
+    for (let r = 0; r < this.DBLocation.length; r++) {
+      let lat = this.DBLocation[r].location.lat()
+      let lng = this.DBLocation[r].location.lng()
+      console.log(lat + lng);
+      
+    
+      if(this.DBLocation.length -1 == r){
+        console.log("last");
+        
+         latlng =latlng +  lat + "," + lng
+        }
+      else if( r == 0){
+        console.log("first");
+        
+        latlng = lat + "," + lng +";"
+      
+      }else {
+        console.log("mii");
+
+        latlng = latlng + lat + "," + lng + ";"
+      }
+      avoidareas = latlng
+      console.log(avoidareas);
+    }
+
+    this.googlemapservice.AvoidArea(avoidareas).subscribe((data)=>{
+      this.dangerPlek = data;
+      console.log(this.dangerPlek);
+      
+     
+      
     
       // start for getting user location
-    var locations = {lat: this.Lats, lng: this.Long}
-    console.log(locations, 'runninnnng');
-    this.start = locations
+    // var locations = {lat: this.Lats, lng: this.Long}
+    // console.log(locations, 'runninnnng');
+    // this.start = locations
 
       //end for getting user destinations
-      this.end = this.destinations 
-      console.log(this.end, "kokoko");
+      //end = this.destinations 
+      console.log(end, "kokoko");
     var method = 'DRIVING';
     var request = {
-      origin: this.start,
-      destination: this.end,
+      origin: start,
+      destination: end,
       travelMode: google.maps.DirectionsTravelMode[method],
+     // avoidareas: this.dangerPlek,
       provideRouteAlternatives: true
     };
+    console.log(request);
+    
     this.directionsService.route(request, (response, status) => {
       if (status === google.maps.DirectionsStatus.OK) {
         var routes = response.routes;
@@ -681,7 +914,7 @@ export class HomePage implements OnInit  {
             map: map,
             directions: response,
             routeIndex: i,
-            avoidareas: this.markers,
+            avoidareas: this.dangerPlek,
             draggable: true,
             polylineOptions: {
               strokeColor: colors[i],
@@ -710,6 +943,7 @@ export class HomePage implements OnInit  {
         } // End route loop
       }
     });
+}) 
  }
 
   setDestination(event){
@@ -717,63 +951,117 @@ export class HomePage implements OnInit  {
     this.destinations = event.detail.value
     console.log(this.destinations);
   }
+
 /////////////////////////////////////////////////////////////////////////////////////
   /////////////  places
-  // SearchPlaces(){
-  //   console.log(this.autocompletez.inputz);
-  //   if(this.autocompletez.inputz === '') {
-  //     this.autocompleteItemz = [];
-  //     return;
-  //   }
-  //   this.GoogleAutocomplete.getPlacePredictions({ inputz: this.autocompletez.inputz },
-  //   (predictions, status) => {
-  //     this.autocompleteItemz = [];
-  //     this.zone.run(() => {
-  //       predictions.forEach((prediction) => {
-  //         this.autocompleteItemz.push(prediction);
-  //       });
-  //     });
-  //   });
-  // }
-  // SearchedResult(itemz){
-  //   this.autocompleteItemz = [];
-  //   this.geocoder.geocode({'Here': itemz.place_id}, (results, status) => {
-  //     console.log(this.markers);
-  //     if(status === 'OK' && results[0]) {
-  //       let position = {
-  //         lat: results[0].geometry.location.lat,
-  //         lng: results[0].geometry.location.lng
-  //       };
-  //       var marker = new google.maps.Marker({
-  //         position: results[0].geometry.location,
-  //         map: map,
-  //         zoom: 15,
-  //         draggable: true
-  //       });
-  //       this.markers.push(marker);
-  //       map.setCenter(results[0].geometry.location);
-  //     }
-  //     console.log(this.markers);
-  //     marker.addListener('click', (event) => {
-  //       this.reportIncident(event, marker)
-  //     })
-  //   })
-  // }
+  SearchPlaces(){
+    console.log(this.myDest);
+    console.log(this.myDest);
+    console.log(this.start);
+    
+    if(this.myDest === '') {
+      this.autocompleteItemz = [];
+      return;
+    }
+    this.GoogleAutocomplete.getPlacePredictions({ input: this.myDest },
+    (predictions, status) => {
+      this.autocompleteItemz = [];
+      this.zone.run(() => {
+        predictions.forEach((prediction) => {
+          this.autocompleteItemz.push(prediction);
+        });
+      });
+    });
+  }
+  
+  getLocation(item){
+    console.log(item);
+    this.autocompleteItemz = []
+    let placeID = item['place_id']
+    console.log(placeID);
+    let currentLocation = this.start
+    this.geocoder.geocode({'placeId': placeID}, (results, status) => {
+      console.log(results);
+      let result = results
+      console.log(result);
+      console.log(result[0]);
+      
+      console.log(result[0].geometry);
+      console.log(result[0].geometry.location);
+      let destinationLocation = result[0].geometry.location
+      console.log(this.start);
+      destinationLocation.lat()
+      console.log(destinationLocation.lat());
+      console.log(destinationLocation.lng());
+      let destination = {}
+      destination = {lat: destinationLocation.lat(), lng: destinationLocation.lng()}
+      console.log(destination);
+      
+      this.plotDirections(this.start, destination)
+    })
+  }
+
+  SearchedResult(itemz){
+    this.autocompleteItemz = [];
+    this.plotDirections(this.start, this.end)
+    this.geocoder.geocode({'placeId': itemz.place_id}, (results, status) => {
+     this.plotDirections(this.start, this.end)
+     console.log(this.plotDirections);
+     
+      // console.log(this.markers);
+      // if(status === 'OK' && results[0]) {
+      //   let position = {
+      //     lat: results[0].geometry.location.lat,
+      //     lng: results[0].geometry.location.lng
+      //   };
+      //   var marker = new google.maps.Marker({
+      //     position: results[0].geometry.location,
+      //     map: map,
+      //     zoom: 15,
+      //     draggable: true
+      //   });
+      //   this.markers.push(marker);
+      //   map.setCenter(results[0].geometry.location);
+      // }
+      // console.log(this.markers);
+      // marker.addListener('click', (event) => {
+      //   this.reportIncident(event, marker)
+      // })
+    })
+  }
   ////////////////////////////////////////////////////////////////////////////////
   openKeyboard(){
     this.keyboard.show();
     //this.keyboard.setResizeMode(mode)
     this.keyboard.onKeyboardDidShow()
-    //this.keyboard.setResizeMode
+    this.keyboard.setResizeMode
     window.addEventListener('keyboardWillShow', () => console.log('keyboard showing'))
   }
   closeKeyboard(){
-    this.keyboard.hide()
-    console.log('closing keys');
-    document.getElementById("place-id").blur()
+    // document.getElementById("place-id").blur()
+    // console.log('closing keyboard');
+    
+    // this.keyboard.hide()
+    // console.log('closing keys');
+    
   }
   scrollStart() {
-    this.keyboard.hide();
+    console.log(this.inputElement);
+    this.inputElement.setFocus()
+    this.inputElement.getInputElement().then(data => {
+      let value = data
+      console.log(value);
+    })
+    
+    
+    console.log(this.inputElement.setFocus());
+    
+    //padding.getElementRef().nativeElement.blur();
+    this.inputElement.ionBlur
+    console.log(this.inputElement.ionBlur);
+    
     document.getElementById("place-id").blur()
+    this.keyboard.onKeyboardHide()
+    this.autocompleteItems = [];
   }
 }
