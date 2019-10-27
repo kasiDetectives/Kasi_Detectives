@@ -764,7 +764,7 @@ export class HomePage implements OnInit  {
     this.keyboard.show();
     //this.keyboard.setResizeMode(mode)
     this.keyboard.onKeyboardDidShow()
-    this.keyboard.setResizeMode
+    //this.keyboard.setResizeMode
     window.addEventListener('keyboardWillShow', () => console.log('keyboard showing'))
   }
   closeKeyboard(){
