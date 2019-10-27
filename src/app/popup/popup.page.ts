@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {NavController, NavParams, Events} from '@ionic/angular'
+import {NavController, NavParams, Events, AlertController} from '@ionic/angular'
 import { ViewController } from '@ionic/core';
 import {ModalController} from '@ionic/angular'
 import { FirebaseService } from '../firebase.service';
@@ -23,7 +23,8 @@ export class PopupPage implements OnInit {
   checkboxState
   crimeText
   userId
-  constructor(public modCtrl:ModalController, public events : Events, public navParam:NavParams) {
+  crimeType
+  constructor(public modCtrl:ModalController, public events : Events, public navParam:NavParams, public alertController: AlertController) {
     // this.fetchCrimeCategories()
     this.events.subscribe('crimeTypes:List', (data) =>{
       let why = data
@@ -74,10 +75,13 @@ export class PopupPage implements OnInit {
     this.optionSelectedValue = event.detail.value
     if(this.optionSelectedValue==='Other'){
       this.showInput = true
+      this.crimeDescription = ''
     }else{
       this.showInput =false
       this.crimeDescription =  this.optionSelectedValue
+      console.log(this.crimeDescription);
     }
+    this.checkValidity()
   }
   sendData(){
     console.log(this.crimeDescription);
@@ -105,8 +109,9 @@ export class PopupPage implements OnInit {
 
   setInput(event){
     console.log(event.detail.value);
+    this.crimeText = event.detail.value
     console.log(this.crimeText);
-    this.crimeDescription = event.detail.value
+    this.crimeDescription = this.crimeText
     this.checkValidity()
   }
 
@@ -120,6 +125,32 @@ export class PopupPage implements OnInit {
     }
   }
 
+  async verifySubmit() {
+    const alert = await this.alertController.create({
+      header: 'Login',
+      message: 'You are about to report ' + this.address['street'] + ', ' + this.address['section'] + ' as a crime area. Continue?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'success',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Okay',
+          handler: (user) => {
+            console.log('Confirm Okay');
+            this.sendData()
+            //this.router.navigate(['/login'])
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   
   
   ngOnInit() {
@@ -131,6 +162,9 @@ export class PopupPage implements OnInit {
     this.lng = this.navParam.get('lng')
     this.address = this.navParam.get('address')
     this.userId = this.navParam.get('userId')
+    this.crimeType = this.navParam.get('crimeType')
+    console.log(this.crimeType);
+    
   }
 
 }

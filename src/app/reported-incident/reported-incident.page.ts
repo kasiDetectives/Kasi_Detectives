@@ -10,12 +10,15 @@ export class ReportedIncidentPage implements OnInit {
   lat
   lng
   address
+  crimeType
   constructor(public modCtrl:ModalController, public navParam:NavParams) { }
 
   ngOnInit() {
     this.lat = this.navParam.get('lat')
     this.lng = this.navParam.get('lng')
     this.address = this.navParam.get('address')
+    this.crimeType = this.navParam.get('crimeType')
+    console.log(this.crimeType);
     console.log(this.address);
     console.log(this.lat);
     }

@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar color="primary">
+<ion-title  style="text-align: center"><img routerLink='/home' src="\assets\icon\magnifying-glass (10).png"></ion-title>   
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="tertiary">
+  <ion-card style="background-color:white;">
+    <ion-card-content >
+        
+
+<div>
+
+    <span style="zoom:1.2;">Not feeling safe? </span>
+    <span style="zoom:1.2;"> Share your Current location with your family </span>
+    <span style="zoom:1.2;"> This will send out your location every 5 minute to your family</span>
+
+<!-- email -->
+    <!--  -->
+  
+    <ion-item>
+        <ion-label color="primary" position="floating">Phone Number</ion-label>
+        <ion-input [(ngModel)]="cellNo"></ion-input>
+      </ion-item>
+   <!-- email -->
+   
+ <!-- start tracking -->
+   <ion-button (click)="start(cellNo)" *ngIf="!isTracking" ><ion-icon style="zoom:1;" name="send"></ion-icon></ion-button>
+   <!-- start tracking -->
+
+    <!-- end tracking -->
+   <ion-button (click)="stop()" *ngIf="isTracking"><ion-icon style="zoom:1;"  name="hand"></ion-icon></ion-button>
+    <!-- end tracking -->
+
+  </div>
+
+
+    </ion-card-content>
+    
+  </ion-card>
+ <!-- back-->
+ <ion-button color="light" routerLink='/home' ><ion-icon style="zoom:1;"  name="arrow-back"></ion-icon></ion-button>
+ <!-- back -->
+  
+  <!-- show lock-->
+<div text-center>
+    <ion-icon  color="light" style="zoom:15;"  name="lock" *ngIf="isTracking"></ion-icon>
+    <ion-icon   color="light" style="zoom:15;"  name="unlock" *ngIf="!isTracking" ></ion-icon>
+</div>
+  <!-- show lock-->
+
+</ion-content>

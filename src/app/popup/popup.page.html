@@ -11,9 +11,11 @@
 </ion-header>
 
 <ion-content>
-    <p style="text-align: center">{{address.street}}</p>
-    <p style="text-align: center">{{address.section}}</p>
-    <p style="text-align: center">{{address.surburb}}</p>
+    <div style="background-color:rgba(100, 196, 237, 0.322); padding: 10px;margin: 5px; text-align: center">
+        <span style="text-align: center">{{address.street}}</span><br>
+        <span style="text-align: center">{{address.section}}</span><br>
+        <span style="text-align: center">{{address.surburb}}</span>
+    </div>
   <ion-card>
 
     <ion-item>
@@ -34,7 +36,7 @@
 </ion-item>
 </ion-list>
 <div style="text-align: center">
-     <ion-button  shape="round" color="tertiary" (click)='sendData()'>
+     <ion-button [disabled]='!reportFormValid' shape="round" color="tertiary" (click)='verifySubmit()'>
          Submit
      </ion-button>
    
