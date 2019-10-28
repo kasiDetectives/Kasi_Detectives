@@ -137,48 +137,68 @@ export class UsersService {
     console.log(this.userProfile);
     return this.userProfile
   }
-}
-
-// readCurrentSession(){
-  //   console.log(this.user);
-  //   return this.user
-  // }
 
 
-  // setCurrentSession(user){
-  //   var uid
-  //   if (user !== null){
-  //     uid = user.currentUser.uid;
-  //     this.user = user.currentUser
-  //     console.log(uid);
+readCurrentSession(){
+    console.log(this.user);
+    return this.user
+  }
+
+
+  setCurrentSession(user){
+    var uid
+    if (user !== null){
+      uid = user.currentUser.uid;
+      this.user = user.currentUser
+      console.log(uid);
       
-  //     var userRoot = firebase.database().ref("Users").child(uid)
-  //     userRoot.once("value", snap => {
-  //       //console.log(userRoot);
-  //       let values = snap.val()
-  //         console.log(values["name"]);
-  //         console.log(values["email"]);
-  //         this.userProfile.push({
-  //         key: snap.key,
-  //         displayName : values["name"],
-  //         email : values["email"],
+      var userRoot = firebase.database().ref("Users").child(uid)
+      userRoot.once("value", snap => {
+        //console.log(userRoot);
+        let values = snap.val()
+          console.log(values["name"]);
+          console.log(values["email"]);
+          this.userProfile.push({
+          key: snap.key,
+          displayName : values["name"],
+          email : values["email"],
 
-  //         })
-  //     })  
-  //   }
-  //    this.currentSessionId = uid
-  //    console.log(uid);
-  //    console.log(user);
-  //    console.log(this.user);
-     
-  // }
+          })
+      })  
+    }
+     this.currentSessionId = uid
+     console.log(uid);
+     console.log(user);
+     console.log(this.user);
+     return this.user
+  }
 
-  // checkState(){
-  //   if(!this.currentState){
-  //    this.router.navigate(['/login'])
-  //   }
-  // }
+  retrievingUserInfo(uid){
+    return new Promise((resolve, reject) => {
+      var userRoot = firebase.database().ref("Users").child(uid)
+      userRoot.once("value", snap => {
+        //console.log(userRoot);
+        let values = snap.val()
+        console.log(values["name"]);
+        console.log(values["email"]);
+        let userProfile = {
+          key: snap.key,
+          displayName : values["name"],
+          email : values["email"],
+        }
+        resolve (userProfile)
+      })
+      
+    })
+  }
 
-  // returnState(){
-  //   return this.currentState
-  // }
+  checkState(){
+    if(!this.currentState){
+     this.router.navigate(['/login'])
+    }
+  }
+
+  returnState(){
+    return this.currentState
+  }
+}

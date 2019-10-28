@@ -23,10 +23,14 @@
 .directions{
   position: fixed;
   background-color: white !important;
-  width: 50%;
   top: 15.5%;
   left: 0;
   right: 0;
+
+  .list{
+    padding-left: 25px;
+
+  }
 }
 
 #floating-panel {
