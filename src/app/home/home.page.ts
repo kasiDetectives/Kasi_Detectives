@@ -875,9 +875,9 @@ export class HomePage implements OnInit  {
       console.log(avoidareas);
     }
 
-    this.googlemapservice.AvoidArea(avoidareas).subscribe((data)=>{
-      this.dangerPlek = data;
-      console.log(this.dangerPlek);
+    // this.googlemapservice.AvoidArea(avoidareas).subscribe((data)=>{
+    //   this.dangerPlek = data;
+    //   console.log(this.dangerPlek);
       
      
       
@@ -914,7 +914,7 @@ export class HomePage implements OnInit  {
             map: map,
             directions: response,
             routeIndex: i,
-            avoidareas: this.dangerPlek,
+           // avoidareas: this.dangerPlek,
             draggable: true,
             polylineOptions: {
               strokeColor: colors[i],
@@ -943,7 +943,7 @@ export class HomePage implements OnInit  {
         } // End route loop
       }
     });
-}) 
+//}) 
  }
 
   setDestination(event){
