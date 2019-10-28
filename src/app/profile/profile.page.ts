@@ -20,7 +20,7 @@ export class ProfilePage implements OnInit {
   userId
   email
   pics
-  user =[]
+  user
   namePattern = "^(?=.*\[A-Z])(?=.*\[a-z])(?=.*\[A-Z]).{2,}$"
   emailPattern= "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
   image: any;
@@ -30,6 +30,7 @@ export class ProfilePage implements OnInit {
   { 
     //this.getUserProfile()
     //this.fetchUserProfile()
+    this.events.publish('currentPage:home', false)
     this.events.subscribe('user:created', (email) => {
       if(!email){
         this.router.navigate(['/login'])
@@ -48,6 +49,8 @@ export class ProfilePage implements OnInit {
         )
       ]]
     })
+    this.getUserID()
+    this.fetchUserProfile()
   }
 
   getPic(sourceType)
@@ -143,6 +146,10 @@ export class ProfilePage implements OnInit {
     this.user = this.userService.returnUserProfile()
     console.log(this.user);
   }
+
+  getUserID(){
+    
+  }
    async fetchUserProfile(){
     const loader = await this.loader.create(
       {
@@ -151,23 +158,31 @@ export class ProfilePage implements OnInit {
     )
 
     await loader.present()
-    this.userService.getUserProfile(this.user[0].key).then(data =>
+    this.userService.checkingAuthState().then(data => {
+      this.user = data
+      console.log(this.user);
+      let userID = this.user['uid']
+      console.log(userID);
+      this.userService.getUserProfile(userID).then(data =>
       
       
       
-      {
-        console.log(this.user[0].key);
-        console.log(data);
-      // this.name = data.name
-      // this.email = data.email
-      this.profileForm.get('email').setValue(data.email)
-      this.profileForm.get('name').setValue(data.name)
+        {
+          console.log(userID);
+          console.log(data);
+        // this.name = data.name
+        // this.email = data.email
+        this.profileForm.get('email').setValue(data.email)
+        this.profileForm.get('name').setValue(data.name)
+      
+        this.image = data.profilePicUrl
+          console.log(data.profilePicUrl);
+          
+          loader.dismiss()
+        })
+      
+    })
     
-      this.image = data.profilePicUrl
-        console.log(data.profilePicUrl);
-        
-        loader.dismiss()
-      })
 
 
 
