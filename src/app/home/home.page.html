@@ -40,7 +40,7 @@
     </ion-card>
 
 <p id="output"></p>
-<ion-card class="directions" [hidden]='hide'>
+<ion-card class="directions"> 
   <ion-item>
     <!-- <ion-label>Directions:</ion-label> -->
     <ion-input type="text" name="myDest" id="myDest" [ngModel]='myDest' (ionChange)='setDestination($event)' placeholder="choose destination.." value=""></ion-input>
@@ -55,5 +55,5 @@
    </ion-list> -->
   </ion-item>
 </ion-card>
-
+<!-- [hidden]='hide' -->
 </ion-content>
