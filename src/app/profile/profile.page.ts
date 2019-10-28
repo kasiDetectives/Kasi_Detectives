@@ -178,23 +178,12 @@ export class ProfilePage implements OnInit {
         this.image = data.profilePicUrl
           console.log(data.profilePicUrl);
           
-          loader.dismiss()
+            loader.dismiss()
+          
+          
         })
       
     })
-    
-
-
-
-
-    
-    
-  
-    this.userService.getUserProfile(this.user[0].key).then( profile =>{
-      this.image = profile.profilePicUrl
-      
-    })
-
   }
 
   async presentToast() {
