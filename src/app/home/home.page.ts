@@ -957,6 +957,7 @@ export class HomePage implements OnInit  {
   SearchPlaces(){
     console.log(this.myDest);
     console.log(this.myDest);
+    console.log(this.start);
     
     if(this.myDest === '') {
       this.autocompleteItemz = [];
@@ -975,6 +976,7 @@ export class HomePage implements OnInit  {
   
   getLocation(item){
     console.log(item);
+    this.autocompleteItemz = []
     let placeID = item['place_id']
     console.log(placeID);
     let currentLocation = this.start

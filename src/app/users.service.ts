@@ -173,6 +173,25 @@ readCurrentSession(){
      return this.user
   }
 
+  retrievingUserInfo(uid){
+    return new Promise((resolve, reject) => {
+      var userRoot = firebase.database().ref("Users").child(uid)
+      userRoot.once("value", snap => {
+        //console.log(userRoot);
+        let values = snap.val()
+        console.log(values["name"]);
+        console.log(values["email"]);
+        let userProfile = {
+          key: snap.key,
+          displayName : values["name"],
+          email : values["email"],
+        }
+        resolve (userProfile)
+      })
+      
+    })
+  }
+
   checkState(){
     if(!this.currentState){
      this.router.navigate(['/login'])
