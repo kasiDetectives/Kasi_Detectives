@@ -55,6 +55,8 @@ export class TrackModalPage implements OnInit {
         console.log(userProfile);
         this.username = userProfile['displayName']
         console.log(this.username);
+        console.log(this.username);
+        
         
 
       })
