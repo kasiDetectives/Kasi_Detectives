@@ -7,10 +7,10 @@ import { filter } from 'minimatch';
 import { interval } from 'rxjs'
 ​​import { SMS } from '@ionic-native/sms/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
-import * as firebase from 'firebase'
 import { UsersService } from '../users.service';
 import { Contacts, ContactFieldType,IContactFindOptions } from '@ionic-native/contacts/ngx';
 import { LoadingController } from '@ionic/angular';
+import * as firebase from 'firebase'
 var database = firebase.database();
 declare var google
 @Component({
@@ -41,7 +41,7 @@ export class TrackModalPage implements OnInit {
   constructor(public loadingController: LoadingController,public contacts: Contacts, public userService: UsersService,private androidPermissions: AndroidPermissions,private sms: SMS,private socialSharing: SocialSharing,public navCtrl: NavController, private plt: Platform, private geolocation: Geolocation) {
    //this.search('');
     this.geocoder = new google.maps.Geocoder;
-    
+    this.retrieveUserID()
    }
 
    search()
@@ -124,16 +124,35 @@ this.lastLocation= String(position.coords.latitude+","+position.coords.longitude
       this.geolocation.getCurrentPosition().then( position =>{
         let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         console.log(latLng);
-        
-      }).catch(error =>{
+      }).catch(error => {
       })
+    }) 
+  }
+
+  retrieveUserID(){
+    this.userService.checkingAuthState().then(data => {
+      console.log(data);
+      let result  = data
+      let userID = result['uid']
+      console.log(userID);
+      this.userService.retrievingUserInfo(userID).then(requestResult => {
+        let userProfile = requestResult
+        console.log(userProfile);
+        this.username = userProfile['displayName']
+        console.log(this.username);
+        console.log(this.username);
+        
+        
+
       })
 
-     
+      
+    })
   }
   //
-  start(cellNo)
-  {
+  start(cellNo)  {
+    console.log(cellNo);
+    
     this.isTracking = true
     this.trackedRoute = []
     this.presentLoading();

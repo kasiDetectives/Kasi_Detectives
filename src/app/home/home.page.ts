@@ -981,6 +981,7 @@ console.log("hh")
       destination: end,
       // 'avoidareas': avoidareas,
       travelMode: google.maps.DirectionsTravelMode[method],
+     // avoidareas: this.dangerPlek,
       provideRouteAlternatives: true
     };
     console.log(request);

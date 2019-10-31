@@ -201,4 +201,33 @@ readCurrentSession(){
   returnState(){
     return this.currentState
   }
+
+  updateProfile(userID, newUsername, username, newEmail, email){
+    return new Promise((resolve, reject) => {
+      if(newUsername !== username){
+        firebase.database().ref('Users/').child(userID).update({
+          name: newUsername
+        })
+        //return 'Profile has been reset'
+      }
+      console.log(newEmail);
+      console.log(email);
+      
+      
+      if(newEmail !== email){
+        var user = firebase.auth().currentUser;
+        console.log(user);
+        firebase.database().ref('Users/').child(userID).update({
+          email: newEmail
+        })
+        user.updateEmail(newEmail).then((data) => {
+          let message = 'Profile has been reset'
+          console.log(data);
+        }).catch(function(error) {
+          // An error happened.
+        });
+      }
+      resolve ()
+    })
+  }
 }

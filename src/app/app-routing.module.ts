@@ -11,9 +11,7 @@ const routes: Routes = [
   { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' },
   { path: 'popup', loadChildren: './popup/popup.module#PopupPageModule' },
   { path: 'reported-incident', loadChildren: './reported-incident/reported-incident.module#ReportedIncidentPageModule' },
-  { path: 'track-modal', loadChildren: './track-modal/track-modal.module#TrackModalPageModule' }
-
-
+  { path: 'track-modal', loadChildren: './track-modal/track-modal.module#TrackModalPageModule' },
 ];
 
 @NgModule({
