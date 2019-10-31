@@ -1,4 +1,5 @@
-<ion-header>
+
+ <ion-header>
   <ion-toolbar color="tertiary">
       <ion-buttons slot ="start">
           <ion-menu-button>
@@ -7,9 +8,11 @@
     <ion-title  style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png" ></ion-title>
   </ion-toolbar>
  </ion-header>
-
+​
 <ion-content class="one" color="success">
-  
+   <!-- back-->
+ <ion-button color="primary" routerLink='/home' ><ion-icon style="zoom:1;"  name="arrow-back"></ion-icon></ion-button>
+ <!-- back -->
   <form  class="form" [formGroup]="profileForm" style="padding: 20px 50px; ">
     <h1 style="text-align: center" class="header"> <b>Profile</b></h1>
     <div class="form-divider">
@@ -24,11 +27,11 @@
         <ion-input  formControlName="name" placeholder=" Full Name"><ion-icon name="person"></ion-icon></ion-input>
       </ion-item>
       <ion-item class="inputItems">
-        <ion-input formControlName="email"  placeholder=" Email Address"><ion-icon name="mail"></ion-icon></ion-input>
+        <ion-input formControlName="email"  placeholder=" Email Address" [disabled]><ion-icon name="mail"></ion-icon></ion-input>
       </ion-item>
     </div>
     <div style="text-align: center">
-      <ion-button color="tertiary"  class="form-buttons" [disabled]="!profileForm.valid" shape="round" (click)="login()">Update</ion-button><br/><br/>  
+      <ion-button color="tertiary"  class="form-buttons" [disabled]="!profileForm.valid" shape="round" (click)="update()">Update</ion-button><br/><br/>  
     </div>
   </form>
   <!-- <ion-button (click)='addImage()'>Add photo</ion-button>

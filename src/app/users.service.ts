@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router'
 import * as firebase from 'firebase'
 import {AlertController} from '@ionic/angular'
-
+​
 var database = firebase.database();
-
+​
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +21,7 @@ export class UsersService {
   email
   password
   constructor(public router : Router, public alertController:AlertController) { }
-
+​
   // Logging users in to the app
   login(email, password){
     return firebase.auth().signInWithEmailAndPassword(email, password).then((result)=>{
@@ -58,7 +58,7 @@ export class UsersService {
        return error
      })
   }
-
+​
   // async presentAlert(errorMessage)
   // {
   //   const alert = await this.alertController.create({
@@ -95,7 +95,7 @@ export class UsersService {
       });
     })
   }
-
+​
   getUserProfile(userId)  {
     return firebase.database().ref("Users/" + userId).once('value').then((snapshot) =>{
       let profile = snapshot.val()
@@ -110,7 +110,7 @@ export class UsersService {
       }
     })
   }
-
+​
   checkingAuthState(){
     return new Promise((resolve, reject) =>{
       firebase.auth().onAuthStateChanged((user) =>{
@@ -119,12 +119,12 @@ export class UsersService {
           
           resolve (user)
         }else{
-
+​
         }
       })
     })
   }
-
+​
   savePic(image){
     this.login(this.email, this.password).then((userID) =>{
       let storageRef = firebase.storage().ref('userDisplayPic/' + userID)
@@ -137,14 +137,14 @@ export class UsersService {
     console.log(this.userProfile);
     return this.userProfile
   }
-
-
+​
+​
 readCurrentSession(){
     console.log(this.user);
     return this.user
   }
-
-
+​
+​
   setCurrentSession(user){
     var uid
     if (user !== null){
@@ -162,7 +162,7 @@ readCurrentSession(){
           key: snap.key,
           displayName : values["name"],
           email : values["email"],
-
+​
           })
       })  
     }
@@ -172,13 +172,32 @@ readCurrentSession(){
      console.log(this.user);
      return this.user
   }
-
+​
+  retrievingUserInfo(uid){
+    return new Promise((resolve, reject) => {
+      var userRoot = firebase.database().ref("Users").child(uid)
+      userRoot.once("value", snap => {
+        //console.log(userRoot);
+        let values = snap.val()
+        console.log(values["name"]);
+        console.log(values["email"]);
+        let userProfile = {
+          key: snap.key,
+          displayName : values["name"],
+          email : values["email"],
+        }
+        resolve (userProfile)
+      })
+      
+    })
+  }
+​
   checkState(){
     if(!this.currentState){
      this.router.navigate(['/login'])
     }
   }
-
+​
   returnState(){
     return this.currentState
   }

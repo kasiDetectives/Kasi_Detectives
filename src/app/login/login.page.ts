@@ -35,8 +35,8 @@ export class LoginPage implements OnInit {
         [Validators.required, Validators.pattern(this.passwordPattern)]
       )]
     })
-   this.loginForm.get('email').setValue('willington.mnisi@gmail.com')
-   this.loginForm.get('password').setValue('Will1ngt0n7&')
+  //  this.loginForm.get('email').setValue('willington.mnisi@gmail.com')
+  //  this.loginForm.get('password').setValue('Will1ngt0n7&')
   }
   
   login(){

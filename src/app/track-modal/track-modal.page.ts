@@ -9,6 +9,8 @@ import { interval } from 'rxjs'
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import * as firebase from 'firebase'
 import { UsersService } from '../users.service';
+import { Contacts, ContactFieldType,IContactFindOptions } from '@ionic-native/contacts/ngx';
+import { LoadingController } from '@ionic/angular';
 var database = firebase.database();
 declare var google
 @Component({
@@ -17,7 +19,9 @@ declare var google
   styleUrls: ['./track-modal.page.scss'],
 })
 export class TrackModalPage implements OnInit {
-  
+  lock=false
+  ourtype: ContactFieldType[]=["displayName"];
+  contactsFound=[]
   isTracking = false
   current = null
   trackedRoute = [];
@@ -29,14 +33,93 @@ export class TrackModalPage implements OnInit {
   positionSubscription: any;
   geocoder: any
   username
-  constructor( public userService: UsersService,private androidPermissions: AndroidPermissions,private sms: SMS,private socialSharing: SocialSharing,public navCtrl: NavController, private plt: Platform, private geolocation: Geolocation) {
-
+  loca
+  theContact
+  theContactNumber
+  lastLocation
+  loc
+  constructor(public loadingController: LoadingController,public contacts: Contacts, public userService: UsersService,private androidPermissions: AndroidPermissions,private sms: SMS,private socialSharing: SocialSharing,public navCtrl: NavController, private plt: Platform, private geolocation: Geolocation) {
+   //this.search('');
     this.geocoder = new google.maps.Geocoder;
     
    }
 
-   
+   search()
+   {
+      // const option: IContactFindOptions ={
+      //   filter: q
+      // }
+      this.contacts.pickContact().then(selectedContact =>{
+        console.log(selectedContact);
+        this.theContact=selectedContact;
+        console.log(this.theContact);
+        this.theContactNumber= String(selectedContact['phoneNumbers']['0']['value'])
+        this.cellNo=String(selectedContact['phoneNumbers']['0']['value'])
+        console.log(selectedContact["phoneNumbers"][0].value, "second meth");
+        console.log(this.theContactNumber,"first meth");
+      })
+
+    // this.contacts.find(this.ourtype,option).then(conts => {
+
+    //   this.contactsFound= conts;
+    // })
+
+   }
+  //  onKeyUp(ev)
+  //  {
+
+  //        this.search(ev.target.value)
+  //  }
   ngOnInit() {
+//curr position
+this.geolocation.getCurrentPosition().then( position =>{
+
+  // location name
+this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
+console.log(results);
+if(status === "OK") {
+//let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
+let addressArray = {
+street: results[0].address_components[1].long_name,
+section: results[0].address_components[2].long_name,
+surburb: results[0].address_components[3].long_name
+}
+this.loc =String(addressArray['street']+" "+addressArray['section']+" "+addressArray['surburb'])
+}
+//location name
+})
+
+//push to array
+this.trackedRoute.push({lat: position.coords.latitude, lng:position.coords.longitude})
+console.log(this.trackedRoute, "routes")
+console.log(this.trackedRoute.length, "routes")
+
+var siz=this.trackedRoute.length
+this.lastLocation= String(position.coords.latitude+","+position.coords.longitude);
+//curr position
+})
+////////////////
+ //  //username
+           //username
+           this.userService.checkingAuthState().then(data => {
+        
+            console.log(data);
+            let user = data
+           
+            console.log(user['uid']," user ID 1");
+           
+            var userRoot = firebase.database().ref("Users").child(user['uid'])
+            userRoot.once("value", snap => {
+              //console.log(userRoot);
+              let values = snap.val()
+                
+              this.username= String(values["name"])
+              console.log(this.username," the username");
+               //rootsnap
+        })
+            //user end
+        })
+
     this.plt.ready().then(() =>{
       this.geolocation.getCurrentPosition().then( position =>{
         let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -53,111 +136,78 @@ export class TrackModalPage implements OnInit {
   {
     this.isTracking = true
     this.trackedRoute = []
-​  
+    this.presentLoading();
 //   let user=this.userService.readCurrentSession()
 //  console.log(user['uid'],"the current user profile")
   // let displayName= userProfile[0].displayName
     // console.log(displayName,"the current user NAME")
-
+   //location name
+  
   
 
     this.plt.ready().then(() =>{
-      this.sub = timer(0,10000).subscribe(result =>{
-        console.log("timer");
-    //curr position
-        this.geolocation.getCurrentPosition().then( position =>{
-            //username
-         this.userService.checkingAuthState().then(data => {
-              // location name
-    this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
-      console.log(results);
-      if(status === "OK") {
-      //let address= results[0].address_components[1].long_name + ',' + results[0].address_components[2].long_name + ',' + results[0].address_components[3].long_name
-        let addressArray = {
-          street: results[0].address_components[1].long_name,
-          section: results[0].address_components[2].long_name,
-          surburb: results[0].address_components[3].long_name
-        }
-      var  loc= addressArray['street']+" "+addressArray['section']+" "+addressArray['surburb']
-      }
-   
-   
-        //push to array
-        this.trackedRoute.push({lat: position.coords.latitude, lng:position.coords.longitude})
-        console.log(this.trackedRoute, "routes")
-        console.log(this.trackedRoute.length, "routes")
- 
-           var siz=this.trackedRoute.length
-        var lastLocation= position.coords.latitude+","+position.coords.longitude;
-
-        //  //username
-        //  this.userService.checkingAuthState().then(data => {
-          console.log(data);
-          let user = data
-         
-          console.log(user['uid']," user ID 1");
-         
-          var userRoot = firebase.database().ref("Users").child(user['uid'])
-          userRoot.once("value", snap => {
-            //console.log(userRoot);
-            let values = snap.val()
-              
-            this.username= values["name"]
-            console.log(this.username," the username");
-             
-          
-          
+      
        
+      this.sub = timer(0,300000).subscribe(result =>{
+        console.log("timer");
+        
+   
+         
+
+
+       
+      ///////////////////// 
+             
+        console.log(this.lastLocation,this.loc,this.username, " 155 strings")
          //username
-        console.log(lastLocation, "last one")
-        console.log(loc, "address")
-        this.msg=" Copy These Coordinates "+lastLocation +" and search them on any map for directions. from the Kasi Detective App";
+        console.log(this.lastLocation, "last one")
+        console.log(this.loc, "address")
+         this.msg=this.username+" was last seen at "+this.loc+" copy these Coordinates "+this.lastLocation +" and search them on any map for directions. sent from the Kasi Detective App";
         console.log(this.msg, "msg")
         console.log(cellNo,"phone numbers")
-        //send sms in the app
-      })
-      })
-      })
-       //location name
-        this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(
-          result => console.log('Has permission?', result.hasPermission),
-          err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS)
-        );
+              
+        //permission
+       this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(
+        result => console.log('Has permission?', result.hasPermission),
+        err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS)
+      );
+    
+    this.androidPermissions.requestPermissions([
+      this.androidPermissions.PERMISSION.SEND_SMS,
+      this.androidPermissions.PERMISSION.GET_ACCOUNTS
+    ]);
 
-      this.androidPermissions.requestPermissions([
-        this.androidPermissions.PERMISSION.SEND_SMS,
-        this.androidPermissions.PERMISSION.GET_ACCOUNTS
-      ]);
+       //send sms in the app
+  this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(() => {
+    var options = {
+      replaceLineBreaks: false, // true to replace \n by a new line, false by default
+      android: {
+          intent: '' // send SMS without opening any other app
+      }
+  };
+     console.log(this.msg," one i need to see");
+    this.sms.send(cellNo,this.msg, options).then(data => {
+    console.log('Msg Data Ok,sent');
+    this.lock=true
+    console.log(this.msg);
+    // this.smsText = "Sms sent to the; user!"
+    // this.submitFirebaseKin();
   ​
-      this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(() => {
-        var options = {
-          replaceLineBreaks: false, // true to replace \n by a new line, false by default
-          android: {
-              intent: '' // send SMS without opening any other app
-          }
-      };
-        this.sms.send(cellNo,this.msg, options).then(data => {
-        console.log('Msg Data Ok');
-        console.log(this.msg);
-        // this.smsText = "Sms sent to the; user!"
-        // this.submitFirebaseKin();
-  ​
-        console.log(data);
-        console.log(this.msg);
-      }).catch(error => {
-        console.log(error);
-      });
- }).catch(error =>{
-        })
-     
-        //curr position
-        })
-      
+    console.log(data);
+    console.log(this.msg);
+  }).catch(error => {
+    console.log(error);
+  });
+  }).catch(error =>{
+    }) 
 
-         
+        
       
+    //timer
      }) 
-
+      
+     
+  //platform   
   })
   this.cellNo=null
   this.msg=null
@@ -169,8 +219,17 @@ export class TrackModalPage implements OnInit {
     this.isTracking = false
     console.log(newRoute);
     this.sub.unsubscribe()
+    this.lock=false
    // this.positionSubscription.unsubscribe()
   }
-​
+​async presentLoading() {
+  const loading = await this.loadingController.create({
+    message: 'loading...',
+    duration: 4000
+  });
+  await loading.present();
+  this.cellNo;
+  loading.dismiss()
+}
   
 }

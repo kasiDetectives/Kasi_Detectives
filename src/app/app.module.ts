@@ -20,6 +20,7 @@ import { ReportedIncidentPageModule } from './reported-incident/reported-inciden
 import * as firebase from 'firebase'
 import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
 import { SMS } from '@ionic-native/sms/ngx';
+import {Contacts,ContactFieldType, IContactFindOptions } from '@ionic-native/contacts/ngx';
 var firebaseConfig = {
   apiKey: "AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI",
   authDomain: "kasidetectives.firebaseapp.com",
@@ -43,6 +44,7 @@ firebase.initializeApp(firebaseConfig);
     SocialSharing,
     Keyboard,
     SMS,
+    Contacts,
     Camera,
     Geolocation,
     AndroidPermissions,

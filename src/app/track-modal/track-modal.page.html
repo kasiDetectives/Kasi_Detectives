@@ -5,6 +5,9 @@
 </ion-header>
 
 <ion-content color="tertiary">
+  <!-- back-->
+ <ion-button color="light" routerLink='/home' ><ion-icon style="zoom:1;"  name="arrow-back"></ion-icon></ion-button>
+ <!-- back -->
   <ion-card style="background-color:white;">
     <ion-card-content >
         
@@ -20,7 +23,7 @@
   
     <ion-item>
         <ion-label color="primary" position="floating">Phone Number</ion-label>
-        <ion-input [(ngModel)]="cellNo"></ion-input>
+        <ion-input [(ngModel)]="cellNo"></ion-input> <ion-button (click)="search()" style="zoom:1.8;" slot="end" ><ion-icon  name="add"></ion-icon></ion-button>
       </ion-item>
    <!-- email -->
    
@@ -38,9 +41,7 @@
     </ion-card-content>
     
   </ion-card>
- <!-- back-->
- <ion-button color="light" routerLink='/home' ><ion-icon style="zoom:1;"  name="arrow-back"></ion-icon></ion-button>
- <!-- back -->
+ 
   
   <!-- show lock-->
 <div text-center>
@@ -48,5 +49,15 @@
     <ion-icon   color="light" style="zoom:15;"  name="unlock" *ngIf="!lock" ></ion-icon>
 </div>
   <!-- show lock-->
+
+<!-- <ion-searchbar (keyup)="onKeyUp($event)"></ion-searchbar>
+  <ion-list>
+    <ion-item *ngFor="let contact of contactsFound">
+      <h2>{{contact?.displayName}}</h2>
+        <p *ngFor= "let num of contact?.phoneNumbers">
+          {{num.value}}
+        </p>
+    </ion-item>
+  </ion-list> -->
 
 </ion-content>

@@ -10,7 +10,9 @@
  </ion-header>
 
 <ion-content class="one" color="success" ($ionicView.enter)="checkURL()">
-  
+    <!-- back-->
+ <ion-button color="primary" routerLink='/home' ><ion-icon style="zoom:1;"  name="arrow-back"></ion-icon></ion-button>
+ <!-- back -->
     <form class="form" style="padding: 50px;" [formGroup]="loginForm">
       <h1 style="text-align: center" class="header"><b>Sign In</b></h1>
       <div class="form-divider">

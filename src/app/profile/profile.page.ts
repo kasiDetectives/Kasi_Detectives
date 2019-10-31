@@ -4,32 +4,33 @@ import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angu
 import { Router } from '@angular/router';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { UsersService } from '../users.service';
-
+​
 import { File } from '@ionic-native/file/ngx';
-
-
+​
+​
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
 })
 export class ProfilePage implements OnInit {
-
+​
   profileForm
   name
   userId
   email
   pics
-  user =[]
+  user
   namePattern = "^(?=.*\[A-Z])(?=.*\[a-z])(?=.*\[A-Z]).{2,}$"
   emailPattern= "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
   image: any;
   secImage
-
+​
   constructor(public file:File, public actionSheetController:ActionSheetController, public userService : UsersService,public camera:Camera, public loader:LoadingController, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
   { 
     //this.getUserProfile()
     //this.fetchUserProfile()
+    this.events.publish('currentPage:home', false)
     this.events.subscribe('user:created', (email) => {
       if(!email){
         this.router.navigate(['/login'])
@@ -41,15 +42,17 @@ export class ProfilePage implements OnInit {
         [Validators.required, Validators.pattern(this.namePattern)]
         )
       ]],
-
+​
       email: [this.email, [Validators.compose
         (
         [Validators.required, Validators.pattern(this.emailPattern)]
         )
       ]]
     })
+    this.getUserID()
+    this.fetchUserProfile()
   }
-
+​
   getPic(sourceType)
   {
     const options: CameraOptions =
@@ -60,21 +63,21 @@ export class ProfilePage implements OnInit {
       encodingType: this.camera.EncodingType.JPEG,
       mediaType: this.camera.MediaType.PICTURE
     }
-
+​
     this.camera.getPicture(options).then((imageData) =>
     {
       console.log(imageData);
       
       var names = imageData.substring(imageData.lastIndexOf('/') +1,
       imageData.length)
-
+​
       console.log(names);
       
       if(sourceType == this.camera.PictureSourceType.PHOTOLIBRARY)
       {
         names = names.substring(0, names.lastIndexOf('?'))
       }
-
+​
       console.log(names);
       
       var dirrectory = imageData.substring(0, imageData.lastIndexOf('/') +1)
@@ -84,29 +87,29 @@ export class ProfilePage implements OnInit {
         this.image = result
         this.secImage =result
       })
-
+​
       this.file.readAsArrayBuffer(dirrectory, names).then((buffer) =>
       {
         var blob = new Blob([buffer], {type: "image/jpeg"})
-
+​
         console.log(buffer);
         console.log(blob.size);
         console.log(blob);
-
+​
         this.userService.savePic(blob)
       }).then(() =>
       {
         if(sourceType === this.camera.PictureSourceType.CAMERA)
         {
-
+​
         }
       })
     }, (err) =>
     {
-
+​
     })
   }
-
+​
   async selectPic()
   {
     const actionSheet = await this.actionSheetController.create(
@@ -128,20 +131,24 @@ export class ProfilePage implements OnInit {
   }]
       }
     )
-
+​
     await actionSheet.present()
   }
-
+​
   
   updateProfile()
   {
     this.email = this.profileForm.get('email').value
     this.name = this.profileForm.get('name').value
   }    
-
+​
   getUserProfile(){
     this.user = this.userService.returnUserProfile()
     console.log(this.user);
+  }
+​
+  getUserID(){
+    
   }
    async fetchUserProfile(){
     const loader = await this.loader.create(
@@ -149,39 +156,36 @@ export class ProfilePage implements OnInit {
         message: 'Loading profile...'
       }
     )
-
+​
     await loader.present()
-    this.userService.getUserProfile(this.user[0].key).then(data =>
+    this.userService.checkingAuthState().then(data => {
+      this.user = data
+      console.log(this.user);
+      let userID = this.user['uid']
+      console.log(userID);
+      this.userService.getUserProfile(userID).then(data =>
       
       
       
-      {
-        console.log(this.user[0].key);
-        console.log(data);
-      // this.name = data.name
-      // this.email = data.email
-      this.profileForm.get('email').setValue(data.email)
-      this.profileForm.get('name').setValue(data.name)
-    
-      this.image = data.profilePicUrl
-        console.log(data.profilePicUrl);
-        
-        loader.dismiss()
-      })
-
-
-
-
-    
-    
-  
-    this.userService.getUserProfile(this.user[0].key).then( profile =>{
-      this.image = profile.profilePicUrl
+        {
+          console.log(userID);
+          console.log(data);
+        // this.name = data.name
+        // this.email = data.email
+        this.profileForm.get('email').setValue(data.email)
+        this.profileForm.get('name').setValue(data.name)
+      
+        this.image = data.profilePicUrl
+          console.log(data.profilePicUrl);
+          
+            loader.dismiss()
+          
+          
+        })
       
     })
-
   }
-
+​
   async presentToast() {
     const toast = await this.toastController.create({
       message: 'Profile Updated Successfully!',
@@ -191,8 +195,8 @@ export class ProfilePage implements OnInit {
     toast.present();
   }
   ngOnInit() {
-
-
+​
+​
   }
   addImage(){
     const options: CameraOptions =
@@ -204,13 +208,13 @@ export class ProfilePage implements OnInit {
       //mediaType: this.camera.MediaType.PICTURE,
       saveToPhotoAlbum: false
     }
-
+​
     this.camera.getPicture(options).then(imageData => {
       this.secImage = 'data:image/jpeg;base64' + imageData
       console.log(this.secImage);
       
     })
   }
-
+​
     
 }

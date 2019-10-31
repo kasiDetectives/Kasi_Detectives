@@ -8,14 +8,13 @@
 </ion-header>
     
 <ion-content color="success">
-
-
-
-  
 <!--  start map -->
    <div id="map_canvas" (click)='closeKeyboard()'></div>
+​
+   <!-- <div id="panel"></div> -->
+      
 <!-- end -->
-<ion-list>
+<ion-list color="primary">
       <ion-item *ngFor="let n of scheduled">
           <ion-label text-wrap>
             {{n.id}} - {{n.title}}
@@ -23,37 +22,50 @@
           </ion-label>
       </ion-item>
   </ion-list>
-
-<ion-fab vertical="top" horizontal="end" slot="fixed">
+  <!-- slot="fixed"  -->
+<ion-fab class="FabButtons" vertical="bottom" horizontal="end" >
   <ion-fab-button routerLink='/track-modal'>
     <ion-icon name="share"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-button (click)="showDestinationInput()">
+    GO
   </ion-fab-button>
 </ion-fab>
 ​
     <ion-card class="searchBar">
-    <ion-searchbar #searchInput id="place-id" (ionFocus)='openKeyboard();' (ionBlur)='closeKeyboard();' [(ngModel)]="autocomplete.input" (ionChange)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
+    <ion-searchbar #searchInput id="place-id" (ionBlur)='closeKeyboard();' [(ngModel)]="autocomplete.input" (ionChange)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
     <ion-list   [hidden]="autocompleteItems.length == 0">
       <ion-item class="list"  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
          {{ item.description }}
       </ion-item>
      </ion-list>
     </ion-card>
-
+​
 <p id="output"></p>
-<ion-card class="directions" [hidden]='hide'>
-  <ion-item>
-    <!-- <ion-label>Directions:</ion-label> -->
-    <ion-input type="text" name="myDest" id="myDest" [ngModel]='myDest' (ionChange)='setDestination($event)' placeholder="choose destination.." value=""></ion-input>
-    <ion-button id="directions-button" data-inline="true" data-mini="true" (click)='plotDirections()'>
-      <ion-icon name="Walk" ></ion-icon>
-  </ion-button>
-  <!-- <ion-input type="text" name="myDest" id="Here"  [(ngModel)]="autocompletez.inputz" (ionChange)="SearchPlaces()"></ion-input>
-    <ion-list   [hidden]="autocompleteItems.length == 0">
-    <ion-item class="list"  *ngFor="let itemz of autocompleteItemz" tappable id="submit" (click)="SearchedResult(itemz)">
-       {{ itemz.description }}
+​
+<ion-card class="directions" *ngIf="showDirection">
+​
+    <!-- <ion-icon style="float: right;" name="close" (click)="HideButton()"></ion-icon>   -->
+    <ion-input id='destination-input' [(ngModel)]='myDest' (ionChange)='SearchPlaces();' placeholder="choose destination.." value="" style='min-width: 200px;'></ion-input>
+    <ion-list   [hidden]="autocompleteItemz.length == 0">
+    <ion-item class="list"  *ngFor="let item of autocompleteItemz" tappable id="submit" (click)="getLocation(item)">
+       {{ item.description }}
     </ion-item>
-   </ion-list> -->
-  </ion-item>
+   </ion-list>  
 </ion-card>
+​<ion-card id="cards" style="width: 25%; height: 30%;" >
+    <p id="pano" style="width: auto; height: 85%;"></p>   
+    <!-- <ion-card-content>  
+      <ion-card-title>Madison, WI</ion-card-title>
+      Founded in 1829 on an isthmus between Lake Monona and Lake Mendota in 1836.
+    </ion-card-content> -->
+  </ion-card>
+
+
+
+
 
 </ion-content>
+
+
+
