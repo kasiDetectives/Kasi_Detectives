@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ToastController, Events, ActionSheetController, LoadingController } from '@ionic/angular';
+import { ToastController, Events, ActionSheetController, LoadingController, AlertController } from '@ionic/angular';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
@@ -25,8 +25,9 @@ export class ProfilePage implements OnInit {
   emailPattern= "[a-zA-Z0-9-_.+#$!=%^&*/?]+[@][a-zA-Z0-9-]+[.][a-zA-Z0-9]+"
   image: any;
   secImage
+  loggedInRecently = false
 
-  constructor(public file:File, public actionSheetController:ActionSheetController, public userService : UsersService,public camera:Camera, public loader:LoadingController, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder) 
+  constructor(public file:File, public actionSheetController:ActionSheetController, public userService : UsersService,public camera:Camera, public loader:LoadingController, public toastController: ToastController,public router: Router,public events : Events, public formBuilder:FormBuilder, public alertController : AlertController) 
   { 
     //this.getUserProfile()
     //this.fetchUserProfile()
@@ -174,7 +175,7 @@ export class ProfilePage implements OnInit {
         // this.email = data.email
         this.profileForm.get('email').setValue(data.email)
         this.profileForm.get('name').setValue(data.name)
-      
+        this.events.publish('user:loggedIn', (data.email))
         this.image = data.profilePicUrl
           console.log(data.profilePicUrl);
           
@@ -197,6 +198,92 @@ export class ProfilePage implements OnInit {
   ngOnInit() {
 
 
+  }
+
+  update(){
+    let newUsername = this.profileForm.get('name').value
+    let newEmail = this.profileForm.get('email').value
+    console.log(newEmail);
+    
+    this.userService.checkingAuthState().then(data => {
+      console.log(data);
+      let result  = data
+      let userID = result['uid']
+      let email  = result['email']
+      let username = result['name']
+      console.log(userID);
+      if(newEmail !== email){
+        this.loginAlert(userID, newUsername, username, newEmail, email).then(data => {
+          console.log(data);
+          
+        })
+      }else{
+        this.userService.updateProfile(userID, newUsername, username, newEmail, email).then(data=>{
+          console.log(data);
+          
+        })
+      }
+      
+        
+        
+
+    
+    })
+  }
+  
+  async loginAlert(userID, newUsername, username, newEmail, email){
+    
+    const alert = await this.alertController.create({
+      header: 'Prompt!',
+      inputs: [
+        {
+          name: 'email',
+          type: 'text',
+          placeholder: 'Email'
+        },
+        {
+          name: 'password',
+          type: 'text',
+          id: 'name2-id',
+          value: 'hello',
+          placeholder: 'Password'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Ok',
+          handler: (data) => {
+            console.log('Confirm Ok');
+            console.log(data.email);
+            console.log(data.password);
+            let currentUserEmail = data.email
+            let currentUserPassword = data.password
+            return this.userService.login(currentUserEmail, currentUserPassword).then(data => {
+              console.log(data);
+              let returned = data
+              if(returned.operationType === "signIn"){
+                this.userService.updateProfile(userID, newUsername, username, newEmail, email).then(data => {
+                  console.log(data);
+                  
+                })
+              }
+              
+            }).catch(error=>{
+              console.log(error);
+              
+            })
+          }
+        }
+      ]
+    });
+    await alert.present()
   }
   addImage(){
     const options: CameraOptions =

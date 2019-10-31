@@ -30,7 +30,7 @@
 </ion-fab>
 ​
     <ion-card class="searchBar">
-    <ion-searchbar #searchInput id="place-id" (ionBlur)='closeKeyboard();' [(ngModel)]="autocomplete.input" (ionChange)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
+    <ion-searchbar #searchInput id="place-id" [(ngModel)]="autocomplete.input" (ionChange)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
     <ion-list   [hidden]="autocompleteItems.length == 0">
       <ion-item class="list"  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
          {{ item.description }}

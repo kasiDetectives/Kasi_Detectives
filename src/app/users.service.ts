@@ -59,16 +59,7 @@ export class UsersService {
      })
   }
 
-  // async presentAlert(errorMessage)
-  // {
-  //   const alert = await this.alertController.create({
-  //     header: "Alert",
-  //     message: errorMessage,
-  //     buttons: ['OK']
-  //   })
-  // }
-   //Allowing users to reset their password
-   passwordReset(emailAddress){
+  passwordReset(emailAddress){
     firebase.auth().sendPasswordResetEmail(emailAddress).then(() => {
       // Email sent.
       console.log("Email has been sent")
@@ -139,11 +130,10 @@ export class UsersService {
   }
 
 
-readCurrentSession(){
+  readCurrentSession(){
     console.log(this.user);
     return this.user
   }
-
 
   setCurrentSession(user){
     var uid
@@ -200,5 +190,34 @@ readCurrentSession(){
 
   returnState(){
     return this.currentState
+  }
+
+  updateProfile(userID, newUsername, username, newEmail, email){
+    return new Promise((resolve, reject) => {
+      if(newUsername !== username){
+        firebase.database().ref('Users/').child(userID).update({
+          name: newUsername
+        })
+        //return 'Profile has been reset'
+      }
+      console.log(newEmail);
+      console.log(email);
+      
+      
+      if(newEmail !== email){
+        var user = firebase.auth().currentUser;
+        console.log(user);
+        firebase.database().ref('Users/').child(userID).update({
+          email: newEmail
+        })
+        user.updateEmail(newEmail).then((data) => {
+          let message = 'Profile has been reset'
+          console.log(data);
+        }).catch(function(error) {
+          // An error happened.
+        });
+      }
+      resolve ()
+    })
   }
 }

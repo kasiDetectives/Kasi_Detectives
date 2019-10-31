@@ -18,5 +18,9 @@
       <span style="font-weight: bold; color: red">{{crimeType}} - </span><br>
       <span style="text-align: center; width: auto;height: auto;"> has been reported at this address</span>
     </div>
-  <ion-button color="tertiary" slot='end' (click)='reportCrime()' fill="clear" style='position: relative; bottom: 5%;' >Report a crime</ion-button>
+   
+  
 </ion-content>
+<ion-footer>
+  <ion-button color="tertiary" (click)='reportCrime()' expand="full" style='position: relative; border: 1px solid rgb(red, green, blue) '>Report a crime at this location</ion-button>
+</ion-footer>
