@@ -4,15 +4,12 @@
           <ion-menu-button>
           </ion-menu-button>
         </ion-buttons>
-        <ion-title style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png" >
-          </ion-title>
+        <ion-title style="text-align: center"><img src="\assets\icon\magnifying-glass (10).png"></ion-title>
   </ion-toolbar>
  </ion-header>
 
 <ion-content class="one" color="success" ($ionicView.enter)="checkURL()">
-    <!-- back-->
- <ion-button color="primary" routerLink='/home' ><ion-icon style="zoom:1;"  name="arrow-back"></ion-icon></ion-button>
- <!-- back -->
+ 
  
     <form class="form" style="padding: 50px;" [formGroup]="loginForm">
       <h1 style="text-align: center" class="header"><b>Sign In</b></h1>
@@ -35,7 +32,7 @@
       <div style="text-align: center">
         <ion-button color="tertiary"  class="form-buttons" [disabled]="!loginForm.valid" shape="round" (click)="login()">Login</ion-button><br/><br/>
         <a (click)="resetPassword()">Forgot password</a><br/>
-        Don't have an account?<a  class="form-link"  [routerLink]="['/registration']">Register</a>  
+        Don't have an account? <a  class="form-link"  [routerLink]="['/registration']">Register</a>  
       </div>
     </form>
     

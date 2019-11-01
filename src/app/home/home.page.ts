@@ -101,7 +101,7 @@ export class HomePage implements OnInit  {
   array = []
 
   showDirection = false
-  HideMe = true
+  showMe = true
 
   constructor(public zone: NgZone,public alertController: AlertController, private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
     private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, private keyboard: Keyboard, public googlemapservice : GooglemapService) 
@@ -690,16 +690,16 @@ console.log("hh")
      streetViewControlOptions: {
          position: google.maps.ControlPosition.BOTTOM_CENTER
      },
-      fullscreenControl: true,
-      fullscreenControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_CENTER
-      },
+      fullscreenControl: false,
+      // fullscreenControlOptions: {
+      //   position: google.maps.ControlPosition.RIGHT_CENTER
+      // },
       mapTypeId: google.maps.MapTypeId.ROADMAP,
-      mapTypeControl: true,
-      mapTypeControlOptions: {
-        style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-        position: google.maps.ControlPosition.LEFT_BOTTOM
-      },
+      mapTypeControl: false,
+      // mapTypeControlOptions: {
+      //   style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+      //   position: google.maps.ControlPosition.LEFT_BOTTOM
+      // },
       center: center
     }
     map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
@@ -770,9 +770,9 @@ console.log("hh")
         });
         this.markers.push(marker);
         map.setCenter(pos[0].location);
-        infoWindow.setPosition(pos[0].location);
-        infoWindow.setContent('haha');
-        infoWindow.open(map)
+        // infoWindow.setPosition(pos[0].location);
+        // infoWindow.setContent('haha');
+        // infoWindow.open(map)
         console.log('runner world');
         
         this.geocoder.geocode({'location': new google.maps.LatLng(position.coords.latitude, position.coords.longitude)}, (results, status) => {
@@ -792,7 +792,7 @@ console.log("hh")
            //console.log(infoWindow.setContent(addressArray['street']))
            infoWindow.setContent(addressArray['street'])
            infoWindow.setPosition(pos[0].location);
-                 infoWindow.open(map)
+            infoWindow.open(map)
           }
         })
         //console.log(infoWindowMarker.setContent(addressArray['street']))
@@ -1135,9 +1135,11 @@ console.log("hh")
 
   showDestinationInput(){
     this.showDirection = true
+    this.showMe = true
   }
-
-  // HideButton(){
-  //     this.HideMe = false 
-  // }
+​
+  HideButton(){
+      this.showMe = false 
+      this.showDirection = false
+  }
 }
