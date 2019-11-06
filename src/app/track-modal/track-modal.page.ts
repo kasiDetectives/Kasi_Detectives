@@ -181,7 +181,7 @@ this.lastLocation= String(position.coords.latitude+","+position.coords.longitude
          //username
         console.log(this.lastLocation, "last one")
         console.log(this.loc, "address")
-         this.msg=this.username+" was last seen at "+this.loc+" copy these Coordinates "+this.lastLocation +" and search them on any map for directions. sent from the Kasi Detective App";
+         this.msg=this.username+" was last seen at "+this.loc+", copy these Coordinates "+this.lastLocation +" and search them on any map for directions. From the Kasi Detectives Team";
         console.log(this.msg, "msg")
         console.log(cellNo,"phone numbers")
               

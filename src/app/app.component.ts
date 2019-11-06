@@ -70,7 +70,9 @@ export class AppComponent {
         // api key for local development
         'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyAqj9dyDMnp_Yjb2JiSr899kubQBx3dzbI'
       });
-      this.statusBar.styleDefault();
+      // this.statusBar.styleDefault();
+      this.statusBar.overlaysWebView(false)
+      this.statusBar.backgroundColorByHexString('#204969')
       this.splashScreen.hide();
     });
   }
