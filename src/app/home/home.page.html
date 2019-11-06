@@ -32,7 +32,7 @@
   </ion-fab-button>
 </ion-fab>
 ​
-    <ion-card class="searchBar">
+    <ion-card class="searchBar" *ngIf=" !showMe && !showDirection ">
     <ion-searchbar #searchInput id="place-id" (ionBlur)='closeKeyboard();' [(ngModel)]="autocomplete.input" (ionChange)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
     <ion-list   [hidden]="autocompleteItems.length == 0">
       <ion-item class="list"  *ngFor="let item of autocompleteItems" tappable id="submit" (click)="selectSearchResult(item)">
@@ -44,14 +44,21 @@
 <p id="output"></p>
 ​
 <ion-card class="directions" *ngIf=" showMe && showDirection ">
-  ​   <ion-input id='destination-input' [(ngModel)]='myDest' (ionChange)='SearchPlaces();' placeholder="choose destination.." value="" style='min-width: 200px;'></ion-input>
-      <ion-icon style="float: right; padding: 10px;" name="close" (click)="HideButton()"></ion-icon>  
-      
+    <div>
+      <ion-input id='destination-input' [(ngModel)]='myDest' (ionChange)='SearchPlaces();' placeholder="choose destination.." value="" style='min-width: 200px;'></ion-input>
+      <ion-icon style="float: right; padding: 10px;" name="close" (click)="HideButton()"></ion-icon>
+    </div>
+    <div>
       <ion-list   [hidden]="autocompleteItemz.length == 0">
       <ion-item class="list"  *ngFor="let item of autocompleteItemz" tappable id="submit" (click)="getLocation(item)">
          {{ item.description }}
       </ion-item>
-     </ion-list>  
+     </ion-list>
+    </div>
+
+  ​     
+      
+        
   </ion-card>
 ​<ion-card id="cards" style="width: 25%; height: 30%;" >
     <p id="pano" style="width: auto; height: 85%;"></p>   

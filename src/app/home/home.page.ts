@@ -646,11 +646,6 @@ console.log("hh")
     })
   }
   initMap() {
-    var GoldReefCity = {lat:-26.235754,lng: 28.013135}  
-    var sv = new google.maps.StreetViewService();
-    panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
-    //////////
-
     var infoWindowMarker;
     var selectedMarker
     var  infoWindow
@@ -811,32 +806,6 @@ console.log("hh")
         this.Long = this.array[0].location.lng();
         // calling function to plot
         this.plotDirections(this.start, this.end);
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-  // Set the initial Street View camera to the center of the map
-  sv.getPanorama({location: GoldReefCity, radius: 50}, this.processSVData);
-
-  // Look for a nearby Street View panorama when the map is clicked.
-  // getPanorama will return the nearest pano when the given
-  // radius is 50 meters or less.
-  map.addListener('click', (event)=> {
-    sv.getPanorama({location: event.latLng, radius: 50}, this.processSVData);
-  });
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-        //////// for avoiding routes
-        this.platformz = new H.service.Platform({
-          //'apikey': 'uHrZJBCC_k98EXtICkx_7GH_QyFRSkAC1xoh7Rd02Pk'
-          'app_id': 'zMRd9OoHnOxtuPVaMd6S',
-          'app_code': 'xonuNeoLdBs37GAGkdalqw',
-          'useHTTPS': true
-        });
-        
-        console.log(this.platformz, "rere");
-
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-       // this.AvoidRoutes() 
       }, () => {
         this.handleLocationError(true, infoWindow, map.getCenter());
       });
@@ -887,39 +856,6 @@ console.log("hh")
     console.log(lat, lng, this.result)
   }
 
-  ///////////////////////////////////////////// Panamora for getting Imagery of locations
-  processSVData(data, status) {
-    if (status === 'OK') {
-      var marker = new google.maps.Marker({
-        position: data.location.latLng,
-        map: map,
-        title: data.location.description
-      });
-
-      panorama.setPano(data.location.pano);
-      panorama.setPov({
-        heading: 270,
-        pitch: 0
-      });
-      panorama.setVisible(true);
-
-      marker.addListener('click', ()=> {
-        var markerPanoID = data.location.pano;
-        // Set the Pano to use the passed panoID.
-        panorama.setPano(markerPanoID);
-        panorama.setPov({
-          heading: 270,
-          pitch: 0
-        });
-        panorama.setVisible(true);
-      });
-    } else {
-      console.error('Street View data not found for this location.');
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////
-      // code is working from here
   plotDirections(start, end) {
     console.log(start);
     console.log(end);
@@ -949,31 +885,6 @@ console.log("hh")
       console.log(avoidareas);
     }
 
-        // Create the parameters for the routing request:
-//var routingParameters = {
-  // The routing mode:
-  //'mode': 'fastest;car', // The start point of the route:
- // 'waypoint0': 'geo!-26.226589, 28.014304', // The end point of the route:
- // 'waypoint1': 'geo!-26.003938, 28.179339', // To retrieve the shape of the route we choose the route
-  // representation mode 'display'
- // 'representation': 'display',
- // 'avoidareas': avoidareas //'-26.022615, 28.199386;-26.006173, 28.120092'
-//};
-
-//console.log( routingParameters, "uuu");
-/////
-
-    // this.googlemapservice.AvoidArea(avoidareas).subscribe((data)=>{
-    //   this.dangerPlek = data;
-    //   console.log(this.dangerPlek);
-      
-      // start for getting user location
-    // var locations = {lat: this.Lats, lng: this.Long}
-    // console.log(locations, 'runninnnng');
-    // this.start = locations
-
-      //end for getting user destinations
-      //end = this.destinations 
       console.log(end, "kokoko");
     var method = 'DRIVING';
     var request = {

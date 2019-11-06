@@ -54,6 +54,7 @@
     "cordova-plugin-x-socialsharing": "^5.6.2",
     "cordova-sms-plugin": "^1.0.0",
     "core-js": "^2.5.4",
+    "de.appplant.cordova.plugin.local-notification": "^0.8.5",
     "es6-promise-plugin": "^4.2.2",
     "firebase": "^6.6.0",
     "rxjs": "~6.5.1",
@@ -108,9 +109,13 @@
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
-      "cordova-plugin-x-socialsharing": {},
+      "cordova-plugin-x-socialsharing": {
+        "ANDROID_SUPPORT_V4_VERSION": "24.1.1+"
+      },
       "cordova-plugin-geolocation": {},
-      "cordova-plugin-camera": {},
+      "cordova-plugin-camera": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
       "cordova-plugin-file": {},
       "cordova-plugin-local-notification": {},
       "cordova-plugin-ionic-keyboard": {},
