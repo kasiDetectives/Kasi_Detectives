@@ -101,7 +101,7 @@ export class HomePage implements OnInit  {
   array = []
 
   showDirection = false
-  showMe = true
+  showMe = false
 
   constructor(public zone: NgZone,public alertController: AlertController, private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
     private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, private keyboard: Keyboard, public googlemapservice : GooglemapService) 
@@ -312,6 +312,18 @@ console.log("hh")
             position: new google.maps.LatLng(data[x].lat, data[x].lng),
             icon: this.dangerImage,
           });
+
+                       // Add circle overlay and bind to marker
+     var circle = new google.maps.Circle({
+      map: map,
+      radius:  155, 
+      fillColor: 'red',
+      strokeColor: 'red',
+      strokeWeight:0,
+      strokeWidth: 0,
+      stroke: 0
+     });
+      circle.bindTo('center', markers, 'position');
           console.log(new google.maps.LatLng(data[x].lat, data[x].lng));
           console.log(  markers , "vvvv");
           google.maps.event.addListener(markers, 'click', ((markers, x) => {
@@ -478,6 +490,8 @@ console.log("hh")
     let result :any
     await this.firebaseService.fetchUserIncidents().then(data => {
       result = data
+      console.log(result);
+      
       this.reportedLocations = data
       console.log(result.length);
     })
@@ -555,9 +569,42 @@ console.log("hh")
         let date = Date()
         console.log(date);
         
-        await this.firebaseService.submit(submitInfo).then(data => {
-          console.log(data);
-          this.succesfulSubmission()
+        // await this.firebaseService.submit(submitInfo).then(data => {
+        //   console.log(data);
+        //   this.succesfulSubmission()
+          
+        // })
+
+        this.firebaseService.checkHighRisks(submitInfo).then(data => {
+          console.log(data)
+          let sendToHighRisks = data
+          if(sendToHighRisks === true){
+            this.firebaseService.submitToHighRisk(submitInfo)
+          }else{
+            this.firebaseService.checkIncidents(submitInfo).then(result => {
+              console.log(result);
+              let sendToIncidents = result[0].submit
+              let key = result[0].incidentKey
+              let numberOfReports = result[0].numberOfReports
+              if(sendToIncidents === true){
+                console.log('adding to incidents');
+                console.log(key);
+                console.log(numberOfReports);
+                if(numberOfReports > 3){
+                  this.firebaseService.submitToHighRisk(submitInfo)
+                }else{
+                  this.firebaseService.submitToOldIncidents(submitInfo, key, numberOfReports).then(result => {
+
+                  })
+                }
+              }else{
+                console.log('adding to new incidents');
+                
+                this.firebaseService.submitNew(submitInfo)
+              }
+            })
+          }
+          
           
         })
       }
@@ -646,11 +693,6 @@ console.log("hh")
     })
   }
   initMap() {
-    var GoldReefCity = {lat:-26.235754,lng: 28.013135}  
-    var sv = new google.maps.StreetViewService();
-    panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
-    //////////
-
     var infoWindowMarker;
     var selectedMarker
     var  infoWindow
@@ -811,32 +853,6 @@ console.log("hh")
         this.Long = this.array[0].location.lng();
         // calling function to plot
         this.plotDirections(this.start, this.end);
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-  // Set the initial Street View camera to the center of the map
-  sv.getPanorama({location: GoldReefCity, radius: 50}, this.processSVData);
-
-  // Look for a nearby Street View panorama when the map is clicked.
-  // getPanorama will return the nearest pano when the given
-  // radius is 50 meters or less.
-  map.addListener('click', (event)=> {
-    sv.getPanorama({location: event.latLng, radius: 50}, this.processSVData);
-  });
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-        //////// for avoiding routes
-        this.platformz = new H.service.Platform({
-          //'apikey': 'uHrZJBCC_k98EXtICkx_7GH_QyFRSkAC1xoh7Rd02Pk'
-          'app_id': 'zMRd9OoHnOxtuPVaMd6S',
-          'app_code': 'xonuNeoLdBs37GAGkdalqw',
-          'useHTTPS': true
-        });
-        
-        console.log(this.platformz, "rere");
-
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-       // this.AvoidRoutes() 
       }, () => {
         this.handleLocationError(true, infoWindow, map.getCenter());
       });
@@ -887,39 +903,6 @@ console.log("hh")
     console.log(lat, lng, this.result)
   }
 
-  ///////////////////////////////////////////// Panamora for getting Imagery of locations
-  processSVData(data, status) {
-    if (status === 'OK') {
-      var marker = new google.maps.Marker({
-        position: data.location.latLng,
-        map: map,
-        title: data.location.description
-      });
-
-      panorama.setPano(data.location.pano);
-      panorama.setPov({
-        heading: 270,
-        pitch: 0
-      });
-      panorama.setVisible(true);
-
-      marker.addListener('click', ()=> {
-        var markerPanoID = data.location.pano;
-        // Set the Pano to use the passed panoID.
-        panorama.setPano(markerPanoID);
-        panorama.setPov({
-          heading: 270,
-          pitch: 0
-        });
-        panorama.setVisible(true);
-      });
-    } else {
-      console.error('Street View data not found for this location.');
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////
-      // code is working from here
   plotDirections(start, end) {
     console.log(start);
     console.log(end);
@@ -949,31 +932,6 @@ console.log("hh")
       console.log(avoidareas);
     }
 
-        // Create the parameters for the routing request:
-//var routingParameters = {
-  // The routing mode:
-  //'mode': 'fastest;car', // The start point of the route:
- // 'waypoint0': 'geo!-26.226589, 28.014304', // The end point of the route:
- // 'waypoint1': 'geo!-26.003938, 28.179339', // To retrieve the shape of the route we choose the route
-  // representation mode 'display'
- // 'representation': 'display',
- // 'avoidareas': avoidareas //'-26.022615, 28.199386;-26.006173, 28.120092'
-//};
-
-//console.log( routingParameters, "uuu");
-/////
-
-    // this.googlemapservice.AvoidArea(avoidareas).subscribe((data)=>{
-    //   this.dangerPlek = data;
-    //   console.log(this.dangerPlek);
-      
-      // start for getting user location
-    // var locations = {lat: this.Lats, lng: this.Long}
-    // console.log(locations, 'runninnnng');
-    // this.start = locations
-
-      //end for getting user destinations
-      //end = this.destinations 
       console.log(end, "kokoko");
     var method = 'DRIVING';
     var request = {
