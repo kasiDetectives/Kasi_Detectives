@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase'
+import { ValueAccessor } from '@ionic/angular/dist/directives/control-value-accessors/value-accessor';
 
 
 
@@ -132,7 +133,7 @@ fetchUserIncidents(){
      })
 }
 
-sendToHighRisks(submitInfo){
+checkHighRisks(submitInfo){
   return new Promise((resolve, reject) => {
     this.getDate()
     let userId = submitInfo.userId
@@ -154,17 +155,19 @@ sendToHighRisks(submitInfo){
     let incidentReport = []
   firebase.database().ref().child('HighRisk').once('value').then(snap => {
     let reported = snap.val()
-    for(let key in reported){
-      // if(place === key){
-        
-      // }
-      console.log(key);
-      let values = Object.values(reported[key])
-      console.log(Object.values(reported[key]));
-      highRiskReport.push({
-        key: key,
-        values: values
-      })
+    for(let place in reported){
+      console.log(place);
+      let placeInfo= (reported[place])
+      for(let placeKey in placeInfo){
+        let values = (placeInfo[placeKey])
+        highRiskReport.push({
+          place: place,
+          values: values,
+          key: placeKey
+        })
+      }
+      console.log(Object.values(reported[place]));
+      
       
     }
     console.log(highRiskReport);
@@ -184,11 +187,11 @@ sendToHighRisks(submitInfo){
       }
     }
     console.log("i am here");
-    resolve()
+    resolve(addToHighRisk)
   })
 })
 }
-sendToIncidents(submitInfo){
+checkIncidents(submitInfo){
   return new Promise((resolve, reject) => {
     this.getDate()
     let userId = submitInfo.userId
@@ -208,34 +211,71 @@ sendToIncidents(submitInfo){
     addToHighRisk = false
     let highRiskReport = []
     let incidentReport = []
+    let result = []
   firebase.database().ref().child('Incidents').once('value').then(incidentSnap => {
     let reportedIncidents = incidentSnap.val()
-    for(let key in reportedIncidents){
-      console.log(key);
-      let values = Object.values(reportedIncidents[key])
+    console.log(reportedIncidents);
+    if(reportedIncidents === null){
+      addToOldUserReport = false
+      result = [{
+        submit : addToOldUserReport,
+        incidentKey : null,
+        numberOfReports : 0
+      }]
+    }
+    for(let place in reportedIncidents){
+      let placeInfo = reportedIncidents[place]
+      console.log(placeInfo);
+      for(let placeKey in placeInfo){
+        console.log(placeKey);
+        console.log(place);
+      let values = (placeInfo[placeKey])
+      console.log(values);
+      
       incidentReport.push({
-        key: key,
-        values: values
+        place: place,
+        values: values,
+        key: placeKey
       })
+      }
+      
+      
       
     }
+    console.log(incidentReport);
+    
     // upi = user [reported] place index
     for(let upi = 0; upi < incidentReport.length; upi++){
+      let incidentKey
+      let numberOfReports
       // uvi = user [reported ] value index
-      for(let uvi = 0; uvi < incidentReport[upi].values.length; uvi++){
-        for(let userKey in incidentReport[upi].values[uvi])
-        if(lat === incidentReport[upi].values[uvi].lat && lng === incidentReport[upi].values[uvi].lng){
+      // for(let uvi = 0; uvi < incidentReport[upi].values.length; uvi++){
+        if(lat === incidentReport[upi].values.lat && lng === incidentReport[upi].values.lng){
           addToHighRisk = false
             addToNewUserReport = false
             addToOldUserReport = true
+            numberOfReports = incidentReport[upi].values.numberOfReports
+            incidentKey = incidentReport[upi].key
+            console.log(numberOfReports);
+            console.log(incidentKey);
+            
+            
             console.log(addToOldUserReport, 'adding to old report');
             console.log(addToHighRisk, 'adding to high risk');
             console.log(addToNewUserReport, 'adding to new report');
+            
         }
-      }
+        result = [{
+          submit : addToOldUserReport,
+          incidentKey : incidentKey,
+          numberOfReports : numberOfReports
+        }]
+      // }
     }
+    
+    
     console.log(incidentReport);
-    resolve(addToOldUserReport)
+    resolve(result)
   })
 })
 }
@@ -280,7 +320,7 @@ sendToIncidents(submitInfo){
       firebase.database().ref().child('Incidents/'+ "/" + place + "/" + newPostKey).update({
         lat : lat,
         lng : lng,
-        numberOfReports: 1        
+        numberOfReports: 1       
       })
 
       firebase.database().ref().child('Incidents/'+ "/" + place + "/" + newPostKey + '/' + userId).update({
@@ -300,6 +340,165 @@ sendToIncidents(submitInfo){
 finallySubmit(addToHighRisk, addToOldUserReport, addToNewUserReport){
   console.log('hello');
   
+}
+submitNew(submitInfo){
+  return new Promise((resolve, reject) => {
+    this.getDate()
+    let userId = submitInfo.userId
+    let place = submitInfo.address
+    let description = submitInfo.description
+    let lat = submitInfo.lat
+    let lng = submitInfo.lng
+    let date = this.date
+    let month = this.month
+    let year = this.year
+    let addToOldUserReport = false
+    let addToNewUserReport
+    let addToHighRisk = false
+
+    addToNewUserReport = false
+    addToOldUserReport = false
+    addToHighRisk = false
+    let highRiskReport = []
+    let incidentReport = []
+    console.log(lat);
+    console.log(lng);
+    console.log(description);
+    console.log(userId);
+    console.log(place);
+      //checking if place has been reported before
+
+      console.log(addToOldUserReport, 'adding to old report');
+      console.log(addToHighRisk, 'adding to high risk');
+      console.log(addToNewUserReport, 'adding to new report');
+
+
+      var newPostKey = firebase.database().ref().child('Incidents/' + "/" + place + "/").push().key;
+    console.log(newPostKey);
+      firebase.database().ref().child('Incidents/'+ "/" + place + "/" + newPostKey).update({
+        lat : lat,
+        lng : lng,
+        numberOfReports: 1        
+      })
+
+      firebase.database().ref().child('Incidents/'+ "/" + place + "/" + newPostKey + '/' + userId).update({
+        description: description,
+          date: date,
+          month: month,
+          year: year
+      })
+    
+    
+    resolve()
+    let gate = 'hell'
+    console.log(gate);
+    
+  })
+}
+submitToOldIncidents(submitInfo, key, numberOfReports){
+  return new Promise((resolve, reject) => {
+    this.getDate()
+    let userId = submitInfo.userId
+    let place = submitInfo.address
+    let description = submitInfo.description
+    let lat = submitInfo.lat
+    let lng = submitInfo.lng
+    let date = this.date
+    let month = this.month
+    let year = this.year
+    let addToOldUserReport = false
+    let addToNewUserReport
+    let addToHighRisk = false
+
+    addToNewUserReport = false
+    addToOldUserReport = false
+    addToHighRisk = false
+    let highRiskReport = []
+    let incidentReport = []
+    console.log(lat);
+    console.log(lng);
+    console.log(description);
+    console.log(userId);
+    console.log(place);
+      //checking if place has been reported before
+
+      console.log(addToOldUserReport, 'adding to old report');
+      console.log(addToHighRisk, 'adding to high risk');
+      console.log(addToNewUserReport, 'adding to new report');
+
+      
+      var newPostKey = firebase.database().ref().child('Incidents/' + "/" + place + "/").push().key;
+      var postKey = key
+      console.log(postKey);
+      
+    console.log(newPostKey);
+      firebase.database().ref().child('Incidents/'+ "/" + place + "/" + postKey).update({
+        lat : lat,
+        lng : lng,
+        numberOfReports: numberOfReports + 1       
+      })
+
+      firebase.database().ref().child('Incidents/'+ "/" + place + "/" + postKey + '/' + userId).update({
+        description: description,
+          date: date,
+          month: month,
+          year: year
+      })
+    
+    
+    resolve()    
+  })
+}
+submitToHighRisk(submitInfo){
+  return new Promise((resolve, reject) => {
+    this.getDate()
+    let userId = submitInfo.userId
+    let place = submitInfo.address
+    let description = submitInfo.description
+    let lat = submitInfo.lat
+    let lng = submitInfo.lng
+    let date = this.date
+    let month = this.month
+    let year = this.year
+    let addToOldUserReport = false
+    let addToNewUserReport
+    let addToHighRisk = false
+
+    addToNewUserReport = false
+    addToOldUserReport = false
+    addToHighRisk = false
+    let highRiskReport = []
+    let incidentReport = []
+    console.log(lat);
+    console.log(lng);
+    console.log(description);
+    console.log(userId);
+    console.log(place);
+      //checking if place has been reported before
+
+      console.log(addToOldUserReport, 'adding to old report');
+      console.log(addToHighRisk, 'adding to high risk');
+      console.log(addToNewUserReport, 'adding to new report');
+
+
+      var newPostKey = firebase.database().ref().child('HighRisk/' + "/" + place + "/").push().key;
+    console.log(newPostKey);
+      firebase.database().ref().child('HighRisk/'+ "/" + place + "/" + newPostKey).update({
+        lat : lat,
+        lng : lng,
+        numberOfReports: 1        
+      })
+
+      firebase.database().ref().child('HighRisk/'+ "/" + place + "/" + newPostKey + '/' + userId).update({
+        description: description,
+          date: date,
+          month: month,
+          year: year
+      })
+    
+    
+    resolve()
+  })   
 }
 // submit(submitInfo){
 //   return new Promise((resolve, reject) => {

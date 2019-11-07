@@ -101,7 +101,7 @@ export class HomePage implements OnInit  {
   array = []
 
   showDirection = false
-  showMe = true
+  showMe = false
 
   constructor(public zone: NgZone,public alertController: AlertController, private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
     private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, private keyboard: Keyboard, public googlemapservice : GooglemapService) 
@@ -312,6 +312,18 @@ console.log("hh")
             position: new google.maps.LatLng(data[x].lat, data[x].lng),
             icon: this.dangerImage,
           });
+
+                       // Add circle overlay and bind to marker
+     var circle = new google.maps.Circle({
+      map: map,
+      radius:  155, 
+      fillColor: 'red',
+      strokeColor: 'red',
+      strokeWeight:0,
+      strokeWidth: 0,
+      stroke: 0
+     });
+      circle.bindTo('center', markers, 'position');
           console.log(new google.maps.LatLng(data[x].lat, data[x].lng));
           console.log(  markers , "vvvv");
           google.maps.event.addListener(markers, 'click', ((markers, x) => {
@@ -555,9 +567,42 @@ console.log("hh")
         let date = Date()
         console.log(date);
         
-        await this.firebaseService.submit(submitInfo).then(data => {
-          console.log(data);
-          this.succesfulSubmission()
+        // await this.firebaseService.submit(submitInfo).then(data => {
+        //   console.log(data);
+        //   this.succesfulSubmission()
+          
+        // })
+
+        this.firebaseService.checkHighRisks(submitInfo).then(data => {
+          console.log(data)
+          let sendToHighRisks = data
+          if(sendToHighRisks === true){
+            this.firebaseService.submitToHighRisk(submitInfo)
+          }else{
+            this.firebaseService.checkIncidents(submitInfo).then(result => {
+              console.log(result);
+              let sendToIncidents = result[0].submit
+              let key = result[0].incidentKey
+              let numberOfReports = result[0].numberOfReports
+              if(sendToIncidents === true){
+                console.log('adding to incidents');
+                console.log(key);
+                console.log(numberOfReports);
+                if(numberOfReports > 3){
+                  this.firebaseService.submitToHighRisk(submitInfo)
+                }else{
+                  this.firebaseService.submitToOldIncidents(submitInfo, key, numberOfReports).then(result => {
+
+                  })
+                }
+              }else{
+                console.log('adding to new incidents');
+                
+                this.firebaseService.submitNew(submitInfo)
+              }
+            })
+          }
+          
           
         })
       }

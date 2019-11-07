@@ -21,7 +21,7 @@
 .directions{
 position: fixed;
 background-color: white !important;
-top: 15.5%;
+top: 6.5%;
 left: 0;
 right: 0;
 .list{
@@ -42,6 +42,8 @@ right: 0;
 }
 .FabButtons{
 margin-right: 50 px;
+color: #fd9c00;
+--background-color: #fd9c00 !important
 }
 #panel {
 background-color: #DDD;

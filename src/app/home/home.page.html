@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="tertiary">
+  <ion-toolbar color="primary">
       <ion-buttons slot ="start">
           <ion-menu-button (click)="run()"></ion-menu-button>
       </ion-buttons>
@@ -23,11 +23,11 @@
       </ion-item>
   </ion-list>
   <!-- slot="fixed"  -->
-<ion-fab class="FabButtons" vertical="bottom" horizontal="end" >
-  <ion-fab-button routerLink='/track-modal'>
+<ion-fab class="FabButtons"  vertical="bottom" horizontal="end" >
+  <ion-fab-button routerLink='/track-modal' color="tertiary">
     <ion-icon name="share"></ion-icon>
   </ion-fab-button>
-  <ion-fab-button (click)="showDestinationInput()">
+  <ion-fab-button (click)="showDestinationInput()" color="tertiary">
     GO
   </ion-fab-button>
 </ion-fab>
@@ -54,32 +54,9 @@
          {{ item.description }}
       </ion-item>
      </ion-list>
-    </div>
-
-  ​     
-      
-        
-  </ion-card>
-​<ion-card id="cards" style="width: 25%; height: 30%;" >
-    <p id="pano" style="width: auto; height: 85%;"></p>   
-    <!-- <ion-card-content>  
-      <ion-card-title>Madison, WI</ion-card-title>
-      Founded in 1829 on an isthmus between Lake Monona and Lake Mendota in 1836.
-    </ion-card-content> -->
+    </div>    
   </ion-card>
 </ion-content>
-<!-- <ion-card class="directions" *ngIf=" showMe && showDirection ">
-  ​   <div style='width: 80%; display: block; float: left'><ion-input id='destination-input' [(ngModel)]='myDest' (ionChange)='SearchPlaces();' placeholder="choose destination.." value="" style='min-width: 200px;'></ion-input></div>
-  <div style='display: block; float: right'>
-    <ion-icon style="float: right; padding: 10px;" name="close" (click)="HideButton()"></ion-icon> 
-  </div>
-  
-      
-      <ion-list   [hidden]="autocompleteItemz.length == 0">
-      <ion-item class="list"  *ngFor="let item of autocompleteItemz" tappable id="submit" (click)="getLocation(item)">
-         {{ item.description }}
-      </ion-item>
-     </ion-list>  
-  </ion-card> -->
+
 
 
