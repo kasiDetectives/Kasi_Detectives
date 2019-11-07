@@ -17,26 +17,28 @@
         
 
 <div>
+  <div style="text-align: center; padding:20px">
+    <span style="zoom:1.2;font-weight: 900">Not feeling safe? </span><br>
+    <span style="zoom:1.2;font-weight: 400"> Share your Current location with your family </span>
+    <span style="zoom:1.2;font-weight: 400"> This will send out your location every 5 minute to your family</span>
 
-    <span style="zoom:1.2;">Not feeling safe? </span>
-    <span style="zoom:1.2;"> Share your Current location with your family </span>
-    <span style="zoom:1.2;"> This will send out your location every 5 minute to your family</span>
+  </div>
 
 <!-- email -->
     <!--  -->
   
     <ion-item>
-        <ion-label color="primary" position="floating">Phone Number</ion-label>
-        <ion-input [(ngModel)]="cellNo"></ion-input> <ion-button (click)="search()" style="zoom:1.8;" slot="end" ><ion-icon  name="add"></ion-icon></ion-button>
+        <ion-label color="primary" >Phone Number</ion-label>
+        <ion-input [(ngModel)]="cellNo"></ion-input> <ion-button (click)="search()"  slot="end" color="tertiary" fill="outline"><ion-icon  name="add"></ion-icon></ion-button>
       </ion-item>
    <!-- email -->
    
  <!-- start tracking -->
-   <ion-button (click)="start(cellNo)" *ngIf="!isTracking" ><ion-icon style="zoom:1;" name="send"></ion-icon></ion-button>
+   <ion-button (click)="start(cellNo)" *ngIf="!isTracking"  color="success"><ion-icon style="zoom:1;color:white" name="send"></ion-icon></ion-button>
    <!-- start tracking -->
 
     <!-- end tracking -->
-   <ion-button (click)="stop()" *ngIf="isTracking"><ion-icon style="zoom:1;"  name="hand"></ion-icon></ion-button>
+   <ion-button (click)="stop()" *ngIf="isTracking" color="danger"><ion-icon style="zoom:1;"  name="hand"></ion-icon></ion-button>
     <!-- end tracking -->
 
   </div>
@@ -48,9 +50,13 @@
  
   
   <!-- show lock-->
-<div text-center>
-    <ion-icon  color="light" style="zoom:15;"  name="lock" *ngIf="lock"></ion-icon>
-    <ion-icon   color="light" style="zoom:15;"  name="unlock" *ngIf="!lock" ></ion-icon>
+  
+
+<div text-center >
+    <!-- <ion-icon  color="light" style="zoom:15;"  name="lock" *ngIf="lock"></ion-icon>
+    <ion-icon   color="light" style="zoom:15;"  name="unlock" *ngIf="!lock" ></ion-icon> -->
+    <div *ngIf="isTracking" class="loader" style="display: block;margin-left: auto;margin-right: auto">
+    </div>
 </div>
   <!-- show lock-->
 

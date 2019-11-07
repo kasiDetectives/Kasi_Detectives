@@ -1,0 +1,43 @@
+.loader {
+    width: 1.5em;
+    height: 1.5em;
+    font-size: 150px;
+    position: relative;
+    @media (max-width: 150px * 1.5), (max-height: 150px * 1.5) {
+      font-size: 150px/2;
+    }
+    &:before, &:after {
+      content: "";
+      top: 0;
+       
+      display: block;
+      width: 1.5em;
+      height: 1.5em;
+      position: absolute;
+      border-width: 0.5em;
+      border-style: double;
+      border-color: transparent;
+      box-sizing: border-box;
+      border-radius: 1em;
+      animation: spin 1s infinite;
+    }
+    &:after {
+      left: 0;
+      border-left-color: #dedede;
+    }
+    &:before {
+      right: 0;
+      border-right-color: #dedede;
+      animation-delay: 1s/-4;
+    }
+    @keyframes spin{
+        from {
+            transform: rotate(360deg)
+        }
+    }
+  }
+
+
+  
+ 
+  
