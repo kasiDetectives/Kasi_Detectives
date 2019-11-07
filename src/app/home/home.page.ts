@@ -490,6 +490,8 @@ console.log("hh")
     let result :any
     await this.firebaseService.fetchUserIncidents().then(data => {
       result = data
+      console.log(result);
+      
       this.reportedLocations = data
       console.log(result.length);
     })

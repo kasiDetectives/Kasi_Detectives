@@ -107,32 +107,57 @@ export class FirebaseService {
     this.year = this.currentDate.getFullYear()
     console.log(this.year);
   }
-fetchUserIncidents(){
-     return new Promise((resolve, reject) => {
-      firebase.database().ref().child('Incident').on('child_added', result=>{
-        let locations = result.val()
-        console.log(locations);
-        this.clearArray(this.tempArray)
-        for(let key in locations){
-          this.tempArray.push({
-            object : Object.values(locations[key]),
-            key: key
-          })
-        }
-        console.log(this.tempArray);
-       for(let i = 0; i < this.tempArray.length; i++){
-        this.userIncidents.push({
-          crimeType: this.tempArray[i].object[1],
-          lat: this.tempArray[i].object[2],
-          lng: this.tempArray[i].object[0]
-        })
-      }
-        resolve(this.userIncidents)
-        console.log(this.userIncidents);
-      })
-     })
-}
+// fetchUserIncidents(){
+//      return new Promise((resolve, reject) => {
+//       firebase.database().ref().child('Incident').on('child_added', result=>{
+//         let locations = result.val()
+//         console.log(locations);
+//         this.clearArray(this.tempArray)
+//         for(let key in locations){
+//           this.tempArray.push({
+//             object : Object.values(locations[key]),
+//             key: key
+//           })
+//         }
+//         console.log(this.tempArray);
+//        for(let i = 0; i < this.tempArray.length; i++){
+//         this.userIncidents.push({
+//           crimeType: this.tempArray[i].object[1],
+//           lat: this.tempArray[i].object[2],
+//           lng: this.tempArray[i].object[0]
+//         })
+//       }
+//         resolve(this.userIncidents)
+//         console.log(this.userIncidents);
+//       })
+//      })
+// }
 
+fetchUserIncidents(){
+  return new Promise((resolve, reject) => {
+   firebase.database().ref().child('Incidents').on('child_added', result=>{
+     let locations = result.val()
+     console.log(locations);
+     this.clearArray(this.tempArray)
+     for(let key in locations){
+       this.tempArray.push({
+         object : Object.values(locations[key]),
+         key: key
+       })
+     }
+     console.log(this.tempArray);
+    for(let i = 0; i < this.tempArray.length; i++){
+     this.userIncidents.push({
+       crimeType: this.tempArray[i].object[1],
+       lat: this.tempArray[i].object[2],
+       lng: this.tempArray[i].object[0]
+     })
+   }
+     resolve(this.userIncidents)
+     console.log(this.userIncidents);
+   })
+  })
+}
 checkHighRisks(submitInfo){
   return new Promise((resolve, reject) => {
     this.getDate()
