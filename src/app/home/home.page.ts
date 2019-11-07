@@ -106,7 +106,7 @@ export class HomePage implements OnInit  {
   constructor(public zone: NgZone,public alertController: AlertController, private localNotifications: LocalNotifications, public userService : UsersService, public router : Router, public events : Events,  public toastCtrl: ToastController,
     private platform: Platform, public modal : ModalController, public firebaseService : FirebaseService,public  socialSharing: SocialSharing, private keyboard: Keyboard, public googlemapservice : GooglemapService) 
     {
-    this.exit()
+    //this.exit()
     this.checkUserState()
     this.checkEmail()
     this.run()
@@ -569,44 +569,44 @@ console.log("hh")
         let date = Date()
         console.log(date);
         
-        // await this.firebaseService.submit(submitInfo).then(data => {
-        //   console.log(data);
-        //   this.succesfulSubmission()
-          
-        // })
-
-        this.firebaseService.checkHighRisks(submitInfo).then(data => {
-          console.log(data)
-          let sendToHighRisks = data
-          if(sendToHighRisks === true){
-            this.firebaseService.submitToHighRisk(submitInfo)
-          }else{
-            this.firebaseService.checkIncidents(submitInfo).then(result => {
-              console.log(result);
-              let sendToIncidents = result[0].submit
-              let key = result[0].incidentKey
-              let numberOfReports = result[0].numberOfReports
-              if(sendToIncidents === true){
-                console.log('adding to incidents');
-                console.log(key);
-                console.log(numberOfReports);
-                if(numberOfReports > 3){
-                  this.firebaseService.submitToHighRisk(submitInfo)
-                }else{
-                  this.firebaseService.submitToOldIncidents(submitInfo, key, numberOfReports).then(result => {
-
-                  })
-                }
-              }else{
-                console.log('adding to new incidents');
-                
-                this.firebaseService.submitNew(submitInfo)
-              }
-            })
-          }
-          
+        await this.firebaseService.submit(submitInfo).then(data => {
+          console.log(data);
+          this.succesfulSubmission()
           
         })
+
+        // this.firebaseService.checkHighRisks(submitInfo).then(data => {
+        //   console.log(data)
+        //   let sendToHighRisks = data
+        //   if(sendToHighRisks === true){
+        //     this.firebaseService.submitToHighRisk(submitInfo)
+        //   }else{
+        //     this.firebaseService.checkIncidents(submitInfo).then(result => {
+        //       console.log(result);
+        //       let sendToIncidents = result[0].submit
+        //       let key = result[0].incidentKey
+        //       let numberOfReports = result[0].numberOfReports
+        //       if(sendToIncidents === true){
+        //         console.log('adding to incidents');
+        //         console.log(key);
+        //         console.log(numberOfReports);
+        //         if(numberOfReports > 3){
+        //           this.firebaseService.submitToHighRisk(submitInfo)
+        //         }else{
+        //           this.firebaseService.submitToOldIncidents(submitInfo, key, numberOfReports).then(result => {
+
+        //           })
+        //         }
+        //       }else{
+        //         console.log('adding to new incidents');
+                
+        //         this.firebaseService.submitNew(submitInfo)
+        //       }
+        //     })
+        //   }
+          
+          
+        // })
       }
       
         async succesfulSubmission() {

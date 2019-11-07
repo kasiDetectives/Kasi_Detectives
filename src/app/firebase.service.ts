@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase'
-import { ValueAccessor } from '@ionic/angular/dist/directives/control-value-accessors/value-accessor';
-
-
-
-
 var database = firebase.database();
 @Injectable({
   providedIn: 'root'
@@ -136,10 +131,24 @@ export class FirebaseService {
 fetchUserIncidents(){
   return new Promise((resolve, reject) => {
    firebase.database().ref().child('Incidents').on('child_added', result=>{
-     let locations = result.val()
+     let locations = result.val
+      
+      
      console.log(locations);
      this.clearArray(this.tempArray)
      for(let key in locations){
+       console.log(locations[key]);
+       console.log(key);
+       
+      let lat =  locations[key]['lat']
+      let lng = locations[key]['lng']
+      let des = locations[key]['lng']
+      let values = Object(locations[key])
+      //  console.log(locations[key][])
+       console.log(lat)
+       console.log(values);
+       
+       
        this.tempArray.push({
          object : Object.values(locations[key]),
          key: key
@@ -306,62 +315,62 @@ checkIncidents(submitInfo){
 }
 
   //Submitting data to firebase /// Pinning new report
-  submit(submitInfo){
-  return new Promise((resolve, reject) => {
-    this.getDate()
-    let userId = submitInfo.userId
-    let place = submitInfo.address
-    let description = submitInfo.description
-    let lat = submitInfo.lat
-    let lng = submitInfo.lng
-    let date = this.date
-    let month = this.month
-    let year = this.year
-    let addToOldUserReport = false
-    let addToNewUserReport
-    let addToHighRisk = false
+//   submit(submitInfo){
+//   return new Promise((resolve, reject) => {
+//     this.getDate()
+//     let userId = submitInfo.userId
+//     let place = submitInfo.address
+//     let description = submitInfo.description
+//     let lat = submitInfo.lat
+//     let lng = submitInfo.lng
+//     let date = this.date
+//     let month = this.month
+//     let year = this.year
+//     let addToOldUserReport = false
+//     let addToNewUserReport
+//     let addToHighRisk = false
 
-    addToNewUserReport = false
-    addToOldUserReport = false
-    addToHighRisk = false
-    let highRiskReport = []
-    let incidentReport = []
-    console.log(lat);
-    console.log(lng);
-    console.log(description);
-    console.log(userId);
-    console.log(place);
-      //checking if place has been reported before
+//     addToNewUserReport = false
+//     addToOldUserReport = false
+//     addToHighRisk = false
+//     let highRiskReport = []
+//     let incidentReport = []
+//     console.log(lat);
+//     console.log(lng);
+//     console.log(description);
+//     console.log(userId);
+//     console.log(place);
+//       //checking if place has been reported before
       
     
-    if(addToOldUserReport === false && addToHighRisk === false && addToNewUserReport === true){
-      console.log(addToOldUserReport, 'adding to old report');
-      console.log(addToHighRisk, 'adding to high risk');
-      console.log(addToNewUserReport, 'adding to new report');
+//     if(addToOldUserReport === false && addToHighRisk === false && addToNewUserReport === true){
+//       console.log(addToOldUserReport, 'adding to old report');
+//       console.log(addToHighRisk, 'adding to high risk');
+//       console.log(addToNewUserReport, 'adding to new report');
 
 
-      var newPostKey = firebase.database().ref().child('Incidents/' + "/" + place + "/").push().key;
-    console.log(newPostKey);
-      firebase.database().ref().child('Incidents/'+ "/" + place + "/" + newPostKey).update({
-        lat : lat,
-        lng : lng,
-        numberOfReports: 1       
-      })
+//       var newPostKey = firebase.database().ref().child('Incidents/' + "/" + place + "/").push().key;
+//     console.log(newPostKey);
+//       firebase.database().ref().child('Incidents/'+ "/" + place + "/" + newPostKey).update({
+//         lat : lat,
+//         lng : lng,
+//         numberOfReports: 1       
+//       })
 
-      firebase.database().ref().child('Incidents/'+ "/" + place + "/" + newPostKey + '/' + userId).update({
-        description: description,
-          date: date,
-          month: month,
-          year: year
-      })
-    }
+//       firebase.database().ref().child('Incidents/'+ "/" + place + "/" + newPostKey + '/' + userId).update({
+//         description: description,
+//           date: date,
+//           month: month,
+//           year: year
+//       })
+//     }
     
-    resolve()
-    let gate = 'hell'
-    console.log(gate);
+//     resolve()
+//     let gate = 'hell'
+//     console.log(gate);
     
-  })
-}
+//   })
+// }
 finallySubmit(addToHighRisk, addToOldUserReport, addToNewUserReport){
   console.log('hello');
   
@@ -525,41 +534,41 @@ submitToHighRisk(submitInfo){
     resolve()
   })   
 }
-// submit(submitInfo){
-//   return new Promise((resolve, reject) => {
-//     this.getDate()
-//     let userId = submitInfo.userId
-//     let place = submitInfo.address
-//     let description = submitInfo.description
-//     let lat = submitInfo.lat
-//     let lng = submitInfo.lng
-//     let date = this.date
-//     let month = this.month
-//     let year = this.year
-//     console.log(lat);
-//     console.log(lng);
-//     console.log(description);
-//     console.log(userId);
-//     console.log(place);
+submit(submitInfo){
+  return new Promise((resolve, reject) => {
+    this.getDate()
+    let userId = submitInfo.userId
+    let place = submitInfo.address
+    let description = submitInfo.description
+    let lat = submitInfo.lat
+    let lng = submitInfo.lng
+    let date = this.date
+    let month = this.month
+    let year = this.year
+    console.log(lat);
+    console.log(lng);
+    console.log(description);
+    console.log(userId);
+    console.log(place);
     
     
     
-//     var newPostKey = firebase.database().ref().child('Incident/' + "/" + place + "/").push().key;
-//     console.log(newPostKey);
-//     firebase.database().ref().child('Incident/'+ "/" + place + "/" + newPostKey).update({
+    var newPostKey = firebase.database().ref().child('Incident/' + "/" + place + "/").push().key;
+    console.log(newPostKey);
+    firebase.database().ref().child('Incident/'+ "/" + place + "/" + newPostKey).update({
       
       
-//       description: description,
-//       lat : lat,
-//       lng : lng,
-//       userId: userId,
-//       date: date,
-//       month: month,
-//       year: year
-//     })
-//     resolve()
-//   })
-// }
+      description: description,
+      lat : lat,
+      lng : lng,
+      userId: userId,
+      date: date,
+      month: month,
+      year: year
+    })
+    resolve()
+  })
+}
   clearArray(array){
     for(let i=0; i < array.length; i++){array.splice(i)}
   }
